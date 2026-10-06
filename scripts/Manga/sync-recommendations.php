@@ -108,16 +108,18 @@ foreach (array_keys($candidates) as $id)
             $volumes = $client->get('/editions/' . rawurlencode($edition['id']));
             $volumes = array_values(array_filter($volumes['volumes'] ?? [], static fn ($volume) => $volume['edition_id'] === $edition['id']));
             usort($volumes, static fn ($a, $b) => ($a['number'] ?? PHP_INT_MAX) <=> ($b['number'] ?? PHP_INT_MAX));
+            if ($volumes === []) continue;
+            $dates = array_filter(array_column($volumes, 'release_date'), static fn ($date) => is_string($date) && preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) === 1);
+            sort($dates, SORT_STRING);
+            $catalog['details'][$id] = ['edition' => $edition['title'] ?? 'Standard', 'volumeCount' => count($volumes), 'firstRelease' => $dates[0] ?? null];
             foreach ($volumes as $volume)
             {
                 $client->cover($volume['id'], $volume['image_url'] ?? null);
                 if (!is_file(ROOT . '/public/images/manga/upcoming/' . $volume['id'] . '.jpg')) continue;
                 $catalog['covers'][$id] = $volume['id'];
-                $dates = array_filter(array_column($volumes, 'release_date'), static fn ($date) => is_string($date) && preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) === 1);
-                sort($dates, SORT_STRING);
-                $catalog['details'][$id] = ['edition' => $edition['title'] ?? 'Standard', 'volumeCount' => count($volumes), 'firstRelease' => $dates[0] ?? null];
-                break 2;
+                break;
             }
+            break;
         }
         echo 'Cover ' . $id . ': ' . (isset($catalog['covers'][$id]) ? 'available' : 'unavailable') . "\n";
     }

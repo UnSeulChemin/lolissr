@@ -87,9 +87,10 @@ final class MangaRecommendationService
      * @param list<string> $titles
      * @param list<string> $hidden
      * @param list<string> $confirmedIds
+     * @param list<string>|null $onlyIds
      * @return list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}>
      */
-    public static function fromCatalog(array $catalog, array $titles, string $mode = 'categories', array $hidden = [], array $confirmedIds = []): array
+    public static function fromCatalog(array $catalog, array $titles, string $mode = 'categories', array $hidden = [], array $confirmedIds = [], ?array $onlyIds = null): array
     {
         if ($titles === [] && $confirmedIds === []) return [];
         $series = $catalog['series'] ?? null;
@@ -119,6 +120,7 @@ final class MangaRecommendationService
         }
         if ($ownedIds === []) return [];
         $hiddenSet = array_fill_keys($hidden, true);
+        $selected = $onlyIds === null ? null : array_fill_keys($onlyIds, true);
         if ($mode === 'authors')
         {
             $authors = $catalog['authors'] ?? [];
@@ -134,7 +136,7 @@ final class MangaRecommendationService
             if ($weight === 0) continue;
             foreach ($ids as $id => $_)
             {
-                if (!isset($index[$id]) || isset($excludeIds[$id]) || isset($hiddenSet[$id]) || $index[$id]['adult']) continue;
+                if (!isset($index[$id]) || isset($excludeIds[$id]) || isset($hiddenSet[$id]) || $index[$id]['adult'] || ($selected !== null && !isset($selected[$id]))) continue;
                 $scores[$id] = ($scores[$id] ?? 0) + $weight;
                 $reasons[$id][$kind['title']] = $weight;
             }
@@ -142,7 +144,7 @@ final class MangaRecommendationService
         $ids = array_keys($scores);
         usort($ids, static fn (string $a, string $b): int => [$scores[$b], $index[$a]['title'], $a] <=> [$scores[$a], $index[$b]['title'], $b]);
         $result = [];
-        foreach (array_slice($ids, 0, 40) as $id)
+        foreach ($onlyIds === null ? array_slice($ids, 0, 40) : $ids as $id)
         {
             $covers = $catalog['covers'] ?? [];
             $cover = is_array($covers) ? ($covers[$id] ?? null) : null;
@@ -216,29 +218,73 @@ final class MangaRecommendationService
         /** @var array<string, array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}>|null $entries */
         $entries = $contents === false ? null : json_decode($contents, true);
         if (!is_array($entries) || $entries === []) return [];
-        $catalog = $this->catalog();
-        if (is_array($catalog))
+        $rows = $this->repository->releaseCollection();
+        $ownerId = user()->id;
+        $compute = function () use ($entries, $rows, $ownerId): array
         {
-            $details = is_array($catalog['details'] ?? null) ? $catalog['details'] : [];
-            $covers = is_array($catalog['covers'] ?? null) ? $catalog['covers'] : [];
-            foreach ($entries as &$entry)
+            $catalog = $this->catalog();
+            if (is_array($catalog))
             {
-                $detail = $details[$entry['id']] ?? null;
-                if (is_array($detail))
+                $confirmed = self::confirmedSeriesIds($catalog, $rows, $ownerId);
+                $current = [];
+                foreach (['categories', 'authors'] as $mode)
                 {
-                    if (is_int($detail['volumeCount'] ?? null)) $entry['volumeCount'] = $detail['volumeCount'];
-                    if (is_string($detail['edition'] ?? null)) $entry['edition'] = $detail['edition'];
-                    $date = $detail['firstRelease'] ?? null;
-                    $parsed = is_string($date) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
-                    if ($parsed !== false && $parsed->format('Y-m-d') === $date) $entry['firstRelease'] = $parsed->format('d/m/Y');
+                    $ids = [];
+                    foreach ($entries as $entry)
+                        if ((str_starts_with($entry['reason'], 'Auteurs communs : ') ? 'authors' : 'categories') === $mode) $ids[] = $entry['id'];
+                    if ($ids === []) continue;
+                    foreach (self::fromCatalog($catalog, array_column($rows, 'livre'), $mode, [], $confirmed, $ids) as $suggestion)
+                        $current[$suggestion['id']] = $suggestion;
                 }
-                $cover = $covers[$entry['id']] ?? null;
-                if (is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 && is_file(base_path('public/images/manga/upcoming/' . $cover . '.jpg')))
-                    $entry['imageUrl'] = \Framework\Config\ApplicationConfig::baseUri() . 'images/manga/upcoming/' . $cover . '.jpg';
+                $titles = [];
+                foreach (is_array($catalog['series'] ?? null) ? $catalog['series'] : [] as $series)
+                    if (is_array($series) && is_string($series['id'] ?? null) && is_string($series['title'] ?? null)) $titles[$series['id']] = $series['title'];
+                $details = is_array($catalog['details'] ?? null) ? $catalog['details'] : [];
+                $covers = is_array($catalog['covers'] ?? null) ? $catalog['covers'] : [];
+                foreach ($entries as &$entry)
+                {
+                    if (isset($titles[$entry['id']]))
+                    {
+                        $entry['title'] = $titles[$entry['id']];
+                        $fresh = $current[$entry['id']] ?? null;
+                        $entry['score'] = $fresh['score'] ?? 0;
+                        $entry['categories'] = $fresh['categories'] ?? [];
+                        $entry['reason'] = $fresh['reason'] ?? (str_starts_with($entry['reason'], 'Auteurs communs : ') ? 'Auteurs communs : ' : 'Catégories communes : ');
+                    }
+                    $detail = $details[$entry['id']] ?? null;
+                    if (is_array($detail))
+                    {
+                        if (is_int($detail['volumeCount'] ?? null)) $entry['volumeCount'] = $detail['volumeCount'];
+                        if (is_string($detail['edition'] ?? null)) $entry['edition'] = $detail['edition'];
+                        $date = $detail['firstRelease'] ?? null;
+                        $parsed = is_string($date) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+                        if ($parsed !== false && $parsed->format('Y-m-d') === $date) $entry['firstRelease'] = $parsed->format('d/m/Y');
+                    }
+                    $cover = $covers[$entry['id']] ?? null;
+                    if (is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 && is_file(base_path('public/images/manga/upcoming/' . $cover . '.jpg')))
+                        $entry['imageUrl'] = \Framework\Config\ApplicationConfig::baseUri() . 'images/manga/upcoming/' . $cover . '.jpg';
+                }
+                unset($entry);
             }
-            unset($entry);
+            return array_values($entries);
+        };
+        if ($this->catalogPath !== null || $this->favoritesPath !== null) return $compute();
+        $revision = hash('sha256', json_encode([$entries, $rows, \Framework\Config\ApplicationConfig::baseUri(),
+            $this->fingerprint(base_path('storage/manga-recommendations.json')),
+            $this->fingerprint(base_path('storage/manga-releases.json')),
+            $this->fingerprint(base_path('Config/settings/manga-releases.php'))], JSON_THROW_ON_ERROR));
+        $key = 'manga.favorites.v1.' . user()->id;
+        $build = static fn (): array => ['revision' => $revision, 'items' => $compute()];
+        $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
+        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision)
+        {
+            \Framework\Cache\Cache::forget($key);
+            $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
         }
-        return array_values($entries);
+        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision) return $compute();
+        /** @var list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> $items */
+        $items = $cached['items'];
+        return $items;
     }
 
     /** @return list<string> */

@@ -48,6 +48,13 @@ try
     file_put_contents($path, json_encode($updatedCatalog, JSON_THROW_ON_ERROR));
     $updatedFavorite = $service->favorites()[0];
     $assert($updatedFavorite['volumeCount'] === 7 && $updatedFavorite['edition'] === 'Updated edition' && $updatedFavorite['firstRelease'] === '07/10/2026', 'Saved favorites kept obsolete catalog metadata');
+    $changedCatalog = $updatedCatalog;
+    $changedCatalog['series'][1]['title'] = 'Updated suggestion';
+    $changedCatalog['kinds'][] = ['title' => 'Romance', 'series_ids' => [$id(0), $id(1)]];
+    file_put_contents($path, json_encode($changedCatalog, JSON_THROW_ON_ERROR));
+    $freshFavorite = $service->favorites()[0];
+    $assert($freshFavorite['title'] === 'Updated suggestion' && $freshFavorite['score'] === 2 && count($freshFavorite['categories']) === 2, 'Favorite title, score and categories did not follow the current catalog');
+    file_put_contents($path, json_encode($updatedCatalog, JSON_THROW_ON_ERROR));
     $assert($service->hide($id(1))->success && $service->all() === [], 'Hidden suggestion remained visible');
     $assert(MangaRecommendationService::favoriteIdsForOwner(1, $favorites) === [$id(1)], 'Sync dropped a favorite absent from current recommendations');
     $assert(MangaRecommendationService::favoriteIdsForOwner(0, $favorites) === [], 'Sync accepted an invalid owner');
@@ -91,6 +98,8 @@ try
     { $manySeries[] = ['id' => $id($i), 'title' => 'Suggestion ' . $i]; $manyIds[] = $id($i); }
     $manyCatalog = ['series' => $manySeries, 'kinds' => [['title' => 'Aventure', 'series_ids' => $manyIds]]];
     $assert(count(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'])) === 40, 'Recommendations were not capped at 40');
+    $targeted = MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', [], [], [$id(79)]);
+    $assert(count($targeted) === 1 && $targeted[0]['id'] === $id(79) && $targeted[0]['score'] === 1, 'A favorite outside the top 40 lost its current score');
     $assert(!in_array($id(10), array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', [$id(10)]), 'id'), true), 'Hidden IDs were not excluded before ranking');
     $fiveHidden = array_slice(array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile']), 'id'), 0, 5);
     $replacements = MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', $fiveHidden);
