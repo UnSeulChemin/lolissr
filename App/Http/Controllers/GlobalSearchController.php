@@ -12,8 +12,8 @@ use App\Services\Manga\MangaReadService;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Peluche\PelucheReadService;
 
-use Framework\Http\Request;
 use Framework\Debug\Profiler;
+use Framework\Http\Request;
 
 final class GlobalSearchController extends Controller
 {

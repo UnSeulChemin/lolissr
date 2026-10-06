@@ -89,8 +89,10 @@ export function initCreatePage()
         let automaticValue = input?.value;
         // Submitted values after validation must also be preserved.
         let manuallyEdited = Boolean(input?.value && (name !== 'statut' || input.value !== 'en_cours'));
-        input?.addEventListener('input', () => { manuallyEdited = true; });
-        input?.addEventListener('change', () => { manuallyEdited = true; });
+        input?.addEventListener('input', () =>
+        { manuallyEdited = true; });
+        input?.addEventListener('change', () =>
+        { manuallyEdited = true; });
         return {
             fill(series)
             {
@@ -128,8 +130,7 @@ export function initCreatePage()
         const fillFromSeries = () =>
             {
                 const title = slugSourceInput.value.trim().toLocaleLowerCase('fr');
-                const matches = seriesOptions.filter((option) =>
-                    option.value.trim().toLocaleLowerCase('fr') === title);
+                const matches = seriesOptions.filter((option) => option.value.trim().toLocaleLowerCase('fr') === title);
                 const series = matches.length === 1 ? matches[0] : null;
                 seriesFields.forEach((field) => field.fill(series));
                 if (slugEditedManually)

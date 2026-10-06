@@ -82,8 +82,6 @@ final readonly class MangaReadService
         return $this->mangaRepository->seriesForCreate();
     }
 
-
-
     public function showSeries(string $slug, int $page = 1): ?MangaListData
     {
         $page = max(1, $page);

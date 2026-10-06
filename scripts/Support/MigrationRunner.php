@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 final readonly class MigrationRunner
 {
-    public function __construct(private PDO $db, private string $directory) {}
+    public function __construct(private PDO $db, private string $directory)
+    {}
 
     public function run(string $action = 'status', ?string $baseline = null): void
     {
@@ -66,7 +67,8 @@ final readonly class MigrationRunner
             foreach ($sources as $name => $source)
             {
                 $status = $records[$name]['status'] ?? 'pending';
-                if ($action === 'status') { echo $name . ': ' . $status . PHP_EOL; continue; }
+                if ($action === 'status')
+                { echo $name . ': ' . $status . PHP_EOL; continue; }
                 if ($action === 'baseline')
                 {
                     if ($name !== $baseline)
@@ -79,7 +81,8 @@ final readonly class MigrationRunner
                     echo $name . ': recorded as already applied (SQL not executed)' . PHP_EOL;
                     return;
                 }
-                if (in_array($status, ['applied', 'baseline'], true)) { echo $name . ': skipped' . PHP_EOL; continue; }
+                if (in_array($status, ['applied', 'baseline'], true))
+                { echo $name . ': skipped' . PHP_EOL; continue; }
                 if ($status !== 'pending') throw new RuntimeException('Interrupted/failed migration requires manual inspection and repair: ' . $name . '. Do not blindly rerun its SQL.');
                 $statement = $this->db->prepare("INSERT INTO schema_migrations (name, checksum, status, started_at) VALUES (?, ?, 'running', UTC_TIMESTAMP())");
                 $statement->execute([$name, $source['checksum']]);

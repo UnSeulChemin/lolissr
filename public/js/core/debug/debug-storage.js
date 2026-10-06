@@ -21,12 +21,3 @@ export function disableDebug()
 {
     localStorage.removeItem(DEBUG_KEY);
 }
-
-// =================================================
-// STATUT
-// =================================================
-
-export function isDebugEnabled()
-{
-    return (localStorage.getItem( DEBUG_KEY ) === '1');
-}

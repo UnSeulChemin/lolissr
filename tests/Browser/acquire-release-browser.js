@@ -2,7 +2,8 @@ export async function runBrowserScenario()
 {
     const {initAcquireRelease} = await import('./js/manga/actions/acquire-release.js');
     const {runCleanup} = await import('./js/router/router-cleanup.js');
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
     const tick = () => new Promise(resolve => setTimeout(resolve, 0));
     const form = document.createElement('form');
     form.className = 'js-acquire-release';
@@ -16,7 +17,8 @@ export async function runBrowserScenario()
     window.fetch = () =>
     {
         requests++;
-        return new Promise(resolve => { complete = resolve; });
+        return new Promise(resolve =>
+        { complete = resolve; });
     };
     const submit = () => form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
     try

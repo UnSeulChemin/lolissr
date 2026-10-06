@@ -86,11 +86,13 @@ final readonly class MangaWriteService
         if ($this->mangaRepository->findRecordBySlugAndNumero($slug, $numero) !== null) return $this->error('Ce manga existe déjà', 409);
         $release = null;
         foreach ($releases->forSeries($slug) as $candidate)
-            if ($candidate->number === $numero) { $release = $candidate; break; }
+            if ($candidate->number === $numero)
+            { $release = $candidate; break; }
         if ($release === null) return $this->error('Tome introuvable', 404);
         $series = null;
         foreach ($this->mangaRepository->seriesForCreate() as $candidate)
-            if ($candidate['slug'] === $slug) { $series = $candidate; break; }
+            if ($candidate['slug'] === $slug)
+            { $series = $candidate; break; }
         if ($series === null) return $this->error('Série introuvable', 404);
         // Resolve only a validated catalog ID; never accept an image path from the client.
         $id = basename($release->sourceUrl);
@@ -127,9 +129,11 @@ final readonly class MangaWriteService
                 {
                     if (!imagewebp($image, $handle, 85)) throw new \RuntimeException('Cannot convert release cover to WebP.');
                 }
-                finally { imagedestroy($image); }
+                finally
+                { imagedestroy($image); }
             }
-            finally { fclose($handle); }
+            finally
+            { fclose($handle); }
             $converted = @getimagesize($destination);
             if ($converted === false || $converted[2] !== IMAGETYPE_WEBP) throw new \RuntimeException('Invalid converted release cover.');
             $dto = new MangaCreateData($slug, $series['livre'], $series['editeur'] ?? '', $numero, $series['statut'], null);

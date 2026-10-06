@@ -11,10 +11,12 @@ $original = (string) $db->query('SELECT DATABASE()')->fetchColumn();
 $fixture = 'migration_test_' . bin2hex(random_bytes(8));
 $directory = sys_get_temp_dir() . '/' . $fixture;
 mkdir($directory);
-$check = static function (bool $ok, string $message): void { if (!$ok) throw new RuntimeException($message); };
+$check = static function (bool $ok, string $message): void
+{ if (!$ok) throw new RuntimeException($message); };
 $reject = static function (callable $action, string $expected): void
 {
-    try { $action(); }
+    try
+    { $action(); }
     catch (Throwable $error)
     {
         if (!str_contains($error->getMessage(), $expected)) throw $error;

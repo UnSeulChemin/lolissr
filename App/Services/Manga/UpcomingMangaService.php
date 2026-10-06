@@ -32,7 +32,8 @@ final class UpcomingMangaService
         $next = null;
         foreach ($this->collectionReleases() as $release)
         {
-            if (!$release->isUpcoming) { $missing++; continue; }
+            if (!$release->isUpcoming)
+            { $missing++; continue; }
             $upcoming++;
             if ($next === null || [$release->date, $release->title, $release->number] < [$next->date, $next->title, $next->number]) $next = $release;
         }

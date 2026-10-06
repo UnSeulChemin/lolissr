@@ -32,8 +32,6 @@ final class MangaRepository extends AbstractRepository
         return $rows;
     }
 
-
-
     /** @return list<array{slug: string, livre: string, numero: int}> */
     public function releaseCollection(): array
     {

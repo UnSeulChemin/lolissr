@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli')
+{ http_response_code(404); exit; }
 define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
@@ -20,7 +21,8 @@ final class SearchProfileStatement extends PDOStatement
 {
     public static array $queries = [];
 
-    protected function __construct() {}
+    protected function __construct()
+    {}
 
     public function execute(?array $params = null): bool
     {

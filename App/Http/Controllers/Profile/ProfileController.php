@@ -125,7 +125,7 @@ final class ProfileController extends Controller
     private function resolveSection(string $section, array $categories): string
     {
         $slug = Str::asciiSlug($section);
-        foreach ($categories as $category)
+        foreach (array_unique($categories) as $category)
         {
             if (Str::asciiSlug($category) === $slug) return $category;
         }

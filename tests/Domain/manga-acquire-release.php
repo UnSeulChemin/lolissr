@@ -14,7 +14,8 @@ $id = substr(bin2hex(random_bytes(8)), 0, 8) . '-1234-1234-1234-' . bin2hex(rand
 $source = ROOT . '/public/images/manga/upcoming/' . $id . '.jpg';
 $path = tempnam(sys_get_temp_dir(), 'acquire-catalog-');
 $created = [];
-$check = static function (bool $ok, string $message): void { if (!$ok) throw new RuntimeException($message); };
+$check = static function (bool $ok, string $message): void
+{ if (!$ok) throw new RuntimeException($message); };
 try
 {
     if (!is_dir(dirname($source))) mkdir(dirname($source), 0755, true);
@@ -61,7 +62,8 @@ try
         $service->acquireRelease('fixture', 3, $releases);
         throw new RuntimeException('Expected insertion failure');
     }
-    catch (PDOException $error) { $check(($error->errorInfo[1] ?? null) === 3819, 'Unexpected insertion error'); }
+    catch (PDOException $error)
+    { $check(($error->errorInfo[1] ?? null) === 3819, 'Unexpected insertion error'); }
     $check((glob(ROOT . '/public/images/manga/thumbnail/*.webp') ?: []) === $before, 'Failed insertion leaked a copied cover');
     $check(hash_file('sha256', $source) === $originalHash, 'Rollback removed shared cover');
     $check($service->delete('fixture', 2)->success && !is_file($created[0]) && is_file($source), 'Deleting owned volume damaged shared cover');

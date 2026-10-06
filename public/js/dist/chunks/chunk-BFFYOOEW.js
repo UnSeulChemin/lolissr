@@ -1,0 +1,1 @@
+var n=new WeakMap;function i(e,t=document){return t.querySelector(e)}function f(e,t=document){return[...t.querySelectorAll(e)]}function l(e,t,r,d){n.has(e)||n.set(e,new Set);let o=n.get(e),c=`${t}::${r}`;o.has(c)||(o.add(c),e.addEventListener(t,s=>{let u=s.target;if(!(u instanceof Element))return;let a=u.closest(r);a&&d(s,a)}))}export{i as a,f as b,l as c};

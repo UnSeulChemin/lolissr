@@ -27,15 +27,6 @@ export function $$(selector, parent = document)
 }
 
 // =================================================
-// LECTURE DES ATTRIBUTS DE DONNÉES
-// =================================================
-
-export function data(element, key)
-{
-    return element.dataset[key];
-}
-
-// =================================================
 // DÉLÉGATION
 // =================================================
 
