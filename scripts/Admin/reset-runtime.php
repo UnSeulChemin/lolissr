@@ -1,16 +1,20 @@
 <?php
 declare(strict_types=1);
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli')
+{ http_response_code(404); exit; }
 $root = dirname(__DIR__, 2);
 $composer = null;
 foreach (explode(PATH_SEPARATOR, (string) getenv('PATH')) as $directory)
 {
     $directory = trim($directory, '"');
     if ($directory === '') continue;
-    if (is_file($directory . '/composer.phar')) { $composer = [PHP_BINARY, $directory . '/composer.phar']; break; }
-    if (PHP_OS_FAMILY !== 'Windows' && is_file($directory . '/composer') && is_executable($directory . '/composer')) { $composer = [$directory . '/composer']; break; }
+    if (is_file($directory . '/composer.phar'))
+    { $composer = [PHP_BINARY, $directory . '/composer.phar']; break; }
+    if (PHP_OS_FAMILY !== 'Windows' && is_file($directory . '/composer') && is_executable($directory . '/composer'))
+    { $composer = [$directory . '/composer']; break; }
 }
-if ($composer === null) { fwrite(STDERR, "Composer introuvable dans le PATH du serveur.\n"); exit(1); }
+if ($composer === null)
+{ fwrite(STDERR, "Composer introuvable dans le PATH du serveur.\n"); exit(1); }
 $commands = [];
 foreach (['logs', 'cache', 'sessions'] as $target) $commands[] = [PHP_BINARY, $root . '/scripts/Maintenance/clear-runtime.php', $target];
 $commands[] = [...$composer, 'dump-autoload', '--no-interaction'];

@@ -61,8 +61,10 @@ try
     file_put_contents($fixture . '/scripts/Maintenance/clear-runtime.php', '<?php if (!in_array($argv[1] ?? null, ["logs", "cache", "sessions"], true)) exit(1); echo $argv[1] . " cleared\n";');
     $previousPath = (string) getenv('PATH');
     putenv('PATH=' . $fixture . PATH_SEPARATOR . $previousPath);
-    try { $run('reset'); $wait('done'); }
-    finally { putenv('PATH=' . $previousPath); }
+    try
+    { $run('reset'); $wait('done'); }
+    finally
+    { putenv('PATH=' . $previousPath); }
     $resetOutput = (string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log');
     if (!str_contains(str_replace("\r", '', $resetOutput), "logs cleared\ncache cleared\nsessions cleared\nAutoload rebuilt")) throw new RuntimeException('Global reset stages missing or out of order: ' . $resetOutput);
     $run('images'); $wait('failed');

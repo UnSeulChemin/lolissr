@@ -24,7 +24,8 @@ $actions = [
             <article class="card dashboard-card u-stack u-relative u-clip u-border-box admin-command-card" data-job="maintenance">
                 <span class="dashboard-card-icon u-row-center" aria-hidden="true"><?= e($action['icon']) ?></span>
                 <span class="dashboard-card-title u-relative u-w-full u-bold"><?= e($action['title']) ?></span>
-                <code class="admin-command-badge"><?= e(match ($action['key']) { 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
+                <code class="admin-command-badge"><?= e(match ($action['key'])
+                { 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
                 <p class="dashboard-card-description"><?= e($action['description']) ?></p>
                 <p role="status"><?= e($labels[$job['state']] ?? 'État inconnu') ?></p>
                 <form method="post" action="<?= e($view->baseUri . 'admin/dev/commandes/' . $action['key']) ?>">

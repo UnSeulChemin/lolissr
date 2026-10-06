@@ -67,8 +67,10 @@ final class AdminController extends Controller
     public function resetDev(): never
     {
         set_time_limit(60);
-        try { MaintenanceJob::start('reset'); }
-        catch (RuntimeException $exception) { $this->commandError('admin/dev', $exception->getMessage()); }
+        try
+        { MaintenanceJob::start('reset'); }
+        catch (RuntimeException $exception)
+        { $this->commandError('admin/dev', $exception->getMessage()); }
         \Framework\Http\Session::destroy();
         // Do not create the login session while the worker is still clearing sessions.
         $deadline = microtime(true) + 45;
