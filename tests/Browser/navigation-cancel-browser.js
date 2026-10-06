@@ -2,9 +2,9 @@ export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
-    const {navigateTo} = await import('./js/router/router-navigation.js');
-    const {navigationState} = await import('./js/router/router-state.js');
-    const {onRouteChange} = await import('./js/router/router-hooks.js');
+    const {navigateTo} = await import('./js/router/navigation/navigation.js');
+    const {navigationState} = await import('./js/router/state.js');
+    const {onRouteChange} = await import('./js/router/lifecycle/hooks.js');
     const {initNavigationLoading} = await import('./js/router/ui/navigation-loading.js');
     const main = document.createElement('main');
     main.className = 'app-content';

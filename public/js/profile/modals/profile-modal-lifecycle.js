@@ -1,4 +1,4 @@
-import { registerCleanup } from '../../router/router-cleanup.js';
+import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 
 let activeClose = null;
 

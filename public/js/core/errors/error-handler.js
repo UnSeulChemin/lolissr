@@ -6,7 +6,7 @@ import { showToast } from '../toast.js';
 
 import { debugError } from '../debug/debug.js';
 
-import { FrontendError } from './FrontendError.js';
+import { FrontendError } from './frontend-error.js';
 
 // =================================================
 // ÉTAT

@@ -3,8 +3,8 @@ export async function runBrowserScenario()
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
     const {initRouter} = await import('./js/router/router.js');
-    const {navigateTo} = await import('./js/router/router-navigation.js');
-    const {navigationState} = await import('./js/router/router-state.js');
+    const {navigateTo} = await import('./js/router/navigation/navigation.js');
+    const {navigationState} = await import('./js/router/state.js');
     const main = document.createElement('main');
     main.className = 'app-content';
     main.style.minHeight = '5000px';

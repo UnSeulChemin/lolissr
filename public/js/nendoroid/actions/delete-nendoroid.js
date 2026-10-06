@@ -12,11 +12,11 @@ import { debug } from '../../core/debug/debug.js';
 
 import { handleError } from '../../core/errors/error-handler.js';
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { navigateTo } from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/navigation/navigation.js';
 
-import { invalidateNendoroidPages } from '../nendoroid-cache.js';
+import { invalidateNendoroidPages } from '../cache.js';
 
 import { deleteModal } from '../../core/modal/modal.js';
 

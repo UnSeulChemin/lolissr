@@ -1,5 +1,5 @@
 import { get } from '../../core/http.js';
-import { registerCleanup } from '../../router/router-cleanup.js';
+import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 
 // Conserver un seul lot ; le serveur fournit le total actuel à chaque chargement.
 export function createFlashcardDeck(container, type)

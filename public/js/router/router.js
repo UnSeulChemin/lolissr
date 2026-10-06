@@ -2,13 +2,13 @@
 // ROUTEUR
 // =================================================
 
-import { navigateTo } from './router-navigation.js';
+import { navigateTo } from './navigation/navigation.js';
 
-import { updateActiveNavigation } from './router-active-link.js';
+import { updateActiveNavigation } from './ui/active-link.js';
 
-import { clearActiveFocus } from './router-focus.js';
+import { clearActiveFocus } from './ui/focus.js';
 
-import { activateScrollEntry } from './route-scroll.js';
+import { activateScrollEntry } from './history/route-scroll.js';
 
 import { debug } from '../core/debug/debug.js';
 

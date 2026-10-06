@@ -12,11 +12,11 @@ import { debug } from '../../core/debug/debug.js';
 
 import { handleError } from '../../core/errors/error-handler.js';
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { invalidatePeluchePages } from '../peluche-cache.js';
+import { invalidatePeluchePages } from '../cache.js';
 
-import { updateHeaderUser } from '../../profile/header-user.js';
+import { updateHeaderUser } from '../../profile/ui/header-user.js';
 
 // =================================================
 // CONFIGURATION

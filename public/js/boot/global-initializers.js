@@ -30,7 +30,7 @@ export const GLOBAL_INITIALIZERS = [
     ['NavigationLoading', initNavigationLoading],
     ['RouterDebugPanel', async () =>
     {
-        if (config.debug) (await import('../router/ui/router-debug-panel.js')).initRouterDebugPanel();
+        if (config.debug) (await import('../router/ui/debug-panel.js')).initRouterDebugPanel();
     }],
     ['GlobalBackNavigation', initGlobalBackNavigation],
     ['GlobalErrorHandlers', initGlobalErrorHandlers]

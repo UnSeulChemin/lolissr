@@ -8,9 +8,9 @@ import { post } from '../../core/http.js';
 
 import { showToast } from '../../core/toast.js';
 
-import { updateHeaderUser } from '../../profile/header-user.js';
+import { updateHeaderUser } from '../../profile/ui/header-user.js';
 
-import { invalidateVocabularyPages } from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../cache.js';
 
 // =================================================
 // INITIALISATION

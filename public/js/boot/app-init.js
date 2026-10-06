@@ -5,7 +5,7 @@ import { runInitializers } from '../router/initializers/run-initializers.js';
 
 import { debug, debugError } from '../core/debug/debug.js';
 
-import { FrontendError } from '../core/errors/FrontendError.js';
+import { FrontendError } from '../core/errors/frontend-error.js';
 
 import { handleError } from '../core/errors/error-handler.js';
 
@@ -19,7 +19,7 @@ import { GLOBAL_INITIALIZERS } from './global-initializers.js';
 
 import { ROUTE_INITIALIZERS } from '../router/initializers/route-initializers.js';
 
-import { onRouteChange } from '../router/router-hooks.js';
+import { onRouteChange } from '../router/lifecycle/hooks.js';
 
 import { config } from '../core/config.js';
 

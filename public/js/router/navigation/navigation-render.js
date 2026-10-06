@@ -2,16 +2,16 @@
 // RENDU DE LA NAVIGATION
 // =================================================
 
-import { cachePage } from '../page-cache.js';
+import { cachePage } from '../pages/cache.js';
 import { showToast } from '../../core/toast.js';
 
-import { updateActiveNavigation } from '../router-active-link.js';
+import { updateActiveNavigation } from '../ui/active-link.js';
 
-import { replaceContent } from '../router-dom.js';
+import { replaceContent } from './page-dom.js';
 
-import { clearActiveFocus } from '../router-focus.js';
+import { clearActiveFocus } from '../ui/focus.js';
 
-import { activateScrollEntry, restoreScrollPosition } from '../route-scroll.js';
+import { activateScrollEntry, restoreScrollPosition } from '../history/route-scroll.js';
 
 // =================================================
 // RENDU

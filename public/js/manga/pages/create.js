@@ -12,7 +12,7 @@ import { debug, debugError } from '../../core/debug/debug.js';
 
 import { generateSlug } from '../../core/slug.js';
 
-import { invalidateMangaPages } from '../manga-cache.js';
+import { invalidateMangaPages } from '../cache.js';
 import { initSeriesSuggestions } from './series-suggestions.js';
 
 // =================================================

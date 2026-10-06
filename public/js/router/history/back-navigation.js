@@ -4,7 +4,7 @@
 
 import { config } from '../../core/config.js';
 
-import { navigateTo } from '../router-navigation.js';
+import { navigateTo } from '../navigation/navigation.js';
 
 import { debug } from '../../core/debug/debug.js';
 

@@ -30,7 +30,7 @@ try
     $fixture = <<<'HTML'
 <!doctype html><html><head><link rel="stylesheet" href="css/app.css" data-test-common></head>
 <body><pre id="result">RUNNING</pre><script type="module">
-import {preparePageStyles} from "./js/router/page-styles.js";
+import {preparePageStyles} from "./js/router/pages/styles.js";
 HTML;
     if (isset($argv[3]))
     {

@@ -15,12 +15,12 @@ return [
         'pages/manga/series/notes',
         'pages/manga/series/unread', 'pages/manga/series/releases'
     ],
-    'pages/sql.css' => ['pages/sql/'],
+    'pages/sql/index.css' => ['pages/sql/'],
     // Le vocabulaire et la grammaire partagent les styles des boutons et de navigation des cartes.
-    'pages/chinois/vocabulaire.css' => ['pages/chinois/'],
-    'pages/chinois/grammaire.css' => ['pages/chinois/'],
+    'pages/chinois/vocabulary.css' => ['pages/chinois/'],
+    'pages/chinois/grammar.css' => ['pages/chinois/'],
     'components/profile-avatar.css' => ['pages/profile/'],
-    'pages/profile/profile.css' => ['pages/profile/'],
+    'pages/profile/index.css' => ['pages/profile/'],
     'pages/profile/customization.css' => ['pages/profile/customization'],
     'components/detail.css' => [
         'errors/',

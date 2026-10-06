@@ -1,7 +1,7 @@
 export async function runBrowserScenario()
 {
     const {createFlashcardDeck} = await import('./js/chinois/pages/flashcard-deck.js');
-    const {runCleanup} = await import('./js/router/router-cleanup.js');
+    const {runCleanup} = await import('./js/router/lifecycle/cleanup.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
     const original = window.fetch;

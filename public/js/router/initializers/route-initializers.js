@@ -164,7 +164,7 @@ const initDeleteVocabulaire = lazyInitializer(
 // =================================================
 
 const initProfileCustomization = lazyInitializer(
-    () => import('../../profile/profile-customization.js'),
+    () => import('../../profile/pages/customization.js'),
     'initProfileCustomization'
 );
 

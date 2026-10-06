@@ -8,7 +8,7 @@ import { end, start } from '../../core/debug/profiler.js';
 
 import { getInFlightPrefetch, getPrefetchedPage } from '../prefetch/prefetch-cache.js';
 
-import { fetchPage } from '../router-fetch.js';
+import { fetchPage } from './fetch-page.js';
 
 // =================================================
 // RÉSOLUTION

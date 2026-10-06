@@ -1,4 +1,4 @@
-import { navigateTo } from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/navigation/navigation.js';
 let searchVersion = 0;
 let lastQuery = null;
 // =================================================
@@ -15,7 +15,7 @@ import { normalizeSearchQuery } from '../utils/search-utils.js';
 
 import { openSearchDropdown, closeSearchDropdown, clearSearchResults } from '../ui/search-dropdown.js';
 
-import { renderResults } from './search-renderer.js';
+import { renderResults } from '../renderers/results-renderer.js';
 
 import { updateActiveResult } from './search-keyboard.js';
 

@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { debug, debugError } from '../../core/debug/debug.js';
 
-import { invalidateVocabularyPages } from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../cache.js';
 
 // =================================================
 // ÉTAT

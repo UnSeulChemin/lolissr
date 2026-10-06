@@ -12,11 +12,11 @@ import { debug } from '../../core/debug/debug.js';
 
 import { handleError } from '../../core/errors/error-handler.js';
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
 import { deleteModal } from '../../core/modal/modal.js';
 
-import { invalidateVocabularyPages } from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../cache.js';
 
 // =================================================
 // ÉTAT

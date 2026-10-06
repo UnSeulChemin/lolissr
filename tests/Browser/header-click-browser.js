@@ -27,7 +27,7 @@ export async function runBrowserScenario()
     check(Math.abs(shortPage.x - longPage.x) < 0.1, 'Scrollbar appearance moves the header links');
     main.style.height = '';
     const {initRouter} = await import('./js/router/router.js');
-    const {navigationState} = await import('./js/router/router-state.js');
+    const {navigationState} = await import('./js/router/state.js');
     history.replaceState({}, '', base);
     initRouter();
     const drag = new DragEvent('dragstart', {bubbles: true, cancelable: true});

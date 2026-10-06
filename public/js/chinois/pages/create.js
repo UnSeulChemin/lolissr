@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { debug, debugError } from '../../core/debug/debug.js';
 
-import { invalidateGrammarPages, invalidateVocabularyPages } from '../chinois-cache.js';
+import { invalidateGrammarPages, invalidateVocabularyPages } from '../cache.js';
 
 // =================================================
 // CONFIGURATION

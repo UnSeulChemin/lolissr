@@ -112,8 +112,8 @@ if (! is_file($commonCssPath))
                 $view->baseUri . 'js/profile/modals/avatar-modal.js?v=' . AssetVersions::version('js/profile/modals/avatar-modal.js'),
             $view->baseUri . 'js/profile/modals/banner-modal.js' =>
                 $view->baseUri . 'js/profile/modals/banner-modal.js?v=' . AssetVersions::version('js/profile/modals/banner-modal.js'),
-            $view->baseUri . 'js/profile/profile-customization.js' =>
-                $view->baseUri . 'js/profile/profile-customization.js?v=' . AssetVersions::version('js/profile/profile-customization.js'),
+            $view->baseUri . 'js/profile/pages/customization.js' =>
+                $view->baseUri . 'js/profile/pages/customization.js?v=' . AssetVersions::version('js/profile/pages/customization.js'),
             $view->baseUri . 'js/profile/modals/title-modal.js' =>
                 $view->baseUri . 'js/profile/modals/title-modal.js?v=' . AssetVersions::version('js/profile/modals/title-modal.js'),
             $view->baseUri . 'js/profile/modals/frame-modal.js' =>

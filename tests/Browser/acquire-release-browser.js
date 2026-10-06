@@ -1,7 +1,7 @@
 export async function runBrowserScenario()
 {
     const {initAcquireRelease} = await import('./js/manga/actions/acquire-release.js');
-    const {runCleanup} = await import('./js/router/router-cleanup.js');
+    const {runCleanup} = await import('./js/router/lifecycle/cleanup.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
     const tick = () => new Promise(resolve => setTimeout(resolve, 0));

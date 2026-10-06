@@ -1,9 +1,9 @@
 import { post } from '../../core/http.js';
 import { showToast } from '../../core/toast.js';
 import { confirmModal } from '../../core/modal/confirm-modal.js';
-import { invalidateMangaPages } from '../manga-cache.js';
-import { navigateTo } from '../../router/router-navigation.js';
-import { registerCleanup } from '../../router/router-cleanup.js';
+import { invalidateMangaPages } from '../cache.js';
+import { navigateTo } from '../../router/navigation/navigation.js';
+import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 
 export function initAcquireRelease()
 {

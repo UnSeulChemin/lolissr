@@ -16,7 +16,7 @@ export async function runBrowserScenario()
     const {ROUTE_INITIALIZERS} = await import('./js/router/initializers/route-initializers.js');
     const {GLOBAL_INITIALIZERS} = await import('./js/boot/global-initializers.js');
     const {initApp} = await import('./js/boot/app-init.js');
-    const {navigateTo} = await import('./js/router/router-navigation.js');
+    const {navigateTo} = await import('./js/router/navigation/navigation.js');
     const originalFetch = window.fetch;
     window.fetch = async () => new Response(JSON.stringify({success: true, type: 'page', page: {
         html: '<p id="arrived">Destination</p>', format: 'fragment', title: 'Destination', stylesheets: [], lang: 'fr', bodyData: {}

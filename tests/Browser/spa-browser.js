@@ -2,12 +2,12 @@ export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
-    const {invalidatePage} = await import('./js/router/page-invalidation.js');
+    const {invalidatePage} = await import('./js/router/pages/invalidation.js');
     const {setPrefetchedPage, getPrefetchedPage} = await import('./js/router/prefetch/prefetch-cache.js');
-    const {shouldRefreshRoute, clearInvalidatedRoute} = await import('./js/router/route-invalidation.js');
-    const {invalidateMangaPages} = await import('./js/manga/manga-cache.js');
+    const {shouldRefreshRoute, clearInvalidatedRoute} = await import('./js/router/pages/route-invalidation.js');
+    const {invalidateMangaPages} = await import('./js/manga/cache.js');
     const {inFlight} = await import('./js/router/prefetch/prefetch-state.js');
-    const {replaceContent} = await import('./js/router/router-dom.js');
+    const {replaceContent} = await import('./js/router/navigation/page-dom.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
     const results = [];

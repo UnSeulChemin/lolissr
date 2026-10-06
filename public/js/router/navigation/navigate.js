@@ -23,19 +23,19 @@ import { resolvePage } from './resolve-page.js';
 
 import { validatePageResponse } from './validate-page-response.js';
 
-import { preparePageStyles } from '../page-styles.js';
+import { preparePageStyles } from '../pages/styles.js';
 
-import { clearInvalidatedRoute, shouldRefreshRoute } from '../route-invalidation.js';
+import { clearInvalidatedRoute, shouldRefreshRoute } from '../pages/route-invalidation.js';
 
-import { runCleanup } from '../router-cleanup.js';
+import { runCleanup } from '../lifecycle/cleanup.js';
 
-import { dispatchRouterLoaded } from '../router-events.js';
+import { dispatchRouterLoaded } from '../lifecycle/events.js';
 
-import { triggerRouteChange } from '../router-hooks.js';
+import { triggerRouteChange } from '../lifecycle/hooks.js';
 
-import { clearController, lockRouter, navigationState, setController, unlockRouter } from '../router-state.js';
+import { clearController, lockRouter, navigationState, setController, unlockRouter } from '../state.js';
 
-import { saveScrollPosition } from '../route-scroll.js';
+import { saveScrollPosition } from '../history/route-scroll.js';
 
 // =================================================
 // NAVIGATION

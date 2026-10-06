@@ -4,7 +4,7 @@
 
 import { debugError } from './debug/debug.js';
 
-import { FrontendError } from './errors/FrontendError.js';
+import { FrontendError } from './errors/frontend-error.js';
 
 // =================================================
 // CONFIGURATION

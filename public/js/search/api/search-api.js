@@ -6,7 +6,7 @@ import { get } from '../../core/http.js';
 
 import { debugError } from '../../core/debug/debug.js';
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
 // =================================================
 // CHARGEMENT DES RÉSULTATS DE RECHERCHE

@@ -22,17 +22,17 @@ foreach ($manifest as $css => $patterns)
 $cases = [
     'pages/auth/login' => [],
     'pages/home/index' => ['components/summary.css'],
-    'pages/sql/index' => ['components/summary.css', 'pages/sql.css'],
+    'pages/sql/index' => ['components/summary.css', 'pages/sql/index.css'],
     'pages/manga/series/index' => [],
     'pages/manga/series/show' => ['components/detail.css', 'pages/manga/note-rating.css', 'components/status-toggle.css'],
     'pages/artbook/show' => ['components/detail.css', 'components/status-toggle.css'],
     'pages/figurine/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
     'pages/nendoroid/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
     'pages/peluche/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
-    'pages/chinois/flashcards/grammaire' => ['pages/chinois/vocabulaire.css', 'pages/chinois/grammaire.css'],
+    'pages/chinois/flashcards/grammaire' => ['pages/chinois/vocabulary.css', 'pages/chinois/grammar.css'],
     'pages/profile/customization' => [
         'components/modals/profile-title-modal.css', 'components/media-picker.css',
-        'components/summary.css', 'components/profile-avatar.css', 'pages/profile/profile.css', 'pages/profile/customization.css'
+        'components/summary.css', 'components/profile-avatar.css', 'pages/profile/index.css', 'pages/profile/customization.css'
     ],
     'errors/403' => ['components/detail.css'],
     'errors/404' => ['components/detail.css'],

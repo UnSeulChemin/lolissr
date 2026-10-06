@@ -2,7 +2,7 @@
 // VALIDATION PAGE RÉPONSE
 // =================================================
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
 // =================================================
 // VALIDATION

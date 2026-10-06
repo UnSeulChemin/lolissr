@@ -4,7 +4,7 @@ import { delegate } from '../../core/dom.js';
 
 import { debug } from '../../core/debug/debug.js';
 
-import { FrontendError } from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/frontend-error.js';
 
 import { confirmModal } from '../../core/modal/confirm-modal.js';
 
