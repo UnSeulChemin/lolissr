@@ -19,7 +19,8 @@ final class HttpTestRunner
     public function __construct(
         private readonly string $base,
         private readonly array $tests,
-        private readonly HttpTestStatistics $stats
+        private readonly HttpTestStatistics $stats,
+        private readonly int $repeat = 1
     )
     {
     }
@@ -36,7 +37,9 @@ final class HttpTestRunner
 
         foreach ($this->tests as $test)
         {
-            $this->runTest($test);
+            // Repeat reads only; mutations and authentication checks run once.
+            $passes = strtoupper((string) ($test['method'] ?? 'GET')) === 'GET' ? $this->repeat : 1;
+            for ($pass = 0; $pass < $passes; $pass++) $this->runTest($test);
         }
 
         $totalDuration = microtime(true) - $globalStart;
@@ -396,6 +399,12 @@ final class HttpTestRunner
         echo 'Moyenne : ' . round($this->stats->averageDuration() * 1000, 2) . 'ms' . PHP_EOL;
         echo 'Temps   : ' . round($totalDuration, 3) . 's' . PHP_EOL;
         echo str_repeat('=', self::SEPARATOR_LENGTH) . PHP_EOL;
+        echo 'Top 10 lectures HTTP les plus lentes (mediane ; premier passage inclus)' . PHP_EOL;
+        foreach (HttpTestStatistics::slowestReads($this->results) as $row)
+        {
+            printf("%8.2f ms | max %8.2f ms | %2d passages | %s %s\n",
+                $row['median'] * 1000, $row['max'] * 1000, $row['samples'], $row['method'], $row['path']);
+        }
     }
 
     // =========================================

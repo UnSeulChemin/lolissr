@@ -29,6 +29,21 @@ composer search:profile -- 1
 = Mesurer des recherches precises
 composer search:profile -- 1 "a" "Berserk" "Berserk 1"
 
+= Ajouter les listes paginees et les statistiques (lecture seule, sans cache HTTP)
+composer search:profile -- 1 --lists
+
+= Choisir les pages pour comparer les OFFSET (10 pages maximum, de 1 a 9999)
+composer search:profile -- 1 "a" --pages=1,5,20
+
+= Mesurer les lectures HTTP sur cinq passages, top 10 par mediane dans la console et le rapport HTML
+composer http:profile
+
+= Choisir le nombre de passages (1 a 20 ; seules les requetes GET sont repetees)
+php tests/Http/run-http.php --repeat=10
+
+= Temps HTTP avec reseau et session ; premier passage inclus, sans mesure du rendu navigateur
+= Rapport : tests/Http/reports/lolissr-http-report.html
+
 = Remplacer 1 par l'identifiant de l'utilisateur a mesurer
 
 

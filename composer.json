@@ -65,10 +65,12 @@
 
         "phpstan": "phpstan analyse --configuration=scripts/Tools/phpstan.neon --no-progress --memory-limit=512M",
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php", "@php tests/Http/json-body-limit.php"],
+        "http:profile": "@php tests/Http/run-http.php --repeat=5",
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "dx": "@php scripts/Tools/dx-format.php",
         "dx:check": "@php scripts/Tools/dx-format.php --check",
         "regression-tests": [
+            "@php tests/Build/http-profile.php",
             "@php tests/Build/project-structure.php",
             "@php tests/Framework/configuration.php",
             "@php tests/Framework/configuration-files.php",
@@ -156,6 +158,7 @@
         "tests:search": "[Tests] Recherche des collections et comparaison des resultats HTTP/SPA.",
         "tests:assets": "[Tests] Bundles CSS/JS, versions, miniatures et images de profil.",
         "search:profile": "[Performance] USER_ID [QUERY ...] : mesure la recherche par categorie et affiche les plans SQL, sans modifier la base.",
+        "http:profile": "[Performance] Mesure les lectures HTTP sur cinq passages et classe les dix cas les plus lents.",
         "manga:sync": "[Manga] Actualise les prochaines sorties via une session invite Mangacollec.",
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",

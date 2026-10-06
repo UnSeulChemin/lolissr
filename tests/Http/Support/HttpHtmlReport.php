@@ -28,6 +28,14 @@ final class HttpHtmlReport
             generatedAt: date('d/m/Y H:i:s')
         );
 
+        $timings = '<h2>Top 10 lectures HTTP (premier passage inclus)</h2><table><tr><th>Route / cas</th><th>Mediane</th><th>Maximum</th><th>Passages</th></tr>';
+        foreach (HttpTestStatistics::slowestReads($results) as $row)
+        {
+            $timings .= '<tr><td>' . self::escape($row['path'] . ' — ' . $row['label']) . '</td><td>'
+                . number_format($row['median'] * 1000, 2) . ' ms</td><td>'
+                . number_format($row['max'] * 1000, 2) . ' ms</td><td>' . $row['samples'] . '</td></tr>';
+        }
+        $html = str_replace('</body>', $timings . '</table></body>', $html);
         if (file_put_contents($file, $html, LOCK_EX) === false)
         {
             throw new RuntimeException(
