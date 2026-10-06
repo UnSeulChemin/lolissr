@@ -10,26 +10,6 @@ composer run-script --list
 
 
 =========================================
-GIT
-=========================================
-
-= Compiler les assets, creer un commit APP_NAME / APP_VERSION et pousser sur origin/master
-composer git:publish
-
-= Annuler les modifications locales et supprimer les fichiers non suivis
-= Execute git reset --hard HEAD et git clean -fd
-composer git:reset
-
-
-=========================================
-DX
-=========================================
-
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
-
-
-=========================================
 DEVELOPPEMENT
 =========================================
 
@@ -44,35 +24,40 @@ composer doctor
 
 
 =========================================
-TESTS CIBLES
+DX
+=========================================
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+
+=========================================
+GIT
+=========================================
+
+= Compiler les assets, creer un commit APP_NAME / APP_VERSION et pousser sur origin/master
+composer git:publish
+
+= Annuler les modifications locales et supprimer les fichiers non suivis
+= Execute git reset --hard HEAD et git clean -fd
+composer git:reset
+
+
+=========================================
+TESTS
 =========================================
 
 = Tous les controles
+= check + (Tests navigateur Edge, schéma MySQL, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
 
 = Analyse PHP + tests HTTP / SPA + regressions
 composer check
 
-= Creation manga, recommandations, sorties, XP et pagination
-composer tests:manga
 
-= Recherche et comparaison HTTP / SPA
-composer tests:search
-
-= CSS / JavaScript, versions, miniatures et profils
-composer tests:assets
-
-= Analyse statique PHP seule
-composer phpstan
-
-= Tests HTTP / SPA seuls
-composer http-tests
 
 = Scenarios Microsoft Edge seuls
 composer browser-tests
-
-= Framework, domaines et assets
-composer regression-tests
 
 = Verifier le formatage sans modifier les fichiers
 composer dx:check
