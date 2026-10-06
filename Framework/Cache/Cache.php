@@ -120,6 +120,20 @@ final class Cache
         }
     }
 
+    public static function rememberRevision(string $key, string $revision, ?int $ttl, callable $callback): mixed
+    {
+        $build = static fn (): array => ['revision' => $revision, 'items' => $callback()];
+        $cached = self::remember($key, $ttl, $build);
+        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision)
+        {
+            self::forget($key);
+            $cached = self::remember($key, $ttl, $build);
+        }
+        // Une requête concurrente peut publier une autre révision entre les deux lectures.
+        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision || !array_key_exists('items', $cached)) return $callback();
+        return $cached['items'];
+    }
+
     public static function forget(string $key): void
     {
         self::synchronized(self::path($key), function () use ($key): void

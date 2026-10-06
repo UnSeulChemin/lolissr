@@ -68,17 +68,8 @@ final class MangaRecommendationService
         }
         $revision = hash('sha256', json_encode($fingerprint, JSON_THROW_ON_ERROR));
         $key = 'manga.recommendations.v3.' . $ownerId . '.' . $mode;
-        $build = static fn (): array => ['revision' => $revision, 'items' => $compute()];
-        $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
-        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision)
-        {
-            \Framework\Cache\Cache::forget($key);
-            $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
-        }
-        // Une autre requête peut avoir publié une collection différente entre les deux lectures.
-        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision) return $compute();
         /** @var list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> $items */
-        $items = $cached['items'];
+        $items = \Framework\Cache\Cache::rememberRevision($key, $revision, 3600, $compute);
         return $items;
     }
 
@@ -258,7 +249,7 @@ final class MangaRecommendationService
                         if (is_string($detail['edition'] ?? null)) $entry['edition'] = $detail['edition'];
                         $date = $detail['firstRelease'] ?? null;
                         $parsed = is_string($date) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
-                        if ($parsed !== false && $parsed->format('Y-m-d') === $date) $entry['firstRelease'] = $parsed->format('d/m/Y');
+                        $entry['firstRelease'] = $parsed !== false && $parsed->format('Y-m-d') === $date ? $parsed->format('d/m/Y') : null;
                     }
                     $cover = $covers[$entry['id']] ?? null;
                     if (is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 && is_file(base_path('public/images/manga/upcoming/' . $cover . '.jpg')))
@@ -273,17 +264,9 @@ final class MangaRecommendationService
             $this->fingerprint(base_path('storage/manga-recommendations.json')),
             $this->fingerprint(base_path('storage/manga-releases.json')),
             $this->fingerprint(base_path('Config/settings/manga-releases.php'))], JSON_THROW_ON_ERROR));
-        $key = 'manga.favorites.v1.' . user()->id;
-        $build = static fn (): array => ['revision' => $revision, 'items' => $compute()];
-        $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
-        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision)
-        {
-            \Framework\Cache\Cache::forget($key);
-            $cached = \Framework\Cache\Cache::remember($key, 3600, $build);
-        }
-        if (!is_array($cached) || ($cached['revision'] ?? null) !== $revision) return $compute();
+        $key = 'manga.favorites.v2.' . user()->id;
         /** @var list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> $items */
-        $items = $cached['items'];
+        $items = \Framework\Cache\Cache::rememberRevision($key, $revision, 3600, $compute);
         return $items;
     }
 
@@ -326,7 +309,11 @@ final class MangaRecommendationService
         try
         {
             if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock favorites');
-            $entries = array_column($this->favorites(), null, 'id');
+            $contents = is_file($path) ? @file_get_contents($path) : false;
+            $saved = $contents === false ? null : json_decode($contents, true);
+            $entries = [];
+            foreach (is_array($saved) ? $saved : [] as $favorite)
+                if (is_array($favorite) && is_string($favorite['id'] ?? null)) $entries[$favorite['id']] = $favorite;
             if ($save) $entries[$id] = $entry;
             else unset($entries[$id]);
             $temporary = tempnam(dirname($path), '.build-');

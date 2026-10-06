@@ -26,7 +26,7 @@ try
         throw new RuntimeException('Edge or temporary output files unavailable.');
     }
 
-    $testCode = file_get_contents($argv[2] ?? __DIR__ . '/page-styles-browser.js');
+    $testCode = file_get_contents($argv[2] ?? __DIR__ . '/Assets/page-styles-browser.js');
     $fixture = <<<'HTML'
 <!doctype html><html><head><link rel="stylesheet" href="css/app.css" data-test-common></head>
 <body><pre id="result">RUNNING</pre><script type="module">
