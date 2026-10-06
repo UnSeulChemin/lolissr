@@ -1,6 +1,6 @@
-param([string]$PhpPath = (Get-Command php -ErrorAction Stop).Source, [int]$OwnerId = 1)
+param([string]$PhpPath = (Get-Command php -ErrorAction Stop).Source, [int]$OwnerId = 0)
 $ErrorActionPreference = 'Stop'
-if ($OwnerId -lt 1) { throw 'OwnerId must be positive' }
+if ($OwnerId -lt 0) { throw 'OwnerId must be zero (all accounts) or positive' }
 $runner = Join-Path $PSScriptRoot 'update-recommendations.ps1'
 $arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "{0}" -PhpPath "{1}" -OwnerId {2}' -f $runner, $PhpPath, $OwnerId
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arguments

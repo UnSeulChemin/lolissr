@@ -10,8 +10,15 @@ require ROOT . '/Framework/Support/Helpers.php';
 require ROOT . '/scripts/Support/AtomicFile.php';
 require ROOT . '/scripts/Manga/Support/MangacollecClient.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
-$owner = filter_var($argv[1] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-if ($owner === false) throw new RuntimeException('Specify the collection owner: composer manga:recommendations -- USER_ID');
+$owner = isset($argv[1]) ? filter_var($argv[1], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
+if ($owner === false || count($argv) > 2) throw new InvalidArgumentException('Usage: composer manga:recommendations [-- USER_ID]');
+$db = new \Framework\Database\Database();
+$statement = $db->prepare('SELECT id FROM users' . ($owner !== null ? ' WHERE id = :owner' : '') . ' ORDER BY id');
+$statement->execute($owner !== null ? ['owner' => $owner] : []);
+$owners = array_map('intval', $statement->fetchAll(PDO::FETCH_COLUMN));
+if ($owner !== null && $owners === []) throw new RuntimeException('Unknown collection owner.');
+if ($owners === []) { echo "No accounts to process.\n"; exit; }
+echo 'Recommendation sync: ' . count($owners) . " account(s).\n";
 $lock = fopen(ROOT . '/storage/manga-recommendations.lock', 'c');
 if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) throw new RuntimeException('Recommendation sync already running');
 register_shutdown_function(static function () use ($lock): void
@@ -26,20 +33,23 @@ unset($entry);
 $path = ROOT . '/storage/manga-recommendations.json';
 $previous = is_file($path) ? json_decode((string) file_get_contents($path), true) : [];
 $catalog = ['series' => $series['series'], 'kinds' => $kinds['kinds'], 'covers' => is_array($previous['covers'] ?? null) ? $previous['covers'] : [], 'details' => is_array($previous['details'] ?? null) ? $previous['details'] : [], 'authors' => is_array($previous['authors'] ?? null) ? $previous['authors'] : [], 'edition_series' => is_array($previous['edition_series'] ?? null) ? $previous['edition_series'] : []];
-$db = new \Framework\Database\Database();
-$collections = [];
-$statement = $db->prepare('SELECT DISTINCT user_id, slug, livre FROM manga WHERE user_id = :owner');
-$statement->execute(['owner' => $owner]);
+$collections = array_fill_keys($owners, []);
+$ownerRows = array_fill_keys($owners, []);
+$statement = $db->prepare('SELECT DISTINCT manga.user_id, manga.slug, manga.livre FROM manga INNER JOIN users ON users.id = manga.user_id' . ($owner !== null ? ' WHERE manga.user_id = :owner' : ''));
+$statement->execute($owner !== null ? ['owner' => $owner] : []);
 $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as $row)
+{
     $collections[$row['user_id']][] = $row['livre'];
+    $ownerRows[$row['user_id']][] = $row;
+}
 $settings = require ROOT . '/Config/settings/manga-releases.php';
 $releasesPath = ROOT . '/storage/manga-releases.json';
 $releases = is_file($releasesPath) ? json_decode((string) file_get_contents($releasesPath), true) : [];
 $editionIds = [];
 foreach ($rows as $row)
 {
-    $editionId = $settings['editions'][$row['slug']] ?? ($releases['users'][(string) $owner][$row['slug']]['edition_id'] ?? null);
+    $editionId = $settings['editions'][$row['slug']] ?? ($releases['users'][(string) $row['user_id']][$row['slug']]['edition_id'] ?? null);
     if (is_string($editionId)) $editionIds[$editionId] = true;
 }
 foreach (array_keys($editionIds) as $editionId)
@@ -53,8 +63,13 @@ foreach (array_keys($editionIds) as $editionId)
     catch (Throwable)
     { echo 'Series identity unavailable for edition ' . $editionId . "\n"; }
 }
-$confirmedIds = \App\Services\Manga\MangaRecommendationService::confirmedSeriesIds($catalog, $rows, $owner);
-$confirmedSet = array_fill_keys($confirmedIds, true);
+$confirmedByOwner = [];
+$confirmedSet = [];
+foreach ($owners as $ownerId)
+{
+    $confirmedByOwner[$ownerId] = \App\Services\Manga\MangaRecommendationService::confirmedSeriesIds($catalog, $ownerRows[$ownerId], $ownerId);
+    foreach ($confirmedByOwner[$ownerId] as $id) $confirmedSet[$id] = true;
+}
 $ownedTitles = [];
 foreach ($collections as $titles)
     foreach ($titles as $title) $ownedTitles[\App\Services\Manga\MangaRecommendationService::normalize($title)] = true;
@@ -88,14 +103,16 @@ foreach (array_keys($authorIds) as $authorId)
     catch (Throwable)
     { echo 'Author bibliography unavailable for ' . $authorId . "\n"; }
 }
-$hidden = \App\Services\Manga\MangaRecommendationService::hiddenForOwner($owner);
 $candidates = [];
-foreach ($collections as $titles)
+foreach ($collections as $ownerId => $titles)
+{
+    $hidden = \App\Services\Manga\MangaRecommendationService::hiddenForOwner($ownerId);
     foreach (['categories', 'authors'] as $mode)
-    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden, $confirmedIds) as $recommendation)
+    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden, $confirmedByOwner[$ownerId]) as $recommendation)
         $candidates[$recommendation['id']] = $recommendation;
-foreach (\App\Services\Manga\MangaRecommendationService::favoriteIdsForOwner($owner) as $favoriteId)
-    $candidates[$favoriteId] = true;
+    foreach (\App\Services\Manga\MangaRecommendationService::favoriteIdsForOwner($ownerId) as $favoriteId)
+        $candidates[$favoriteId] = true;
+}
 foreach (array_keys($candidates) as $id)
 {
     try

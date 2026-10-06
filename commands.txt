@@ -24,17 +24,6 @@ composer doctor
 
 
 =========================================
-DX
-=========================================
-
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
-
-= Verifier le formatage sans modifier les fichiers
-composer dx:check
-
-
-=========================================
 GIT
 =========================================
 
@@ -44,6 +33,17 @@ composer git:publish
 = Annuler les modifications locales et supprimer les fichiers non suivis
 = Execute git reset --hard HEAD et git clean -fd
 composer git:reset
+
+
+=========================================
+DX
+=========================================
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+= Verifier le formatage sans modifier les fichiers
+composer dx:check
 
 
 =========================================
@@ -71,16 +71,8 @@ IMAGES
 = Actualise le manifeste des profils et les empreintes de toutes les images
 composer images:build
 
-= Verifier les miniatures sans modifier les fichiers
+= Verifier profils, miniatures, variantes .grid, extensions en base, manifestes et empreintes sans les modifier
 composer images:check
-
-
-
-
-
-
-
-
 
 
 
@@ -88,15 +80,26 @@ composer images:check
 MANGA
 =========================================
 
-= Windows : sorties a 09:00, recommandations a 09:15 et ouverture de session
-= PC allume, Apache/MySQL disponibles ; aucune commande quotidienne necessaire
+!! Windows : sorties a 09:00, recommandations a 09:15 et ouverture de session
+!! PC allume, Apache/MySQL disponibles ; aucune commande quotidienne necessaire
 
-= Actualiser manuellement les tomes a venir
+= Actualiser manuellement les prochain sorties a venir
 composer manga:sync
 
-= Actualiser manuellement les recommandations du compte local
-= Remplacer 1 par l'identifiant du compte concerne
+= Actualiser le catalogue et les couvertures des recommandations pour tous les comptes
+= Local et production ; ajouter -- USER_ID pour cibler un seul compte
+composer manga:recommendations
+
+= Actualiser uniquement les recommandations du compte 1
 composer manga:recommendations -- 1
+
+
+
+
+
+
+
+
 
 = Apres modification manuelle du catalogue JSON : republier sa revision sans reseau
 composer manga:catalog-revision
@@ -104,8 +107,8 @@ composer manga:catalog-revision
 = Installer/reinstaller la tache Windows des sorties
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-schedule.ps1
 
-= Installer/reinstaller la tache Windows des recommandations pour le compte 1
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1 -OwnerId 1
+= Installer/reinstaller la tache Windows des recommandations pour tous les comptes
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1
 
 = Sur un autre serveur : planifier les deux commandes d'actualisation
 
@@ -115,6 +118,8 @@ storage/logs/manga-recommendations-sync.log
 
 = Correspondances des editions
 Config/settings/manga-releases.php
+
+
 
 
 =========================================
