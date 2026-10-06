@@ -285,7 +285,7 @@ $hasMostRepresented =
     ================================================= -->
 
     <h2 class="home-section-title u-relative u-text-center u-w-full">📚 Suivi de mes séries</h2>
-    <section class="home-grid home-grid-stats card-grid-3">
+    <section class="home-grid home-grid-stats home-series-tracking card-grid-3">
         <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/a-paraitre') ?>">
             <h3 class="home-card-title">📅 À paraître</h3>
             <p class="home-card-value u-relative u-bold"><?= $releaseUpcomingCount ?> tomes</p>
@@ -302,6 +302,14 @@ $hasMostRepresented =
             <?php else: ?>
                 <p class="home-card-title">Aucune sortie annoncée</p>
             <?php endif; ?>
+        </a>
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/recommandations') ?>">
+            <h3 class="home-card-title">✨ Séries par catégories</h3>
+            <p class="home-card-title">Des séries partageant les catégories de mes mangas</p>
+        </a>
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/recommandations-auteurs') ?>">
+            <h3 class="home-card-title">✍️ Séries des mêmes auteurs</h3>
+            <p class="home-card-title">Des séries écrites ou dessinées par les auteurs de mes mangas</p>
         </a>
     </section>
 

@@ -48,6 +48,7 @@
             "@php tests/Domain/manga-acquire-release.php",
             "@php tests/Domain/manga-create-notes.php",
             "@php tests/Domain/manga-upcoming.php",
+            "@php tests/Domain/manga-recommendations.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/manga-filtered-pages.php"
         ],
@@ -95,6 +96,7 @@
             "@php tests/Domain/collection-update-existence.php",
             "@php tests/Domain/manga-create-notes.php",
             "@php tests/Domain/manga-upcoming.php",
+            "@php tests/Domain/manga-recommendations.php",
             "@php tests/Domain/media-integrity.php",
             "@php tests/Domain/manga-acquire-release.php",
             "@php tests/Domain/manga-xp-batch.php",
@@ -140,6 +142,7 @@
         "bootstrap:clear": "@php scripts/Maintenance/bootstrap-cache.php clear",
 
         "manga:sync": "@php scripts/Manga/sync-releases.php",
+        "manga:recommendations": "@php scripts/Manga/sync-recommendations.php",
         "search:profile": "@php scripts/Tools/profile-search.php",
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
@@ -157,6 +160,7 @@
     },
 
     "scripts-descriptions": {
+        "manga:recommendations": "[Manga] USER_ID : actualise le catalogue public et les couvertures des suggestions de ce compte local.",
         "doctor": "[Diagnostic] Verifie PHP, configuration, stockage, MySQL, migrations, assets et acces HTTP local.",
         "preflight": "[Production] Avant publication : diagnostic, build, formatage et suite complete. Apache/MySQL/Edge et identifiants de test requis ; utilise des fixtures temporaires.",
         "db:migrate": "[Donnees] Applique les migrations SQL manquantes dans la base du .env.",

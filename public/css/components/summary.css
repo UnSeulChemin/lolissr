@@ -435,3 +435,12 @@
         left: 140%;
     }
 }
+
+
+.home-series-tracking > .card:nth-child(n + 3) p.home-card-title,
+.home-series-tracking > .card:nth-child(n + 3) time.home-card-title
+{
+    font-size: 1.2rem;
+    line-height: 1.45;
+}
+

@@ -543,3 +543,61 @@
 {
     gap: 16px;
 }
+
+.collection-recommendation-card .collection-card-subtitle
+{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    height: 4.2em;
+    line-height: 1.4;
+    overflow: hidden;
+}
+
+.recommendation-rank
+{
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--gradient-violet);
+    color: #fff;
+    font-weight: 700;
+}
+
+.collection-recommendation-card
+{
+    padding-top: 92px;
+}
+
+.collection-recommendation-card .recommendation-categories
+{
+    position: absolute;
+    top: 20px;
+    left: 54px;
+    right: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: center;
+    gap: 5px;
+}
+
+.recommendation-category
+{
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(123, 44, 255, 0.10);
+    color: var(--color-violet);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 600;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}

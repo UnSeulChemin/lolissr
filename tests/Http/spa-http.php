@@ -8,7 +8,7 @@ require __DIR__ . '/Support/HttpClient.php';
 http_login();
 $jsonHeaders = ['Accept: application/json'];
 $fragmentHeaders = [...$jsonHeaders, 'X-Page-Format: fragment'];
-foreach (['/', '/profil', '/profil/succes', '/manga', '/chinois', '/figurine'] as $path)
+foreach (['/', '/profil', '/profil/succes', '/manga', '/manga/series/recommandations', '/manga/series/recommandations-auteurs', '/chinois', '/figurine'] as $path)
 {
     $fullResponse = http_get(http_base() . $path, $jsonHeaders);
     $fragmentResponse = http_get(http_base() . $path, $fragmentHeaders);

@@ -27,6 +27,33 @@ final class MangaController extends Controller
         $this->redirectWithSuccess(self::SERIES_PATH . '/' . rawurlencode($slug), $result->message);
     }
 
+    public function hideRecommendation(string $id): never
+    {
+        $result = $this->recommendationService->hide($id);
+        if ($this->expectsJson()) $this->jsonResult($result);
+        if (!$result->success) $this->redirectWithError('manga/series/recommandations', $result->message, false);
+        $this->redirectWithSuccess('manga/series/recommandations', $result->message);
+    }
+
+    public function authorRecommendations(int $page = 1): never
+    { $this->recommendationPage('authors', $page); }
+
+    public function recommendations(int $page = 1): never
+    { $this->recommendationPage('categories', $page); }
+
+    private function recommendationPage(string $mode, int $page): never
+    {
+        $items = $this->recommendationService->all($mode);
+        $perPage = max(1, \Framework\Config\ApplicationConfig::pagination());
+        $totalPages = max(1, (int) ceil(count($items) / $perPage));
+        if ($page < 1 || $page > $totalPages) throw new NotFoundException('Page introuvable');
+        $offset = ($page - 1) * $perPage;
+        $this->title = $mode === 'authors' ? 'Manga | Mêmes auteurs' : 'Manga | Recommandations';
+        $this->render('pages/manga/series/recommendations', ['recommendations' => array_slice($items, $offset, $perPage),
+            'currentPage' => $page, 'totalPages' => $totalPages, 'rankOffset' => $offset,
+            'paginationPath' => 'manga/series/' . ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations')]);
+    }
+
     public function forthcoming(int $page = 1): never
     { $this->releases('a-paraitre', $page); }
 
@@ -48,6 +75,7 @@ final class MangaController extends Controller
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
         private readonly \App\Services\Manga\UpcomingMangaService $upcomingMangaService,
+        private readonly \App\Services\Manga\MangaRecommendationService $recommendationService,
         Request $request
     )
     {
