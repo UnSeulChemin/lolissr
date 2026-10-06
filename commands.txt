@@ -17,8 +17,16 @@ GIT
 composer git:publish
 
 = Annuler les modifications locales et supprimer les fichiers non suivis
-= Execute git reset --hard HEAD et git clean -fd ; fichiers ignores conserves
+= Execute git reset --hard HEAD et git clean -fd
 composer git:reset
+
+
+=========================================
+DX
+=========================================
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
 
 
 =========================================
@@ -37,11 +45,9 @@ composer doctor
 
 
 
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
 
-= Analyse PHP + tests HTTP / SPA + regressions
-composer check
+
+
 
 
 =========================================
@@ -75,6 +81,9 @@ composer bootstrap:clear
 =========================================
 TESTS CIBLES
 =========================================
+
+= Analyse PHP + tests HTTP / SPA + regressions
+composer check
 
 = Tous les controles, sans recompiler les assets
 composer check:all
