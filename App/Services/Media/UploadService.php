@@ -97,6 +97,7 @@ final readonly class UploadService
                     if (str_contains(str_replace('\\', '/', $destination), '/images/profil/'))
                         \App\Support\Media\ImageAssets::invalidateProfileVersion();
                     else ThumbnailOptimizer::createGrid($destination);
+                    \App\Support\Media\ImageAssets::refreshFingerprint($destination);
                 }
                 catch (\Throwable $exception)
                 {
@@ -143,10 +144,12 @@ final readonly class UploadService
 
     public function removeFile(string $path): bool
     {
+        \App\Support\Media\ImageAssets::forgetFingerprint($path);
         ThumbnailOptimizer::forgetGrid($path);
         if (str_contains(str_replace('\\', '/', $path), '/images/profil/'))
             \App\Support\Media\ImageAssets::invalidateProfileVersion();
         $grid = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.grid.$1', $path);
+        if (is_string($grid) && $grid !== $path) \App\Support\Media\ImageAssets::forgetFingerprint($grid);
         if (is_string($grid) && $grid !== $path && is_file($grid) && !@unlink($grid))
         {
             Logger::warning('Upload: impossible de supprimer la miniature.', ['path' => $grid]);

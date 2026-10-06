@@ -23,11 +23,13 @@ final class ThumbnailOptimizer
             if (!copy($path, $temporary)) throw new \RuntimeException('Cannot stage grid image.');
             if (!self::optimize($temporary, 600))
             {
+                ImageAssets::forgetFingerprint($target);
                 if (is_file($target) && !unlink($target)) throw new \RuntimeException('Cannot remove obsolete grid image.');
                 ImageManifest::write($statePath, ['source' => $sourceHash, 'settings' => '600:85:v1', 'grid' => false]);
                 return false;
             }
             if (!rename($temporary, $target)) throw new \RuntimeException('Cannot publish grid image.');
+            ImageAssets::refreshFingerprint($target);
             ImageManifest::write($statePath, ['source' => $sourceHash, 'settings' => '600:85:v1', 'grid' => true]);
             return true;
         }
@@ -133,6 +135,7 @@ final class ThumbnailOptimizer
                 throw new \RuntimeException('Invalid optimized thumbnail.');
             if (filesize($temporary) >= strlen($bytes)) return false;
             if (!rename($temporary, $path)) throw new \RuntimeException('Cannot publish thumbnail.');
+            ImageAssets::refreshFingerprint($path);
             return true;
         }
         finally

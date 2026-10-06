@@ -183,6 +183,11 @@ composer images:variants -- --apply
 = Après ajout, remplacement ou suppression manuelle d'une image de profil : actualiser son manifeste
 composer images:manifest
 
+= Apres remplacement manuel des images : recalculer les empreintes SHA-256 des originaux et variantes .grid
+composer images:fingerprints
+= Taille et dates identiques : reconstruction obligatoire ; uploads et scripts actualisent automatiquement les empreintes
+= Pour une image de profil, images:manifest actualise aussi la version globale et les empreintes individuelles
+
 = En production : APP_ENV=production et APP_DEBUG=false, puis compiler le bootstrap sur le serveur cible
 composer bootstrap:cache
 

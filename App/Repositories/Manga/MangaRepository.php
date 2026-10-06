@@ -20,13 +20,13 @@ final class MangaRepository extends AbstractRepository
     /** @return list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> */
     public function seriesForCreate(): array
     {
-        $statement = $this->db->prepare("SELECT slug, livre, editeur, statut, next_numero FROM (
+        $statement = $this->query("SELECT slug, livre, editeur, statut, next_numero FROM (
             SELECT slug, livre, editeur, statut,
                 MAX(numero) OVER (PARTITION BY slug) + 1 AS next_numero,
                 ROW_NUMBER() OVER (PARTITION BY slug ORDER BY numero, id) AS position
             FROM {$this->readTable()}
         ) series WHERE position = 1 ORDER BY livre, slug");
-        $statement->execute();
+        if ($statement === false) throw new \RuntimeException('Cannot read manga series for creation.');
         /** @var list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> $rows */
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
         return $rows;
@@ -35,16 +35,17 @@ final class MangaRepository extends AbstractRepository
     /** @return list<array{slug: string, livre: string, numero: int}> */
     public function releaseCollection(): array
     {
-        $statement = $this->db->prepare("SELECT slug, livre, numero FROM {$this->readTable()}");
-        $statement->execute();
+        $statement = $this->query("SELECT slug, livre, numero FROM {$this->readTable()}");
+        if ($statement === false) throw new \RuntimeException('Cannot read manga release collection.');
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** @return list<int> */
     public function ownedNumbers(string $slug): array
     {
-        $statement = $this->db->prepare("SELECT numero FROM {$this->readTable()} WHERE slug = :slug AND {$this->ownerCondition()}");
-        $statement->execute(['slug' => $this->normalizeSlug($slug)]);
+        $statement = $this->query("SELECT numero FROM {$this->readTable()} WHERE slug = :slug AND {$this->ownerCondition()}",
+            ['slug' => $this->normalizeSlug($slug)]);
+        if ($statement === false) throw new \RuntimeException('Cannot read owned manga numbers.');
         return array_map(static fn ($number): int => (int) $number, $statement->fetchAll(\PDO::FETCH_COLUMN));
     }
 

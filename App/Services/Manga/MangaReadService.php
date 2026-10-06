@@ -14,11 +14,13 @@ use App\Models\Manga\Manga;
 use App\Repositories\Manga\MangaCollectionRepository;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
+use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
 use Framework\Config\ApplicationConfig;
 
 final readonly class MangaReadService
 {
+    use BuildsCollectionReadData;
     public function __construct(
         private MangaRepository $mangaRepository,
         private MangaSearchRepository $searchRepository,
@@ -173,17 +175,7 @@ final readonly class MangaReadService
 
     private function mapManga(Manga $manga): MangaData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail =
-            $manga->thumbnail !== ''
-                ? $manga->thumbnail
-                : null;
-
-        $extension =
-            $manga->extension !== ''
-                ? $manga->extension
-                : null;
+        $image = $this->collectionThumbnail('manga', $manga->thumbnail, $manga->extension);
 
         $status =
             $manga->statut !== ''
@@ -195,13 +187,9 @@ final readonly class MangaReadService
             slug: $manga->slug,
             livre: $manga->livre,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
-
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
+            thumbnailUrl: $image['thumbnailUrl'],
 
             editeur: $manga->editeur ?? '',
 
@@ -247,11 +235,7 @@ final readonly class MangaReadService
 
     private function mapSeriesItem(Manga $manga): MangaListItemData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $manga->thumbnail !== '' ? $manga->thumbnail : null;
-
-        $extension = $manga->extension !== '' ? $manga->extension : null;
+        $image = $this->collectionThumbnail('manga', $manga->thumbnail, $manga->extension);
 
         $status = $manga->statut !== '' ? $manga->statut : 'en_cours';
 
@@ -260,13 +244,9 @@ final readonly class MangaReadService
             numero: $manga->numero,
             livre: $manga->livre,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
-
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
+            thumbnailUrl: $image['thumbnailUrl'],
 
             statut: $status,
 
@@ -289,9 +269,10 @@ final readonly class MangaReadService
 
     private function mapSearchItem(Manga $manga): MangaSearchItemData
     {
+        $image = $this->collectionThumbnail('manga', $manga->thumbnail, $manga->extension, grid: true);
         return new MangaSearchItemData(
 
-            thumbnailUrl: $manga->thumbnail !== '' && $manga->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/manga/thumbnail/' . $manga->thumbnail . '.' . $manga->extension, true) : null,
+            thumbnailUrl: $image['thumbnailUrl'],
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,

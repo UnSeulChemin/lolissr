@@ -6,6 +6,10 @@ namespace App\Services\Manga;
 
 use App\Repositories\Manga\MangaRepository;
 
+/**
+ * @phpstan-type CatalogIndex array{index: array<string, array{title: string, adult: bool}>, ownedIds: array<string, true>, excludeIds: array<string, true>}
+ * @phpstan-type Recommendation array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}
+ */
 final class MangaRecommendationService
 {
     private ?string $catalogFingerprint = null;
@@ -83,10 +87,22 @@ final class MangaRecommendationService
      */
     public static function fromCatalog(array $catalog, array $titles, string $mode = 'categories', array $hidden = [], array $confirmedIds = [], ?array $onlyIds = null): array
     {
-        if ($titles === [] && $confirmedIds === []) return [];
+        $prepared = self::prepareCatalog($catalog, $titles, $confirmedIds);
+        return $prepared === null ? [] : self::fromPreparedCatalog($catalog, $prepared, $mode, $hidden, $onlyIds);
+    }
+
+    /**
+     * @param array<mixed> $catalog
+     * @param list<string> $titles
+     * @param list<string> $confirmedIds
+     * @return CatalogIndex|null
+     */
+    private static function prepareCatalog(array $catalog, array $titles, array $confirmedIds): ?array
+    {
+        if ($titles === [] && $confirmedIds === []) return null;
         $series = $catalog['series'] ?? null;
         $kinds = $catalog['kinds'] ?? null;
-        if (!is_array($series) || !is_array($kinds)) return [];
+        if (!is_array($series) || !is_array($kinds)) return null;
         $owned = [];
         foreach (array_unique($titles) as $title) $owned[self::normalize($title)] = true;
         $index = [];
@@ -109,7 +125,22 @@ final class MangaRecommendationService
             foreach ($matches as $id) $excludeIds[$id] = true;
             if (count($matches) === 1) $ownedIds[$matches[0]] = true;
         }
-        if ($ownedIds === []) return [];
+        if ($ownedIds === []) return null;
+        return ['index' => $index, 'ownedIds' => $ownedIds, 'excludeIds' => $excludeIds];
+    }
+
+    /**
+     * @param array<mixed> $catalog
+     * @param CatalogIndex $prepared
+     * @param list<string> $hidden
+     * @param list<string>|null $onlyIds
+     * @return list<Recommendation>
+     */
+    private static function fromPreparedCatalog(array $catalog, array $prepared, string $mode, array $hidden, ?array $onlyIds = null): array
+    {
+        ['index' => $index, 'ownedIds' => $ownedIds, 'excludeIds' => $excludeIds] = $prepared;
+        $kinds = $catalog['kinds'] ?? [];
+        $kinds = is_array($kinds) ? $kinds : [];
         $hiddenSet = array_fill_keys($hidden, true);
         $selected = $onlyIds === null ? null : array_fill_keys($onlyIds, true);
         if ($mode === 'authors')
@@ -303,31 +334,15 @@ final class MangaRecommendationService
             if ($entry === null) return \App\DTO\Common\ServiceResult::error('Suggestion introuvable', status: 404);
         }
         $path = $this->favoritesPath ?? base_path('storage/manga-recommendations-favorites-' . $owner->id . '.json');
-        $lock = fopen($path . '.lock', 'c');
-        if ($lock === false) throw new \RuntimeException('Cannot lock favorites');
-        $temporary = false;
-        try
+        self::updateJson($path, static function (array $saved) use ($save, $id, $entry): array
         {
-            if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock favorites');
-            $contents = is_file($path) ? @file_get_contents($path) : false;
-            $saved = $contents === false ? null : json_decode($contents, true);
             $entries = [];
-            foreach (is_array($saved) ? $saved : [] as $favorite)
+            foreach ($saved as $favorite)
                 if (is_array($favorite) && is_string($favorite['id'] ?? null)) $entries[$favorite['id']] = $favorite;
             if ($save) $entries[$id] = $entry;
             else unset($entries[$id]);
-            $temporary = tempnam(dirname($path), '.build-');
-            if ($temporary === false) throw new \RuntimeException('Cannot stage favorites');
-            $json = json_encode($entries, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-            if (file_put_contents($temporary, $json) !== strlen($json) || !chmod($temporary, 0600) || !rename($temporary, $path))
-                throw new \RuntimeException('Cannot save favorites');
-        }
-        finally
-        {
-            if ($temporary !== false && is_file($temporary)) unlink($temporary);
-            flock($lock, LOCK_UN);
-            fclose($lock);
-        }
+            return $entries;
+        }, JSON_UNESCAPED_UNICODE);
         return \App\DTO\Common\ServiceResult::success($save ? 'Série ajoutée aux favoris' : 'Série retirée des favoris');
     }
 
@@ -336,17 +351,49 @@ final class MangaRecommendationService
     {
         $result = ['categories' => [], 'authors' => []];
         $query = self::normalize($query);
-        if ($query === '' || user() === null) return $result;
+        $owner = user();
+        if ($query === '' || $owner === null) return $result;
+        $rows = $this->repository->releaseCollection();
+        $hidden = $this->hidden();
+        $ownerId = $owner->id;
+        $compute = function () use ($rows, $hidden, $ownerId): array
+        {
+            $filters = ['categories' => [], 'authors' => []];
+            $catalog = $this->catalog();
+            if ($catalog === null) return $filters;
+            $prepared = self::prepareCatalog($catalog, array_column($rows, 'livre'), self::confirmedSeriesIds($catalog, $rows, $ownerId));
+            if ($prepared === null) return $filters;
+            foreach (['categories', 'authors'] as $mode)
+            {
+                $titles = [];
+                foreach (self::fromPreparedCatalog($catalog, $prepared, $mode, $hidden) as $entry)
+                    foreach ($entry['categories'] as $badge) $titles[$badge['title']] = true;
+                $titles = array_keys($titles);
+                sort($titles, SORT_NATURAL | SORT_FLAG_CASE);
+                foreach ($titles as $title)
+                    $filters[$mode][] = ['title' => $title, 'normalized' => self::normalize($title)];
+            }
+            return $filters;
+        };
+        $path = $this->catalogPath ?? base_path('storage/manga-recommendations.json');
+        if ($this->catalogPath !== null || !is_file($path))
+        {
+            $filters = $compute();
+        }
+        else
+        {
+            $revision = hash('sha256', json_encode([$ownerId, $rows, $hidden, \Framework\Config\ApplicationConfig::baseUri(),
+                $this->fingerprint($path), $this->fingerprint(base_path('storage/manga-releases.json')),
+                $this->fingerprint(base_path('Config/settings/manga-releases.php'))], JSON_THROW_ON_ERROR));
+            /** @var array{categories: list<array{title: string, normalized: string}>, authors: list<array{title: string, normalized: string}>} $filters */
+            $filters = \Framework\Cache\Cache::rememberRevision('manga.recommendation-filters.v1.' . $ownerId, $revision, 3600, $compute);
+        }
         foreach (['categories', 'authors'] as $mode)
         {
-            $titles = [];
-            foreach ($this->all($mode) as $entry)
-                foreach ($entry['categories'] as $badge) $titles[$badge['title']] = true;
-            $titles = array_keys($titles);
-            sort($titles, SORT_NATURAL | SORT_FLAG_CASE);
-            foreach ($titles as $title)
+            foreach ($filters[$mode] as $filter)
             {
-                if (!str_contains(self::normalize($title), $query)) continue;
+                if (!str_contains($filter['normalized'], $query)) continue;
+                $title = $filter['title'];
                 $result[$mode][] = ['title' => $title,
                     'url' => $mode === 'authors' ? 'manga/series/recommandations-auteurs/auteur/' . \Framework\Support\Strings::asciiSlug($title) : 'manga/series/recommandations/categorie/' . rawurlencode(mb_strtolower($title)),
                     'symbol' => $mode === 'authors' ? '✍️' : '✨', 'description' => $mode === 'authors' ? 'Recommandations de cet auteur' : 'Recommandations de cette catégorie'];
@@ -386,18 +433,34 @@ final class MangaRecommendationService
         if ($owner === null) return \App\DTO\Common\ServiceResult::error('Connexion requise', status: 401);
         if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) return \App\DTO\Common\ServiceResult::error('Suggestion invalide', status: 422);
         $path = $this->hiddenPath ?? base_path('storage/manga-recommendations-hidden-' . $owner->id . '.json');
+        self::updateJson($path, static function (array $saved) use ($hide, $id): array
+        {
+            $ids = array_values(array_filter($saved, 'is_string'));
+            return $hide ? array_values(array_unique([...$ids, $id])) : array_values(array_diff($ids, [$id]));
+        });
+        return \App\DTO\Common\ServiceResult::success($hide ? 'Suggestion masquée' : 'Suggestion rétablie');
+    }
+
+    /** @param callable(array<mixed>): array<mixed> $update */
+    private static function updateJson(string $path, callable $update, int $flags = 0): void
+    {
+        // Keep the lock file stable across atomic replacements of the JSON file.
         $lock = fopen($path . '.lock', 'c');
-        if ($lock === false) throw new \RuntimeException('Cannot lock recommendations');
+        if ($lock === false) throw new \RuntimeException('Cannot lock recommendation data.');
         $temporary = false;
         try
         {
-            if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock recommendations');
-            $ids = $hide ? array_values(array_unique([...$this->hidden(), $id])) : array_values(array_diff($this->hidden(), [$id]));
+            if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock recommendation data.');
+            $contents = is_file($path) ? @file_get_contents($path) : false;
+            $saved = $contents === false ? null : json_decode($contents, true);
+            // Preserve the existing recovery policy: missing, unreadable or invalid JSON starts empty.
+            $data = $update(is_array($saved) ? $saved : []);
             $temporary = tempnam(dirname($path), '.build-');
-            if ($temporary === false) throw new \RuntimeException('Cannot stage recommendations');
-            $json = json_encode($ids, JSON_THROW_ON_ERROR);
+            if ($temporary === false) throw new \RuntimeException('Cannot stage recommendation data.');
+            $json = json_encode($data, JSON_THROW_ON_ERROR | $flags);
+            // If replacement fails (including on Windows), keep the previous file intact.
             if (file_put_contents($temporary, $json) !== strlen($json) || !chmod($temporary, 0600) || !rename($temporary, $path))
-                throw new \RuntimeException('Cannot save hidden recommendations');
+                throw new \RuntimeException('Cannot save recommendation data.');
         }
         finally
         {
@@ -405,6 +468,5 @@ final class MangaRecommendationService
             flock($lock, LOCK_UN);
             fclose($lock);
         }
-        return \App\DTO\Common\ServiceResult::success($hide ? 'Suggestion masquée' : 'Suggestion rétablie');
     }
 }

@@ -32,11 +32,21 @@ final class ImageAssets
     private static function fingerprint(string $file): string
     {
         if (isset(self::$fingerprints[$file])) return self::$fingerprints[$file];
-        \Framework\Debug\Profiler::increment('images.fingerprint.count');
-        $version = \Framework\Debug\Profiler::measure('images.fingerprint', static fn (): string|false => hash_file('sha256', $file));
-        if ($version === false) throw new \RuntimeException('Cannot fingerprint image.');
+        $version = ImageFingerprints::get($file);
         if (self::$fingerprints !== null) self::$fingerprints[$file] = $version;
         return $version;
+    }
+
+    public static function refreshFingerprint(string $file): void
+    {
+        unset(self::$fingerprints[$file]);
+        ImageFingerprints::refresh($file);
+    }
+
+    public static function forgetFingerprint(string $file): void
+    {
+        unset(self::$fingerprints[$file]);
+        ImageFingerprints::forget($file);
     }
 
     public static function url(string $url, bool $grid = false): string

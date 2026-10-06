@@ -22,3 +22,4 @@ BuildLock::acquire(dirname(__DIR__, 3));
     }
     echo 'Grid images created: ' . $created . ($apply ? '' : ' (audit only; use --apply)') . PHP_EOL;
 })(($argv[1] ?? '') === '--apply');
+if (($argv[1] ?? '') === '--apply') require_once __DIR__ . '/build-image-fingerprints.php';

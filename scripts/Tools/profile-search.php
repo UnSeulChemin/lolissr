@@ -70,10 +70,16 @@ foreach (array_slice($argv, 2) as $argument)
     $queries[] = $argument;
 }
 $queries = $queries ?: ['a', 'HSK', 'Berserk', 'Berserk 1', 'absent-search-987654'];
-echo "Measurements: 10 samples after 1 warm-up; read-only, current data, sequential execution.\n";
+echo "Measurements: 10 samples after 1 warm-up; SQL read-only, current data, sequential execution. Recommendation cache may be populated.\n";
 foreach ($queries as $query)
 {
     echo 'Query: ' . json_encode($query, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+    profileOperation('Recommendation filters (categories + authors)', static function () use ($container, $query): int
+    {
+        // Each sample represents a new request, including file fingerprinting and collection revision checks.
+        $filters = $container->get(\App\Services\Manga\MangaRecommendationService::class)->searchFilters($query);
+        return count($filters['categories']) + count($filters['authors']);
+    }, $database);
     foreach ($services as $kind => $service)
     {
         profileOperation($kind, static fn (): int => count(($searchLimit === null ? $service->search($query) : $service->search($query, $searchLimit))->results), $database);
@@ -123,7 +129,10 @@ function profileOperation(string $label, callable $operation, \Framework\Databas
         $resultCount = $operation();
         $elapsed = (hrtime(true) - $start) / 1_000_000;
         $durations = (new ReflectionProperty(\Framework\Debug\Profiler::class, 'durations'))->getValue();
+        $counters = (new ReflectionProperty(\Framework\Debug\Profiler::class, 'counters'))->getValue();
         $captured = SearchProfileStatement::$queries;
+        if (($counters['database.query.count'] ?? 0) !== count($captured))
+            throw new RuntimeException('SQL instrumentation mismatch for ' . $label);
         if ($iteration > 0)
         {
             $samples[] = $elapsed;

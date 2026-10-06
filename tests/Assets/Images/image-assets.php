@@ -26,6 +26,7 @@ try
     if (str_contains($versioned, 'v=old') || !str_contains($versioned, '?v=') || !str_contains($gridUrl, '.grid.jpg?v='))
         throw new RuntimeException('Image version or grid selection failed.');
     \Framework\Config\Config::prime(['app' => ['profiler' => true]]);
+    ImageAssets::forgetFingerprint($publicFixture);
     \Framework\Debug\Profiler::startRequest();
     $reused = ImageAssets::withFingerprints(static function () use ($url): array
     {
@@ -36,8 +37,21 @@ try
         throw new RuntimeException('Repeated image was not fingerprinted once per render.');
     ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($url));
     $counters = (new ReflectionProperty(\Framework\Debug\Profiler::class, 'counters'))->getValue();
-    if (($counters['images.fingerprint.count'] ?? 0) !== 2)
-        throw new RuntimeException('Fingerprint cache escaped the render scope.');
+    if (($counters['images.fingerprint.count'] ?? 0) !== 1 || ($counters['images.fingerprint.hit'] ?? 0) !== 1)
+        throw new RuntimeException('Persistent fingerprint was not reused across renders.');
+    $code = 'require ' . var_export(dirname(__DIR__, 3) . '/tests/Support/bootstrap.php', true) . '; '
+        . '\\Framework\\Config\\Config::prime(["app" => ["profiler" => true]]); \\Framework\\Debug\\Profiler::startRequest(); '
+        . '$url = \\App\\Support\\Media\\ImageAssets::url(' . var_export($url, true) . '); '
+        . '$counts = (new ReflectionProperty(\\Framework\\Debug\\Profiler::class, "counters"))->getValue(); '
+        . 'echo json_encode([$url, $counts["images.fingerprint.count"] ?? 0]);';
+    $process = proc_open([PHP_BINARY, '-r', $code], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+    if (!is_resource($process)) throw new RuntimeException('Cannot start fingerprint persistence test.');
+    $output = stream_get_contents($pipes[1]);
+    $errors = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    if (proc_close($process) !== 0 || json_decode($output, true) !== [$versioned, 0])
+        throw new RuntimeException('Fresh process did not reuse persisted fingerprint: ' . $errors);
     \Framework\Config\Config::clear();
     $versionBefore = $versioned;
     touch($publicFixture, time() + 10);
@@ -59,8 +73,18 @@ try
     clearstatcache(true, $versionFixture);
     if (filesize($versionFixture) !== $size || filemtime($versionFixture) !== $timestamp)
         throw new RuntimeException('Replacement fixture did not preserve size and timestamp.');
+    ImageAssets::refreshFingerprint($versionFixture);
     if (ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($versionUrl)) === $before)
         throw new RuntimeException('Different image content kept a stale version with identical size/date.');
+    $entry = dirname(__DIR__, 3) . '/storage/image-fingerprints/' . hash('sha256', realpath($versionFixture)) . '.json';
+    file_put_contents($entry, '{broken');
+    if (!str_contains(ImageAssets::url($versionUrl), 'v=' . hash_file('sha256', $versionFixture)))
+        throw new RuntimeException('Corrupt fingerprint manifest did not fall back to content hashing.');
+    $gridFixture = str_replace('.jpg', '.grid.jpg', $publicFixture);
+    file_put_contents($gridFixture, 'manual-grid-replacement');
+    ImageAssets::refreshFingerprint($gridFixture);
+    if (!str_contains(ImageAssets::url($url, true), 'v=' . hash_file('sha256', $gridFixture)))
+        throw new RuntimeException('Grid replacement did not refresh its independent fingerprint.');
     $originalHash = hash_file('sha256', $directory . '/source.jpg');
     if (!ThumbnailOptimizer::createGrid($directory . '/source.jpg')
         || hash_file('sha256', $directory . '/source.jpg') !== $originalHash
@@ -106,13 +130,13 @@ try
     }
     if (ImageAssets::url('/images/../.env') !== '/images/../.env') throw new RuntimeException('Unsafe image lookup.');
     if (ImageAssets::url('/not-an-image') !== '/not-an-image') throw new RuntimeException('Non-image URL changed.');
-    echo "PASS: EXIF orientations, image versions, grid selection, obsolete grid removal and cached skipped conversions.\n";
+    echo "PASS: EXIF orientations, persistent fingerprints across processes, manual refresh, corrupt manifest fallback, independent grid versions and obsolete grid removal.\n";
 }
 finally
 {
     foreach ([$publicFixture, $versionFixture, str_replace('.jpg', '.grid.jpg', $publicFixture)] as $fixture)
         if (is_file($fixture))
-        { ThumbnailOptimizer::forgetGrid($fixture); unlink($fixture); }
+        { ImageAssets::forgetFingerprint($fixture); ThumbnailOptimizer::forgetGrid($fixture); unlink($fixture); }
     ThumbnailOptimizer::forgetGrid($directory . '/source.jpg');
     foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
     rmdir($directory);

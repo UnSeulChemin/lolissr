@@ -135,6 +135,7 @@
         "images:optimize": "@php scripts/Assets/Images/optimize-thumbnails.php",
         "images:variants": "@php scripts/Assets/Images/build-grid-images.php",
         "images:manifest": "@php scripts/Assets/Images/build-profile-manifest.php",
+        "images:fingerprints": "@php scripts/Assets/Images/build-image-fingerprints.php",
 
         "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
         "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",
@@ -192,6 +193,7 @@
         "js:prune": "[Build] Supprime les anciens bundles JavaScript après leur délai de rétention.",
         "images:build": "[Build] Génère les images de profil.",
         "images:optimize": "[Images] Audite les miniatures ; --apply optimise avec sauvegarde des originaux.",
+        "images:fingerprints": "[Images] Reconstruit les empreintes apres remplacement manuel des fichiers, variantes grid comprises.",
 
         "dev:reset": "[Nettoyage] Vide logs, cache et sessions, puis régénère l’autoload.",
         "logs:clear": "[Nettoyage] Vide les logs.",
