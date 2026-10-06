@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User\User;
-use App\Services\Profile\ProfileAchievements;
+use App\Services\Profile\ProfileAchievementCatalog;
 use App\Services\Profile\ProfileStatsService;
 
 use Framework\Container\Container;
@@ -71,7 +71,7 @@ for ($visit = 0; $visit < 2; $visit++)
         throw new RuntimeException('Reading the profile modified XP or started a transaction.');
     }
 }
-$achievements = ProfileAchievements::forStats($stats, $user->level);
+$achievements = ProfileAchievementCatalog::forStats($stats, $user->level);
 if (count($achievements) !== 44 || count(array_filter($achievements, static fn ($item) => $item['unlocked'])) !== 44)
 {
     throw new RuntimeException('Missing or incorrectly locked achievement thresholds.');
@@ -85,7 +85,7 @@ echo "PASS: repeated profile reads with all thresholds reached, read-only databa
 $catalog = new \App\Services\Profile\ProfileImageCatalog();
 foreach ([0, 1, 9, 10, 24, 25] as $level)
 {
-    $items = ProfileAchievements::forStats(new \App\DTO\Profile\Responses\ProfileUnlockStatsData(), $level);
+    $items = ProfileAchievementCatalog::forStats(new \App\DTO\Profile\Responses\ProfileUnlockStatsData(), $level);
     $baseCount = count(array_filter($items, static fn ($item) => $item['category'] !== 'Succès' && $item['unlocked']));
     foreach (array_filter($items, static fn ($item) => $item['category'] === 'Succès') as $item)
     {
@@ -104,7 +104,7 @@ foreach ([0, 1, 9, 10, 24, 25] as $count)
 }
 
 $unlocks = $container->get(\App\Repositories\Profile\ProfileUnlockStatsRepository::class);
-if (ProfileAchievements::forStats($unlocks->forAchievements(), $user->level) !== $achievements)
+if (ProfileAchievementCatalog::forStats($unlocks->forAchievements(), $user->level) !== $achievements)
 {
     throw new RuntimeException('Lightweight achievements differ from full profile stats.');
 }

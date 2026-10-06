@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Profile;
 
-use App\Constants\Profile\UserTitle;
+use App\Constants\Profile\ProfileTitles;
 use App\DTO\Common\ServiceResult;
 use App\Http\Controllers\Controller;
 use App\Models\User\User;
@@ -35,7 +35,7 @@ final class ProfileAjaxController extends Controller
         $stats = $this->unlockStats->forTitles();
         $user = $this->user();
 
-        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned);
+        $titles = ProfileTitles::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
@@ -48,7 +48,7 @@ final class ProfileAjaxController extends Controller
         $title = $this->stringInput('title');
 
         $selectedTitle = $this->findItem(
-            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned),
+            ProfileTitles::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned),
             'title',
             $title
         );
@@ -209,7 +209,7 @@ final class ProfileAjaxController extends Controller
     /** @return list<array{avatar: string, avatar_extension: string, unlocked: bool, requirement: string}> */
     private function availableAvatars(): array
     {
-        $achievements = \App\Services\Profile\ProfileAchievements::forStats($this->unlockStats->forAchievements(), $this->user()->level);
+        $achievements = \App\Services\Profile\ProfileAchievementCatalog::forStats($this->unlockStats->forAchievements(), $this->user()->level);
         $count = count(array_filter($achievements, static fn (array $item): bool => $item['category'] !== 'Succès' && $item['unlocked']));
 
         return $this->imageCatalog->avatarsForAchievements($count);

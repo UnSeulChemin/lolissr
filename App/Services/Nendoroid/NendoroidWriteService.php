@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Nendoroid;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateData;
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Services\Collections\CollectionCreationService;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -22,7 +22,7 @@ final readonly class NendoroidWriteService
 
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
-        private ThumbnailManager $thumbnailManager,
+        private ThumbnailUploadService $thumbnailUploadService,
         private Database $database,
         private NendoroidXpRewardService $nendoroidXpRewardService,
         private CollectionCreationService $creationService
@@ -167,7 +167,7 @@ final readonly class NendoroidWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_NENDOROID : 0,
+                        'xpAmount' => $xpEarned ? XpRewards::COLLECT_NENDOROID : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp
                     ]
@@ -210,7 +210,7 @@ final readonly class NendoroidWriteService
             return $result;
         }
 
-        if (! $this->thumbnailManager->remove($nendoroid->thumbnail, $nendoroid->extension, 'nendoroid'))
+        if (! $this->thumbnailUploadService->remove($nendoroid->thumbnail, $nendoroid->extension, 'nendoroid'))
         {
             Logger::warning(
                 "Nendoroid supprimé mais thumbnail non supprimée slug={$slug} numero={$numero}"

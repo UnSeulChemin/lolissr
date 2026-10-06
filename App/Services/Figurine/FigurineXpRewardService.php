@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Figurine\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 
@@ -29,7 +29,7 @@ final readonly class FigurineXpRewardService
 
         $xpEarned = $this->figurineRepository->claimCollectReward($figurine->id);
 
-        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_FIGURINE : 0);
+        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->countCollected(), $xpEarned ? XpRewards::COLLECT_FIGURINE : 0);
 
         return $xpEarned;
     }

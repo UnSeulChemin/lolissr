@@ -8,7 +8,7 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\Support\Media\ThumbnailDirectory;
 
-final readonly class ThumbnailManager
+final readonly class ThumbnailUploadService
 {
     public function __construct(private UploadService $uploadService)
     {

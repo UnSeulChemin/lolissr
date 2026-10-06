@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Profile\Responses\ProfileStatsData;
 use App\Models\User\User;
 use App\Repositories\Profile\ProfileStatsRepository;
@@ -22,20 +22,20 @@ final readonly class ProfileStatsService
         $readTomes = $summary['manga_read'];
         $completedSeries = $summary['completed_series'];
         $achievementXp = $summary['achievement_xp'];
-        $tomeXp = $summary['manga_rewarded_tomes'] * UserXp::READ_TOME;
-        $seriesXp = $summary['manga_rewarded_series'] * UserXp::COMPLETE_SERIES;
+        $tomeXp = $summary['manga_rewarded_tomes'] * XpRewards::READ_TOME;
+        $seriesXp = $summary['manga_rewarded_series'] * XpRewards::COMPLETE_SERIES;
         $readArtbooks = $summary['artbook_count'];
-        $artbookXp = $summary['artbook_rewarded'] * UserXp::READ_ARTBOOK;
+        $artbookXp = $summary['artbook_rewarded'] * XpRewards::READ_ARTBOOK;
         $figurinesCollected = $summary['figurine_count'];
-        $figurinesXp = $summary['figurine_rewarded'] * UserXp::COLLECT_FIGURINE;
+        $figurinesXp = $summary['figurine_rewarded'] * XpRewards::COLLECT_FIGURINE;
         $nendoroidsCollected = $summary['nendoroid_count'];
-        $nendoroidsXp = $summary['nendoroid_rewarded'] * UserXp::COLLECT_NENDOROID;
+        $nendoroidsXp = $summary['nendoroid_rewarded'] * XpRewards::COLLECT_NENDOROID;
         $peluchesCollected = $summary['peluche_count'];
-        $peluchesXp = $summary['peluche_rewarded'] * UserXp::COLLECT_PELUCHE;
+        $peluchesXp = $summary['peluche_rewarded'] * XpRewards::COLLECT_PELUCHE;
         $vocabularyLearned = $summary['chinois_vocabulaire_count'];
         $grammarLearned = $summary['chinois_grammaire_count'];
-        $vocabularyXp = $summary['chinois_vocabulaire_rewarded'] * UserXp::LEARN_VOCABULARY;
-        $grammarXp = $summary['chinois_grammaire_rewarded'] * UserXp::LEARN_GRAMMAR;
+        $vocabularyXp = $summary['chinois_vocabulaire_rewarded'] * XpRewards::LEARN_VOCABULARY;
+        $grammarXp = $summary['chinois_grammaire_rewarded'] * XpRewards::LEARN_GRAMMAR;
 
         return new ProfileStatsData(
             readTomes: $readTomes,

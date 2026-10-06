@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Peluche;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Peluche\Peluche;
 use App\Repositories\Peluche\PelucheRepository;
 
@@ -29,7 +29,7 @@ final readonly class PelucheXpRewardService
 
         $xpEarned = $this->pelucheRepository->claimCollectReward($peluche->id);
 
-        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_PELUCHE : 0);
+        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->countCollected(), $xpEarned ? XpRewards::COLLECT_PELUCHE : 0);
 
         return $xpEarned;
     }

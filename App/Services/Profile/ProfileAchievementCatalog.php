@@ -9,7 +9,7 @@ use App\DTO\Profile\Responses\ProfileStatsData;
 use App\DTO\Profile\Responses\ProfileUnlockStatsData;
 
 /** @phpstan-type Achievement array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool} */
-final class ProfileAchievements
+final class ProfileAchievementCatalog
 {
     /** @return list<Achievement> */
     public static function forStats(ProfileStatsData|ProfileUnlockStatsData $stats, int $level): array

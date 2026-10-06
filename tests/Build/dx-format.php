@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/scripts/Tools/Support/DxFormatter.php';
+require_once dirname(__DIR__, 2) . '/scripts/Tools/Support/SourceFormatter.php';
 
 $root = dirname(__DIR__, 2);
-$formatter = new DxFormatter($root, $root . '/scripts/Tools/dx.json');
+$formatter = new SourceFormatter($root, $root . '/scripts/Tools/dx.json');
 $check = static function (bool $condition, string $message): void
 {
     if (!$condition) throw new RuntimeException($message);
@@ -99,7 +99,7 @@ try
     $config = ['paths' => ['source.php'], 'extensions' => ['php'], 'exclude' => [], 'line_length' => 120];
     file_put_contents($directory . '/dx.json', json_encode($config, JSON_THROW_ON_ERROR));
     file_put_contents($directory . '/source.php', $php);
-    $isolated = new DxFormatter($directory, $directory . '/dx.json');
+    $isolated = new SourceFormatter($directory, $directory . '/dx.json');
     ob_start();
     try
     {
@@ -123,7 +123,7 @@ try
     {
         try
         {
-            (new DxFormatter($directory, $directory . '/dx.json'))->run(false);
+            (new SourceFormatter($directory, $directory . '/dx.json'))->run(false);
             throw new RuntimeException('DX accepted invalid PHP.');
         }
         catch (ParseError)
@@ -142,7 +142,7 @@ try
     {
         try
         {
-            (new DxFormatter($directory, $directory . '/dx.json'))->run(false);
+            (new SourceFormatter($directory, $directory . '/dx.json'))->run(false);
             throw new RuntimeException('DX accepted a path outside the project.');
         }
         catch (InvalidArgumentException)

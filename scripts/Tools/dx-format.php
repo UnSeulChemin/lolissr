@@ -8,7 +8,7 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
-require_once __DIR__ . '/Support/DxFormatter.php';
+require_once __DIR__ . '/Support/SourceFormatter.php';
 
 try
 {
@@ -37,7 +37,7 @@ try
         }
     }
 
-    $formatter = new DxFormatter(dirname(__DIR__, 2), $config);
+    $formatter = new SourceFormatter(dirname(__DIR__, 2), $config);
     exit($formatter->run($check));
 }
 catch (Throwable $error)

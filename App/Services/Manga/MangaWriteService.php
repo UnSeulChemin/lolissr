@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\Cache\Home\DashboardCache;
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateData;
 use App\DTO\Manga\Inputs\MangaUpdateData;
@@ -13,7 +13,7 @@ use App\DTO\Manga\Inputs\MangaUpdateNoteData;
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Collections\CollectionCreationService;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -24,7 +24,7 @@ final readonly class MangaWriteService
 
     public function __construct(
         private MangaRepository $mangaRepository,
-        private ThumbnailManager $thumbnailManager,
+        private ThumbnailUploadService $thumbnailUploadService,
         private Database $database,
         private MangaXpRewardService $mangaXpRewardService,
         private CollectionCreationService $creationService,
@@ -155,7 +155,7 @@ final readonly class MangaWriteService
         }
         finally
         {
-            if (!$committed) $this->thumbnailManager->rollback($upload);
+            if (!$committed) $this->thumbnailUploadService->rollback($upload);
         }
     }
 
@@ -288,7 +288,7 @@ final readonly class MangaWriteService
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::READ_TOME : 0,
+                        'xpAmount' => $xpEarned ? XpRewards::READ_TOME : 0,
                         'seriesXpEarned' => $seriesXpEarned,
                         'level' => $user?->level,
                         'xp' => $user?->xp
@@ -340,7 +340,7 @@ final readonly class MangaWriteService
             return $result;
         }
 
-        if (! $this->thumbnailManager->remove($manga->thumbnail, $manga->extension, 'manga'))
+        if (! $this->thumbnailUploadService->remove($manga->thumbnail, $manga->extension, 'manga'))
         {
             Logger::warning(
                 "Manga supprimé mais thumbnail non supprimée slug={$slug} numero={$numero}"

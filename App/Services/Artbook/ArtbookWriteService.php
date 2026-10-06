@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Artbook;
 
 use App\Cache\Home\DashboardCache;
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Artbook\Inputs\ArtbookCreateData;
 use App\DTO\Artbook\Inputs\ArtbookUpdateData;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Artbook\ArtbookRepository;
 use App\Services\Collections\CollectionCreationService;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -23,7 +23,7 @@ final readonly class ArtbookWriteService
 
     public function __construct(
         private ArtbookRepository $artbookRepository,
-        private ThumbnailManager $thumbnailManager,
+        private ThumbnailUploadService $thumbnailUploadService,
         private Database $database,
         private ArtbookXpRewardService $artbookXpRewardService,
         private CollectionCreationService $creationService,
@@ -175,7 +175,7 @@ final readonly class ArtbookWriteService
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::READ_ARTBOOK : 0,
+                        'xpAmount' => $xpEarned ? XpRewards::READ_ARTBOOK : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp
                     ]
@@ -223,7 +223,7 @@ final readonly class ArtbookWriteService
             return $result;
         }
 
-        if (! $this->thumbnailManager->remove($artbook->thumbnail, $artbook->extension, 'artbook'))
+        if (! $this->thumbnailUploadService->remove($artbook->thumbnail, $artbook->extension, 'artbook'))
         {
             Logger::warning(
                 "Artbook supprimé mais thumbnail non supprimée slug={$slug} numero={$numero}"

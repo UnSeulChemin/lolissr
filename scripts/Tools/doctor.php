@@ -77,7 +77,7 @@ if (!$beforeBuild)
     doctorCheck('Bundle JavaScript et sources', static function (): void
     {
         $manifest = require ROOT . '/Config/javascript.php';
-        $sources = require ROOT . '/scripts/Assets/JavaScript/javascript-sources.php';
+        $sources = require ROOT . '/scripts/Assets/JavaScript/source-manifest.php';
         doctorRequire(isset($manifest['entry'], $manifest['preloads'], $manifest['files'], $sources['sources'], $sources['manifest_hash']));
         doctorRequire($manifest['files'] !== [] && hash('sha256', serialize($manifest)) === $sources['manifest_hash']);
         foreach ($manifest['files'] as $file) doctorRequire(is_file(ROOT . '/public/' . $file));

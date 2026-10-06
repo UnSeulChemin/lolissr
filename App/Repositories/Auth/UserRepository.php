@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Auth;
 
-use App\Constants\Profile\UserTitle;
+use App\Constants\Profile\ProfileTitles;
 use App\Models\User\User;
 use App\Repositories\AbstractRepository;
 
@@ -78,7 +78,7 @@ final class UserRepository extends AbstractRepository
             'frame_extension' => 'webp',
             'username' => trim($username),
             'password' => $password,
-            'title' => UserTitle::EXPLORATEUR,
+            'title' => ProfileTitles::EXPLORATEUR,
             'level' => 1,
             'xp' => 0
         ]);

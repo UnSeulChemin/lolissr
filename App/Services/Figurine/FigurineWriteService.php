@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateData;
 use App\DTO\Figurine\Inputs\FigurineUpdateData;
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\Collections\CollectionCreationService;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -22,7 +22,7 @@ final readonly class FigurineWriteService
 
     public function __construct(
         private FigurineRepository $figurineRepository,
-        private ThumbnailManager $thumbnailManager,
+        private ThumbnailUploadService $thumbnailUploadService,
         private Database $database,
         private FigurineXpRewardService $figurineXpRewardService,
         private CollectionCreationService $creationService
@@ -169,7 +169,7 @@ final readonly class FigurineWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_FIGURINE : 0,
+                        'xpAmount' => $xpEarned ? XpRewards::COLLECT_FIGURINE : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp
                     ]
@@ -212,7 +212,7 @@ final readonly class FigurineWriteService
             return $result;
         }
 
-        if (! $this->thumbnailManager->remove($figurine->thumbnail, $figurine->extension, 'figurine'))
+        if (! $this->thumbnailUploadService->remove($figurine->thumbnail, $figurine->extension, 'figurine'))
         {
             Logger::warning(
                 "Figurine supprimée mais thumbnail non supprimée slug={$slug} numero={$numero}"

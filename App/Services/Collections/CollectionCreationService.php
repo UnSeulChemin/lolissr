@@ -6,7 +6,7 @@ namespace App\Services\Collections;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -15,7 +15,7 @@ use PDOException;
 
 final readonly class CollectionCreationService
 {
-    public function __construct(private Database $database, private ThumbnailManager $thumbnails)
+    public function __construct(private Database $database, private ThumbnailUploadService $thumbnails)
     {
     }
 

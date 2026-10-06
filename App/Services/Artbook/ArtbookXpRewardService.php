@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Artbook;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Artbook\Artbook;
 use App\Models\User\User;
 use App\Repositories\Artbook\ArtbookRepository;
@@ -34,7 +34,7 @@ final readonly class ArtbookXpRewardService
 
         $xpEarned = $this->artbookRepository->claimReadReward($artbook->id);
 
-        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->countRead(), $xpEarned ? UserXp::READ_ARTBOOK : 0);
+        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->countRead(), $xpEarned ? XpRewards::READ_ARTBOOK : 0);
 
         return $xpEarned;
     }

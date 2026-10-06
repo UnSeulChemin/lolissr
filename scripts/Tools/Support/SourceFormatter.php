@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../Support/AtomicFile.php';
 require_once __DIR__ . '/../../Assets/JavaScript/Support/JavaScriptBuilder.php';
 
-final class DxFormatter
+final class SourceFormatter
 {
     private array $config;
     private string $root;

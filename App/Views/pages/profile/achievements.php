@@ -65,11 +65,11 @@ foreach ($achievements as $item)
             <p class="success-status"><?= $achievement['unlocked'] ? '✓ Obtenu' : '🔒 À débloquer' ?></p>
             <progress max="<?= $achievement['target'] ?>" value="<?= min($achievement['current'], $achievement['target']) ?>" aria-label="<?= e($achievement['title']) ?>"></progress>
             <span><?= min($achievement['current'], $achievement['target']) ?> / <?= $achievement['target'] ?></span>
-            <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === \App\Constants\Profile\UserTitle::FIGURINE_REWARD_TARGET): ?>
+            <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === \App\Constants\Profile\ProfileTitles::FIGURINE_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::FIGURINES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
-                    <span data-title-style="<?= $achievement['unlocked'] ? 'rose-blue' : '' ?>"><?= e(\App\Constants\Profile\UserTitle::FIGURINE_REWARD) ?></span>
+                    <span data-title-style="<?= $achievement['unlocked'] ? 'rose-blue' : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::FIGURINE_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                     <?php else: ?>
@@ -89,11 +89,11 @@ foreach ($achievements as $item)
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === \App\Constants\Profile\UserTitle::ARTBOOK_REWARD_TARGET): ?>
+            <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === \App\Constants\Profile\ProfileTitles::ARTBOOK_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
-                    <span data-title-style="<?= $achievement['unlocked'] ? 'teal-gold' : '' ?>"><?= e(\App\Constants\Profile\UserTitle::ARTBOOK_REWARD) ?></span>
+                    <span data-title-style="<?= $achievement['unlocked'] ? 'teal-gold' : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::ARTBOOK_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                     <?php else: ?>
@@ -137,11 +137,11 @@ foreach ($achievements as $item)
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === \App\Constants\Profile\UserTitle::TOME_REWARD_TARGET): ?>
+            <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === \App\Constants\Profile\ProfileTitles::TOME_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
-                    <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle(\App\Constants\Profile\UserTitle::TOME_REWARD) : '' ?>"><?= e(\App\Constants\Profile\UserTitle::TOME_REWARD) ?></span>
+                    <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle(\App\Constants\Profile\ProfileTitles::TOME_REWARD) : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::TOME_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                     <?php else: ?>
@@ -149,7 +149,7 @@ foreach ($achievements as $item)
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Tomes' && ! in_array($achievement['target'], [\App\Constants\Profile\UserTitle::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_FRAME_TARGET], true) && isset(\App\Constants\Profile\AchievementRewards::TOMES[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Tomes' && ! in_array($achievement['target'], [\App\Constants\Profile\ProfileTitles::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_FRAME_TARGET], true) && isset(\App\Constants\Profile\AchievementRewards::TOMES[$achievement['target']])): ?>
                 <div class="success-reward success-reward-title success-reward-xp">
                     <strong>Récompense : ⭐ <?= \App\Constants\Profile\AchievementRewards::TOMES[$achievement['target']] ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
@@ -158,11 +158,11 @@ foreach ($achievements as $item)
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Séries' && isset(\App\Constants\Profile\AchievementRewards::SERIES[$achievement['target']])): ?>
-                <div class="success-reward success-reward-title <?= $achievement['target'] === \App\Constants\Profile\UserTitle::SERIES_REWARD_TARGET ? '' : 'success-reward-xp' ?>">
+                <div class="success-reward success-reward-title <?= $achievement['target'] === \App\Constants\Profile\ProfileTitles::SERIES_REWARD_TARGET ? '' : 'success-reward-xp' ?>">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::SERIES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
-                    <?php if ($achievement['target'] === \App\Constants\Profile\UserTitle::SERIES_REWARD_TARGET): ?>
+                    <?php if ($achievement['target'] === \App\Constants\Profile\ProfileTitles::SERIES_REWARD_TARGET): ?>
                         <strong>Récompense : titre</strong>
-                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle(\App\Constants\Profile\UserTitle::SERIES_REWARD) : '' ?>"><?= e(\App\Constants\Profile\UserTitle::SERIES_REWARD) ?></span>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle(\App\Constants\Profile\ProfileTitles::SERIES_REWARD) : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::SERIES_REWARD) ?></span>
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                         <?php endif; ?>
@@ -201,7 +201,7 @@ foreach ($achievements as $item)
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] !== ProfileImageCatalog::NENDOROID_FRAME_TARGET && isset(\App\Constants\Profile\AchievementRewards::NENDOROIDS[$achievement['target']])): ?>
-                <div class="success-reward success-reward-title <?= $achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET ? 'success-reward-banner' : ($achievement['target'] === \App\Constants\Profile\UserTitle::NENDOROID_REWARD_TARGET ? '' : 'success-reward-xp success-reward-xp-top') ?>">
+                <div class="success-reward success-reward-title <?= $achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET ? 'success-reward-banner' : ($achievement['target'] === \App\Constants\Profile\ProfileTitles::NENDOROID_REWARD_TARGET ? '' : 'success-reward-xp success-reward-xp-top') ?>">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::NENDOROIDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Le petit monde des Nendoroids</span></strong>
@@ -209,9 +209,9 @@ foreach ($achievements as $item)
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                         <?php endif; ?>
-                    <?php elseif ($achievement['target'] === \App\Constants\Profile\UserTitle::NENDOROID_REWARD_TARGET): ?>
+                    <?php elseif ($achievement['target'] === \App\Constants\Profile\ProfileTitles::NENDOROID_REWARD_TARGET): ?>
                         <strong>Récompense : titre</strong>
-                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle(\App\Constants\Profile\UserTitle::NENDOROID_REWARD) : '' ?>"><?= e(\App\Constants\Profile\UserTitle::NENDOROID_REWARD) ?></span>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle(\App\Constants\Profile\ProfileTitles::NENDOROID_REWARD) : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::NENDOROID_REWARD) ?></span>
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                         <?php endif; ?>
@@ -243,7 +243,7 @@ foreach ($achievements as $item)
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Vocabulaire' && isset(\App\Constants\Profile\AchievementRewards::VOCABULARY[$achievement['target']])): ?>
-                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\Profile\UserTitle::VOCABULARY_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
+                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\Profile\ProfileTitles::VOCABULARY_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::VOCABULARY[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Bibliothèque des mots</span></strong>
@@ -258,9 +258,9 @@ foreach ($achievements as $item)
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                         <?php endif; ?>
                     <?php endif; ?>
-                    <?php if ($achievement['target'] === \App\Constants\Profile\UserTitle::VOCABULARY_REWARD_TARGET): ?>
+                    <?php if ($achievement['target'] === \App\Constants\Profile\ProfileTitles::VOCABULARY_REWARD_TARGET): ?>
                         <strong>Récompense : titre</strong>
-                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle(\App\Constants\Profile\UserTitle::VOCABULARY_REWARD) : '' ?>"><?= e(\App\Constants\Profile\UserTitle::VOCABULARY_REWARD) ?></span>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle(\App\Constants\Profile\ProfileTitles::VOCABULARY_REWARD) : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::VOCABULARY_REWARD) ?></span>
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                         <?php endif; ?>
@@ -271,7 +271,7 @@ foreach ($achievements as $item)
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Grammaire' && isset(\App\Constants\Profile\AchievementRewards::GRAMMAR[$achievement['target']])): ?>
-                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\Profile\UserTitle::GRAMMAR_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
+                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\Profile\ProfileTitles::GRAMMAR_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\Profile\AchievementRewards::GRAMMAR[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Atelier des phrases</span></strong>
@@ -286,9 +286,9 @@ foreach ($achievements as $item)
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                         <?php endif; ?>
                     <?php endif; ?>
-                    <?php if ($achievement['target'] === \App\Constants\Profile\UserTitle::GRAMMAR_REWARD_TARGET): ?>
+                    <?php if ($achievement['target'] === \App\Constants\Profile\ProfileTitles::GRAMMAR_REWARD_TARGET): ?>
                         <strong>Récompense : titre</strong>
-                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle(\App\Constants\Profile\UserTitle::GRAMMAR_REWARD) : '' ?>"><?= e(\App\Constants\Profile\UserTitle::GRAMMAR_REWARD) ?></span>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle(\App\Constants\Profile\ProfileTitles::GRAMMAR_REWARD) : '' ?>"><?= e(\App\Constants\Profile\ProfileTitles::GRAMMAR_REWARD) ?></span>
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                         <?php endif; ?>
@@ -310,12 +310,12 @@ foreach ($achievements as $item)
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Niveau'): ?>
-                <?php $levelTitle = \App\Constants\Profile\UserTitle::LEVEL_REWARDS[$achievement['target']] ?? null; ?>
+                <?php $levelTitle = \App\Constants\Profile\ProfileTitles::LEVEL_REWARDS[$achievement['target']] ?? null; ?>
                 <?php $levelFrame = ProfileImageCatalog::LEVEL_REWARD_FRAMES[$achievement['target']] ?? null; ?>
                 <div class="success-reward success-reward-level <?= $levelFrame !== null ? '' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEVEL_BANNER_TARGET ? 'success-reward-banner' : '' ?>">
                     <?php if ($levelTitle !== null): ?>
                         <strong>Récompense : titre</strong>
-                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\UserTitle::styleForTitle($levelTitle) : '' ?>"><?= e($levelTitle) ?></span>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\Profile\ProfileTitles::styleForTitle($levelTitle) : '' ?>"><?= e($levelTitle) ?></span>
                     <?php elseif ($levelFrame !== null): ?>
                         <strong>Récompense : cadre<span class="success-reward-name"><?= $achievement['target'] === 100 ? 'Ailes d’azur' : 'Ailes souveraines' ?></span></strong>
                         <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . $levelFrame . '.webp')) ?>" alt="Cadre ailé de niveau <?= $achievement['target'] ?>" width="120" height="120" loading="lazy">

@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\User\User;
-use App\Services\Profile\ProfileAchievements;
+use App\Services\Profile\ProfileAchievementCatalog;
 use App\Services\Profile\ProfileStatsService;
 use App\Services\User\UserLevelService;
 
@@ -36,7 +36,7 @@ final class ProfileController extends Controller
         assert($user instanceof User);
         $this->render('pages/profile/index', [
             'user' => $user,
-            'achievements' => ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level),
+            'achievements' => ProfileAchievementCatalog::forStats($this->unlockStats->forAchievements(), $user->level),
             'level' => $user->level,
             'currentXp' => $user->xp,
             'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
@@ -53,7 +53,7 @@ final class ProfileController extends Controller
         assert($user instanceof User);
 
         $stats = $this->profileStatsService->getStats($user);
-        $achievements = ProfileAchievements::forStats($stats, $user->level);
+        $achievements = ProfileAchievementCatalog::forStats($stats, $user->level);
         $section ??= $this->stringInput('section');
         $section = $this->resolveSection($section, ['succes', ...array_column($achievements, 'category')]);
 
@@ -103,7 +103,7 @@ final class ProfileController extends Controller
         $user = user();
         assert($user instanceof User);
 
-        $achievements = ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level);
+        $achievements = ProfileAchievementCatalog::forStats($this->unlockStats->forAchievements(), $user->level);
         $section ??= $this->stringInput('section');
         $section = $this->resolveSection($section, array_column($achievements, 'category'));
 

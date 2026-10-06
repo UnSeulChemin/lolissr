@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Manga\Manga;
 use App\Repositories\Manga\MangaRepository;
 
@@ -40,7 +40,7 @@ final readonly class MangaXpRewardService
             $user,
             $this->mangaStatsRepository->countRead(),
             $this->mangaStatsRepository->countCompletedSeries(),
-            ($xpEarned ? UserXp::READ_TOME : 0) + ($seriesXpEarned ? UserXp::COMPLETE_SERIES : 0)
+            ($xpEarned ? XpRewards::READ_TOME : 0) + ($seriesXpEarned ? XpRewards::COMPLETE_SERIES : 0)
         );
 
         return ['xpEarned' => $xpEarned, 'seriesXpEarned' => $seriesXpEarned];

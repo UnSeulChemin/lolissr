@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Peluche;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\DTO\Peluche\Inputs\PelucheCreateData;
 use App\DTO\Peluche\Inputs\PelucheUpdateData;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Services\Collections\CollectionCreationService;
-use App\Services\Media\ThumbnailManager;
+use App\Services\Media\ThumbnailUploadService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -22,7 +22,7 @@ final readonly class PelucheWriteService
 
     public function __construct(
         private PelucheRepository $pelucheRepository,
-        private ThumbnailManager $thumbnailManager,
+        private ThumbnailUploadService $thumbnailUploadService,
         private Database $database,
         private PelucheXpRewardService $pelucheXpRewardService,
         private CollectionCreationService $creationService
@@ -167,7 +167,7 @@ final readonly class PelucheWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_PELUCHE : 0,
+                        'xpAmount' => $xpEarned ? XpRewards::COLLECT_PELUCHE : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp
                     ]
@@ -210,7 +210,7 @@ final readonly class PelucheWriteService
             return $result;
         }
 
-        if (! $this->thumbnailManager->remove($peluche->thumbnail, $peluche->extension, 'peluche'))
+        if (! $this->thumbnailUploadService->remove($peluche->thumbnail, $peluche->extension, 'peluche'))
         {
             Logger::warning(
                 "Peluche supprimée mais thumbnail non supprimée slug={$slug} numero={$numero}"

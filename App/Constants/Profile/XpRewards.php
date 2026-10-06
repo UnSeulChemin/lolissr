@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Constants\Profile;
 
-final class UserXp
+final class XpRewards
 {
     // =================================================
     // MANGA

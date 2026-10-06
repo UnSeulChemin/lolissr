@@ -66,7 +66,7 @@ $username =
                 <?= e($username) ?>
             </h1>
 
-            <p class="profile-customization-title" data-title-style="<?= \App\Constants\Profile\UserTitle::styleForTitle($user->title) ?>">
+            <p class="profile-customization-title" data-title-style="<?= \App\Constants\Profile\ProfileTitles::styleForTitle($user->title) ?>">
                 <?= e($user->title) ?>
             </p>
 

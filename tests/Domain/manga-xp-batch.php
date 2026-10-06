@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Constants\Profile\AchievementRewards;
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Manga\Manga;
 use App\Models\User\User;
 use App\Services\Manga\MangaXpRewardService;
@@ -69,7 +69,7 @@ $assert((int) $db->query('SELECT COUNT(*) FROM manga_series_rewards')->fetchColu
 XpBatchQueryCounter::$queries = [];
 $result = $db->transaction(fn () => $service->rewardRead($manga, 'alpha'));
 $assert($result === ['xpEarned' => true, 'seriesXpEarned' => true], 'Missing base rewards');
-$assert($earned() === UserXp::READ_TOME + UserXp::COMPLETE_SERIES + AchievementRewards::TOMES[1] + AchievementRewards::SERIES[1], 'Combined reward total changed');
+$assert($earned() === XpRewards::READ_TOME + XpRewards::COMPLETE_SERIES + AchievementRewards::TOMES[1] + AchievementRewards::SERIES[1], 'Combined reward total changed');
 $updates = array_filter(XpBatchQueryCounter::$queries, static fn ($sql) => preg_match('/UPDATE\s+users\b/i', $sql) === 1);
 $locks = array_filter(XpBatchQueryCounter::$queries, static fn ($sql) => preg_match('/FROM\s+users\b[\s\S]*FOR UPDATE/i', $sql) === 1);
 $assert(count($updates) === 1 && count($locks) === 1, 'XP batch did not use one user lock and update');
@@ -95,7 +95,7 @@ $stored = $db->query('SELECT level, xp FROM users WHERE id = 1')->fetch();
 $assert([(int) $stored->level, (int) $stored->xp] === $before, 'Rollback persisted XP');
 $assert((int) $db->query('SELECT xp_read_rewarded + xp_series_rewarded FROM manga WHERE id = 2')->fetchColumn() === 0, 'Rollback persisted reward flags');
 $db->transaction(fn () => $service->rewardRead($manga, 'beta'));
-$assert($earned() === UserXp::READ_TOME * 2 + UserXp::COMPLETE_SERIES * 2 + AchievementRewards::TOMES[1] + AchievementRewards::SERIES[1], 'Base rewards lost when achievements were already claimed');
+$assert($earned() === XpRewards::READ_TOME * 2 + XpRewards::COMPLETE_SERIES * 2 + AchievementRewards::TOMES[1] + AchievementRewards::SERIES[1], 'Base rewards lost when achievements were already claimed');
 echo "PASS: combined manga XP, one user lock/update, duplicate prevention and rollback (temporary tables only).\n";
 
 $achievementService = $container->get(\App\Services\Profile\AchievementXpService::class);

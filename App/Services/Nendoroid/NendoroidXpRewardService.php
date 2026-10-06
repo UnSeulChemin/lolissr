@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Nendoroid;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidRepository;
 
@@ -29,7 +29,7 @@ final readonly class NendoroidXpRewardService
 
         $xpEarned = $this->nendoroidRepository->claimCollectReward($nendoroid->id);
 
-        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_NENDOROID : 0);
+        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->countCollected(), $xpEarned ? XpRewards::COLLECT_NENDOROID : 0);
 
         return $xpEarned;
     }

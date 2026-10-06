@@ -13,7 +13,7 @@ use App\Repositories\Profile\ProfileStatsRepository;
 use App\Repositories\Profile\ProfileUnlockStatsRepository;
 use App\Services\Auth\AuthService;
 use App\Services\Manga\MangaXpRewardService;
-use App\Services\Profile\ProfileAchievements;
+use App\Services\Profile\ProfileAchievementCatalog;
 
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
@@ -93,8 +93,8 @@ try
     $GLOBALS['testCurrentUser'] = $other;
     $check($ownerCache !== CacheKey::dashboard(), 'Dashboard cache key is shared');
     $check(array_filter($stats->summary(2)) === [], 'A second account inherited collection progress/XP');
-    $achievements = ProfileAchievements::forStats($unlocks->forAchievements(), $other->level);
-    $check($achievements === ProfileAchievements::forStats(new \App\DTO\Profile\Responses\ProfileUnlockStatsData(), $other->level), 'New account inherited achievements');
+    $achievements = ProfileAchievementCatalog::forStats($unlocks->forAchievements(), $other->level);
+    $check($achievements === ProfileAchievementCatalog::forStats(new \App\DTO\Profile\Responses\ProfileUnlockStatsData(), $other->level), 'New account inherited achievements');
 
     foreach ($cases as $kind => $data)
     {

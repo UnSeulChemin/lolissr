@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Constants\Profile\AchievementRewards;
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Models\User\User;
 
 use Framework\Application\Bootstrap;
@@ -32,12 +32,12 @@ $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [CollectionXpQueryCounter::class]);
 $db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB'));
 $db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB'));
 $cases = [
-    ['figurine', 'collect', 'collect_rewarded', 'Figurine/Figurine', 'rewardCollect', 'Figurine', UserXp::COLLECT_FIGURINE, AchievementRewards::FIGURINES[1]],
-    ['nendoroid', 'collect', 'collect_rewarded', 'Nendoroid/Nendoroid', 'rewardCollect', 'Nendoroid', UserXp::COLLECT_NENDOROID, AchievementRewards::NENDOROIDS[1]],
-    ['peluche', 'collect', 'collect_rewarded', 'Peluche/Peluche', 'rewardCollect', 'Peluche', UserXp::COLLECT_PELUCHE, AchievementRewards::PELUCHES[1]],
-    ['artbook', 'lu', 'xp_read_rewarded', 'Artbook/Artbook', 'rewardArtbookRead', 'Artbook', UserXp::READ_ARTBOOK, AchievementRewards::ARTBOOKS[1]],
-    ['chinois_grammaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardGrammar', null, UserXp::LEARN_GRAMMAR, AchievementRewards::GRAMMAR[1]],
-    ['chinois_vocabulaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardVocabulary', null, UserXp::LEARN_VOCABULARY, AchievementRewards::VOCABULARY[1]]
+    ['figurine', 'collect', 'collect_rewarded', 'Figurine/Figurine', 'rewardCollect', 'Figurine', XpRewards::COLLECT_FIGURINE, AchievementRewards::FIGURINES[1]],
+    ['nendoroid', 'collect', 'collect_rewarded', 'Nendoroid/Nendoroid', 'rewardCollect', 'Nendoroid', XpRewards::COLLECT_NENDOROID, AchievementRewards::NENDOROIDS[1]],
+    ['peluche', 'collect', 'collect_rewarded', 'Peluche/Peluche', 'rewardCollect', 'Peluche', XpRewards::COLLECT_PELUCHE, AchievementRewards::PELUCHES[1]],
+    ['artbook', 'lu', 'xp_read_rewarded', 'Artbook/Artbook', 'rewardArtbookRead', 'Artbook', XpRewards::READ_ARTBOOK, AchievementRewards::ARTBOOKS[1]],
+    ['chinois_grammaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardGrammar', null, XpRewards::LEARN_GRAMMAR, AchievementRewards::GRAMMAR[1]],
+    ['chinois_vocabulaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardVocabulary', null, XpRewards::LEARN_VOCABULARY, AchievementRewards::VOCABULARY[1]]
 ];
 $assert = static function (bool $condition, string $message): void
 {

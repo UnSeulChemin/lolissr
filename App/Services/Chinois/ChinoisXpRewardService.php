@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
-use App\Constants\Profile\UserXp;
+use App\Constants\Profile\XpRewards;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
@@ -35,7 +35,7 @@ final readonly class ChinoisXpRewardService
 
         $xpEarned = $this->grammaireRepository->claimXpReward($id);
 
-        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->countMastered(), $xpEarned ? UserXp::LEARN_GRAMMAR : 0);
+        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->countMastered(), $xpEarned ? XpRewards::LEARN_GRAMMAR : 0);
 
         return $xpEarned;
     }
@@ -51,7 +51,7 @@ final readonly class ChinoisXpRewardService
 
         $xpEarned = $this->vocabulaireRepository->claimXpReward($id);
 
-        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->countMastered(), $xpEarned ? UserXp::LEARN_VOCABULARY : 0);
+        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->countMastered(), $xpEarned ? XpRewards::LEARN_VOCABULARY : 0);
 
         return $xpEarned;
     }

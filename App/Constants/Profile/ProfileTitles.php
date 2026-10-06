@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Constants\Profile;
 
-final class UserTitle
+final class ProfileTitles
 {
     public const FIGURINE_REWARD = 'Collection arc-en-ciel';
     public const FIGURINE_REWARD_TARGET = 4;
