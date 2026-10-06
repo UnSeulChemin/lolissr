@@ -16,7 +16,6 @@ use App\Repositories\Artbook\ArtbookSearchRepository;
 use App\Repositories\Artbook\ArtbookStatsRepository;
 use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
-use Framework\Config\ApplicationConfig;
 use Framework\Support\Dates\DateFormatter;
 
 final readonly class ArtbookReadService
@@ -49,7 +48,7 @@ final readonly class ArtbookReadService
         return new ArtbookListData(
             artbooks: $data['items'],
             currentPage: $data['currentPage'],
-            totalArtbooks: $data['totalWaifus'],
+            totalArtbooks: $data['totalItems'],
             perPage: $data['perPage'],
             totalPages: $data['totalPages']
         );
@@ -90,15 +89,7 @@ final readonly class ArtbookReadService
 
     private function mapArtbook(Artbook $artbook): ArtbookData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $artbook->thumbnail !== ''
-            ? $artbook->thumbnail
-            : null;
-
-        $extension = $artbook->extension !== ''
-            ? $artbook->extension
-            : null;
+        $image = $this->collectionThumbnail('artbook', $artbook->thumbnail, $artbook->extension);
 
         $auteur = trim((string) $artbook->auteur) !== ''
             ? $artbook->auteur
@@ -122,13 +113,10 @@ final readonly class ArtbookReadService
 
             artbook: $artbook->artbook,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             auteur: $auteur,
             hasAuteur: $auteur !== null,
@@ -149,15 +137,7 @@ final readonly class ArtbookReadService
 
     private function mapSeriesItem(Artbook $artbook): ArtbookListItemData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $artbook->thumbnail !== ''
-            ? $artbook->thumbnail
-            : null;
-
-        $extension = $artbook->extension !== ''
-            ? $artbook->extension
-            : null;
+        $image = $this->collectionThumbnail('artbook', $artbook->thumbnail, $artbook->extension);
 
         $auteur = trim((string) $artbook->auteur) !== ''
             ? $artbook->auteur
@@ -173,13 +153,10 @@ final readonly class ArtbookReadService
 
             artbook: $artbook->artbook,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             auteur: $auteur,
             serie: $serie,
@@ -193,13 +170,7 @@ final readonly class ArtbookReadService
 
     private function mapSearchItem(Artbook $artbook): ArtbookSearchItemData
     {
-        $thumbnail = $artbook->thumbnail !== ''
-            ? $artbook->thumbnail
-            : null;
-
-        $extension = $artbook->extension !== ''
-            ? $artbook->extension
-            : null;
+        $image = $this->collectionThumbnail('artbook', $artbook->thumbnail, $artbook->extension, true);
 
         $auteur = trim((string) $artbook->auteur) !== ''
             ? $artbook->auteur
@@ -211,7 +182,7 @@ final readonly class ArtbookReadService
 
         return new ArtbookSearchItemData(
 
-            thumbnailUrl: $artbook->thumbnail !== '' && $artbook->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/artbook/thumbnail/' . $artbook->thumbnail . '.' . $artbook->extension, true) : null,
+            thumbnailUrl: $image['thumbnailUrl'],
             slug: $artbook->slug,
             numero: $artbook->numero,
 
@@ -219,8 +190,8 @@ final readonly class ArtbookReadService
             auteur: $auteur,
             serie: $serie,
 
-            thumbnail: $thumbnail,
-            extension: $extension
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension']
         );
     }
 }

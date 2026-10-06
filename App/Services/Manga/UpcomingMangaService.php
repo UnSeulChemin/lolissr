@@ -98,6 +98,8 @@ final class UpcomingMangaService
         $entries = $series[$slug]['upcoming'] ?? [];
         if (!is_array($entries)) return;
         $owned = $entries === [] ? [] : ($this->collectionNumbers[$slug] ?? $this->repository->ownedNumbers($slug));
+        $ownedSet = array_fill_keys($owned, true);
+        $today = date('Y-m-d');
         $upper = PHP_INT_MAX;
         $lower = 0;
         if ($perPage !== null && $perPage > 0)
@@ -113,7 +115,7 @@ final class UpcomingMangaService
             $number = $entry['number'] ?? null;
             $date = $entry['release_date'] ?? null;
             $id = $entry['id'] ?? null;
-            if (!is_int($number) || $number < 1 || $number >= $upper || $number < $lower || in_array($number, $owned, true) || !is_string($date) || !is_string($id)) continue;
+            if (!is_int($number) || $number < 1 || $number >= $upper || $number < $lower || isset($ownedSet[$number]) || !is_string($date) || !is_string($id)) continue;
             if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) continue;
             $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
             if ($parsed === false || $parsed->format('Y-m-d') !== $date) continue;
@@ -121,7 +123,7 @@ final class UpcomingMangaService
             yield new UpcomingMangaData(
                 $number, $date, $parsed->format('d/m/Y'),
                 'https://www.mangacollec.com/volumes/' . $id,
-                is_file(base_path('public/' . $image)) ? ApplicationConfig::baseUri() . $image : null, $date > date('Y-m-d')
+                is_file(base_path('public/' . $image)) ? ApplicationConfig::baseUri() . $image : null, $date > $today
             );
         }
     }

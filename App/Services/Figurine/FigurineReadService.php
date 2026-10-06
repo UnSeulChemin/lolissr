@@ -46,7 +46,7 @@ final readonly class FigurineReadService
         return new FigurineListData(
             figurines: $data['items'],
             currentPage: $data['currentPage'],
-            totalWaifus: $data['totalWaifus'],
+            totalWaifus: $data['totalItems'],
             perPage: $data['perPage'],
             totalPages: $data['totalPages']
         );

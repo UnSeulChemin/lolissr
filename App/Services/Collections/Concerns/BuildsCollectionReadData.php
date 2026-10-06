@@ -15,7 +15,7 @@ trait BuildsCollectionReadData
      * @template U of object
      * @param callable(int, int): list<T> $load
      * @param callable(T): U $map
-     * @return array{items: list<U>, currentPage: int, totalWaifus: int, perPage: int, totalPages: int}|null
+     * @return array{items: list<U>, currentPage: int, totalItems: int, perPage: int, totalPages: int}|null
      */
     private function collectionPage(int|string $page, int $total, callable $load, callable $map): ?array
     {
@@ -27,7 +27,7 @@ trait BuildsCollectionReadData
         return [
             'items' => $total === 0 ? [] : array_map($map, $load($perPage, $page)),
             'currentPage' => $page,
-            'totalWaifus' => $total,
+            'totalItems' => $total,
             'perPage' => $perPage,
             'totalPages' => $totalPages
         ];

@@ -46,7 +46,7 @@ final readonly class PelucheReadService
         return new PelucheListData(
             peluches: $data['items'],
             currentPage: $data['currentPage'],
-            totalWaifus: $data['totalWaifus'],
+            totalWaifus: $data['totalItems'],
             perPage: $data['perPage'],
             totalPages: $data['totalPages']
         );

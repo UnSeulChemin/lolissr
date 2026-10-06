@@ -46,7 +46,7 @@ final readonly class NendoroidReadService
         return new NendoroidListData(
             nendoroids: $data['items'],
             currentPage: $data['currentPage'],
-            totalWaifus: $data['totalWaifus'],
+            totalWaifus: $data['totalItems'],
             perPage: $data['perPage'],
             totalPages: $data['totalPages']
         );
