@@ -52,25 +52,23 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
     }
     $assert($repository->findPaginated(2, 3) === [], "$kind: out-of-range page is not empty");
     $assert(count($repository->findPaginated(0, 0)) === 1, "$kind: minimum pagination changed");
-    if ($kind !== 'Artbook')
-    {
-        $property = strtolower($kind) . 's';
-        $perPage = \Framework\Config\ApplicationConfig::pagination();
-        $first = $service->waifus(0);
-        $assert($first !== null && $first->currentPage === 1 && $first->totalWaifus === 4,
-            "$kind: service page normalization or total changed");
-        $assert($first->totalPages === (int) ceil(4 / $perPage)
-            && count($first->{$property}) === min(4, $perPage), "$kind: service pagination changed");
-        $assert($service->waifus((string) ($first->totalPages + 1)) === null,
-            "$kind: service out-of-range page changed");
-        $assert($service->waifus(PHP_INT_MAX) === null, "$kind: extreme page changed");
-        $database->exec("DELETE FROM $table");
-        $empty = $service->waifus(1);
-        $assert($empty !== null && $empty->{$property} === [] && $empty->totalWaifus === 0
-            && $empty->currentPage === 1 && $empty->totalPages === 1,
-            "$kind: empty collection metadata changed");
-        $assert($service->waifus(2) === null, "$kind: empty collection accepted page two");
-    }
+    $property = strtolower($kind) . 's';
+    $totalProperty = $kind === 'Artbook' ? 'totalArtbooks' : 'totalWaifus';
+    $list = $kind === 'Artbook' ? $service->artbooks(...) : $service->waifus(...);
+    $perPage = \Framework\Config\ApplicationConfig::pagination();
+    $first = $list(0);
+    $assert($first !== null && $first->currentPage === 1 && $first->{$totalProperty} === 4,
+        "$kind: service page normalization or total changed");
+    $assert($first->totalPages === (int) ceil(4 / $perPage)
+        && count($first->{$property}) === min(4, $perPage), "$kind: service pagination changed");
+    $assert($list((string) ($first->totalPages + 1)) === null, "$kind: service out-of-range page changed");
+    $assert($list(PHP_INT_MAX) === null, "$kind: extreme page changed");
+    $database->exec("DELETE FROM $table");
+    $empty = $list(1);
+    $assert($empty !== null && $empty->{$property} === [] && $empty->{$totalProperty} === 0
+        && $empty->currentPage === 1 && $empty->totalPages === 1,
+        "$kind: empty collection metadata changed");
+    $assert($list(2) === null, "$kind: empty collection accepted page two");
 }
 
 final class RepresentationQueryCounter extends PDOStatement

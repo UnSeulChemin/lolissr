@@ -35,12 +35,12 @@ final class GlobalSearchController extends Controller
     {
         $query = trim($this->stringInput('q'));
         $this->jsonResult(ServiceResult::success(data: [
-            'mangas' => Profiler::measure('search.mangas', fn (): array => $this->mangas->search($query)->results),
-            'artbooks' => Profiler::measure('search.artbooks', fn (): array => $this->artbooks->search($query)->results),
-            'chinois' => Profiler::measure('search.chinois', fn (): array => $this->chinois->search($query)->results),
-            'figurines' => Profiler::measure('search.figurines', fn (): array => $this->figurines->search($query)->results),
-            'nendoroids' => Profiler::measure('search.nendoroids', fn (): array => $this->nendoroids->search($query)->results),
-            'peluches' => Profiler::measure('search.peluches', fn (): array => $this->peluches->search($query)->results)
+            'mangas' => Profiler::measure('search.mangas', fn (): array => $this->mangas->search($query, 5)->results),
+            'artbooks' => Profiler::measure('search.artbooks', fn (): array => $this->artbooks->search($query, 5)->results),
+            'chinois' => Profiler::measure('search.chinois', fn (): array => $this->chinois->search($query, 5)->results),
+            'figurines' => Profiler::measure('search.figurines', fn (): array => $this->figurines->search($query, 5)->results),
+            'nendoroids' => Profiler::measure('search.nendoroids', fn (): array => $this->nendoroids->search($query, 5)->results),
+            'peluches' => Profiler::measure('search.peluches', fn (): array => $this->peluches->search($query, 5)->results)
         ]));
     }
 }

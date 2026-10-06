@@ -16,7 +16,7 @@ final class ArtbookSearchRepository extends AbstractRepository
     /**
      * @return list<Artbook>
      */
-    public function search(string $search): array
+    public function search(string $search, int $limit = 20): array
     {
         $search = $this->normalizeSearch($search);
 
@@ -25,7 +25,7 @@ final class ArtbookSearchRepository extends AbstractRepository
             return [];
         }
 
-        return $this->fetchSearchResults($search);
+        return $this->fetchSearchResults($search, max(1, min(20, $limit)));
     }
 
     // --------------------------------------------------------------------------
@@ -45,7 +45,7 @@ final class ArtbookSearchRepository extends AbstractRepository
     /**
      * @return list<Artbook>
      */
-    private function fetchSearchResults(string $search): array
+    private function fetchSearchResults(string $search, int $limit): array
     {
         $slug = $this->slugSearch($search);
 
@@ -58,7 +58,7 @@ final class ArtbookSearchRepository extends AbstractRepository
                 OR serie LIKE :search_serie
                 OR slug LIKE :search_slug
             )
-            ORDER BY artbook ASC, numero ASC, id ASC LIMIT 20
+            ORDER BY artbook ASC, numero ASC, id ASC LIMIT {$limit}
         ";
 
         /** @var list<Artbook> $artbooks */

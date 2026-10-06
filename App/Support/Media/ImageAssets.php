@@ -6,6 +6,39 @@ namespace App\Support\Media;
 
 final class ImageAssets
 {
+    /** @var array<string, string>|null */
+    private static ?array $fingerprints = null;
+
+    /**
+     * Reuse fingerprints only during a read-only render or DTO mapping.
+     * @template T
+     * @param callable(): T $render
+     * @return T
+     */
+    public static function withFingerprints(callable $render): mixed
+    {
+        if (self::$fingerprints !== null) return $render();
+        self::$fingerprints = [];
+        try
+        {
+            return $render();
+        }
+        finally
+        {
+            self::$fingerprints = null;
+        }
+    }
+
+    private static function fingerprint(string $file): string
+    {
+        if (isset(self::$fingerprints[$file])) return self::$fingerprints[$file];
+        \Framework\Debug\Profiler::increment('images.fingerprint.count');
+        $version = \Framework\Debug\Profiler::measure('images.fingerprint', static fn (): string|false => hash_file('sha256', $file));
+        if ($version === false) throw new \RuntimeException('Cannot fingerprint image.');
+        if (self::$fingerprints !== null) self::$fingerprints[$file] = $version;
+        return $version;
+    }
+
     public static function url(string $url, bool $grid = false): string
     {
         $path = parse_url($url, PHP_URL_PATH);
@@ -27,9 +60,7 @@ final class ImageAssets
         if (!is_file($file)) return $url;
         $url = preg_replace('/([?&])v=[^&]*&?/', '$1', $url) ?? $url;
         $url = rtrim($url, '?&');
-        \Framework\Debug\Profiler::increment('images.fingerprint.count');
-        $version = \Framework\Debug\Profiler::measure('images.fingerprint', static fn (): string|false => hash_file('sha256', $file));
-        if ($version === false) throw new \RuntimeException('Cannot fingerprint image.');
+        $version = self::fingerprint($file);
         return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $version;
     }
 

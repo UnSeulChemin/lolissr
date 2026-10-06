@@ -314,7 +314,7 @@ abstract class Controller
      */
     private function renderContent(string $viewPath, array $data = [], bool $withTemplate = true): string
     {
-        return Profiler::measure(
+        return \App\Support\Media\ImageAssets::withFingerprints(fn (): string => Profiler::measure(
             'view.render',
             function () use ($viewPath, $data, $withTemplate): string
             {
@@ -341,7 +341,7 @@ abstract class Controller
                     )
                 );
             }
-        );
+        ));
     }
 
     /**

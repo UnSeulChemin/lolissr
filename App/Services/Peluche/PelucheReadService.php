@@ -68,13 +68,13 @@ final readonly class PelucheReadService
     // RECHERCHE
     // --------------------------------------------------------------------------
 
-    public function search(string|int $query = ''): PelucheSearchData
+    public function search(string|int $query = '', int $limit = 20): PelucheSearchData
     {
         $query = trim((string) $query);
 
-        $results = $this->searchRepository->search($query);
+        $results = $this->searchRepository->search($query, $limit);
 
-        return new PelucheSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new PelucheSearchData(results: \App\Support\Media\ImageAssets::withFingerprints(fn (): array => array_map($this->mapSearchItem(...), $results)), search: $query);
     }
 
     // --------------------------------------------------------------------------

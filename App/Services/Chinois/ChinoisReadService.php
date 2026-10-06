@@ -193,11 +193,11 @@ final readonly class ChinoisReadService
     // RECHERCHE
     // =================================================
 
-    public function search(string $query = ''): ChinoisSearchData
+    public function search(string $query = '', ?int $limit = null): ChinoisSearchData
     {
         $query = trim($query);
 
-        return new ChinoisSearchData(results: $this->searchRepository->search($query), search: $query);
+        return new ChinoisSearchData(results: $this->searchRepository->search($query, $limit), search: $query);
     }
 
     // =================================================

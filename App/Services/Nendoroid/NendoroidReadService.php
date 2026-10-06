@@ -68,13 +68,13 @@ final readonly class NendoroidReadService
     // RECHERCHE
     // --------------------------------------------------------------------------
 
-    public function search(string|int $query = ''): NendoroidSearchData
+    public function search(string|int $query = '', int $limit = 20): NendoroidSearchData
     {
         $query = trim((string) $query);
 
-        $results = $this->searchRepository->search($query);
+        $results = $this->searchRepository->search($query, $limit);
 
-        return new NendoroidSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new NendoroidSearchData(results: \App\Support\Media\ImageAssets::withFingerprints(fn (): array => array_map($this->mapSearchItem(...), $results)), search: $query);
     }
 
     // --------------------------------------------------------------------------

@@ -52,13 +52,13 @@ foreach (['a', 'HSK', '测试'] as $query)
     {
         $legacy = http_get(http_base() . $endpoint . rawurlencode($query), $jsonHeaders);
         $data = json_decode($legacy['body'], true, 512, JSON_THROW_ON_ERROR);
-        if ($legacy['status'] !== 200 || ($grouped['data'][$category] ?? null) !== ($data['data']['results'] ?? null))
+        if ($legacy['status'] !== 200 || ($grouped['data'][$category] ?? null) !== array_slice($data['data']['results'] ?? [], 0, 5))
         {
             throw new RuntimeException('Global search changed results: ' . $category);
         }
     }
 }
-echo "PASS: global search returns identical results for all six categories (three queries).\n";
+echo "PASS: global search returns the same first five results for all six categories (three queries).\n";
 $invalid = http_get(http_base() . '/recherche?q%5B%5D=test', $jsonHeaders);
 if ($invalid['status'] !== 422) throw new RuntimeException('Search must reject array input.');
 echo "PASS: invalid search input rejected.\n";

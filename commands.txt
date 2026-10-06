@@ -38,6 +38,9 @@ composer search:profile -- 1
 = Mesurer des recherches precises
 composer search:profile -- 1 "a" "Berserk" "Berserk 1"
 
+= Mesurer la limite du menu de recherche globale (cinq resultats par categorie)
+composer search:profile -- 1 a Berserk --limit=5
+
 = Ajouter les listes paginees et les statistiques (lecture seule, sans cache HTTP)
 composer search:profile -- 1 --lists
 

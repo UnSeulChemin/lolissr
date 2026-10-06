@@ -15,8 +15,8 @@ final class FigurineSearchRepository extends AbstractRepository
     protected string $table = 'figurine';
 
     /** @return list<Figurine> */
-    public function search(string $search): array
+    public function search(string $search, int $limit = 20): array
     {
-        return $this->searchCollectibles($search, Figurine::class);
+        return $this->searchCollectibles($search, Figurine::class, $limit);
     }
 }

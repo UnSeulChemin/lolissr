@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 use App\Support\Media\ImageAssets;
 use App\Support\Media\JpegOrientation;
 use App\Support\Media\ThumbnailOptimizer;
@@ -25,6 +25,20 @@ try
     $gridUrl = ImageAssets::url($url, true);
     if (str_contains($versioned, 'v=old') || !str_contains($versioned, '?v=') || !str_contains($gridUrl, '.grid.jpg?v='))
         throw new RuntimeException('Image version or grid selection failed.');
+    \Framework\Config\Config::prime(['app' => ['profiler' => true]]);
+    \Framework\Debug\Profiler::startRequest();
+    $reused = ImageAssets::withFingerprints(static function () use ($url): array
+    {
+        return [ImageAssets::url($url), ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($url))];
+    });
+    $counters = (new ReflectionProperty(\Framework\Debug\Profiler::class, 'counters'))->getValue();
+    if ($reused !== [$versioned, $versioned] || ($counters['images.fingerprint.count'] ?? 0) !== 1)
+        throw new RuntimeException('Repeated image was not fingerprinted once per render.');
+    ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($url));
+    $counters = (new ReflectionProperty(\Framework\Debug\Profiler::class, 'counters'))->getValue();
+    if (($counters['images.fingerprint.count'] ?? 0) !== 2)
+        throw new RuntimeException('Fingerprint cache escaped the render scope.');
+    \Framework\Config\Config::clear();
     $versionBefore = $versioned;
     touch($publicFixture, time() + 10);
     clearstatcache(true, $publicFixture);
@@ -36,7 +50,7 @@ try
     touch($versionFixture, $timestamp);
     clearstatcache(true, $versionFixture);
     $versionUrl = '/lolissr/images/' . basename($versionFixture);
-    $before = ImageAssets::url($versionUrl);
+    $before = ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($versionUrl));
     $size = filesize($versionFixture);
     imagefill($image, 0, 0, imagecolorallocate($image, 0, 0, 255));
     imagepng($image, $versionFixture, 0);
@@ -45,7 +59,7 @@ try
     clearstatcache(true, $versionFixture);
     if (filesize($versionFixture) !== $size || filemtime($versionFixture) !== $timestamp)
         throw new RuntimeException('Replacement fixture did not preserve size and timestamp.');
-    if (ImageAssets::url($versionUrl) === $before)
+    if (ImageAssets::withFingerprints(static fn (): string => ImageAssets::url($versionUrl)) === $before)
         throw new RuntimeException('Different image content kept a stale version with identical size/date.');
     $originalHash = hash_file('sha256', $directory . '/source.jpg');
     if (!ThumbnailOptimizer::createGrid($directory . '/source.jpg')

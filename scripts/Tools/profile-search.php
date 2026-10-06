@@ -47,8 +47,15 @@ foreach (['Manga', 'Artbook', 'Chinois', 'Figurine', 'Nendoroid', 'Peluche'] as 
 $queries = [];
 $pages = [1, 5, 20];
 $withLists = false;
+$searchLimit = null;
 foreach (array_slice($argv, 2) as $argument)
 {
+    if (str_starts_with($argument, '--limit='))
+    {
+        $searchLimit = filter_var(substr($argument, 8), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 20]]);
+        if ($searchLimit === false) throw new InvalidArgumentException('Search limit: 1..20.');
+        continue;
+    }
     if ($argument === '--lists')
     { $withLists = true; continue; }
     if (str_starts_with($argument, '--pages='))
@@ -69,7 +76,7 @@ foreach ($queries as $query)
     echo 'Query: ' . json_encode($query, JSON_UNESCAPED_UNICODE) . PHP_EOL;
     foreach ($services as $kind => $service)
     {
-        profileOperation($kind, static fn (): int => count($service->search($query)->results), $database);
+        profileOperation($kind, static fn (): int => count(($searchLimit === null ? $service->search($query) : $service->search($query, $searchLimit))->results), $database);
     }
 }
 if ($withLists)

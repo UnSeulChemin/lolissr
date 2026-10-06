@@ -18,7 +18,7 @@ final class ChinoisSearchRepository extends AbstractRepository
     /**
      * @return list<ChinoisSearchItemData>
      */
-    public function search(string $search): array
+    public function search(string $search, ?int $limit = null): array
     {
         $search = trim($search);
 
@@ -29,7 +29,11 @@ final class ChinoisSearchRepository extends AbstractRepository
 
         $like = "%{$search}%";
 
-        return [...$this->searchGrammaire($like), ...$this->searchVocabulaire($like)];
+        if ($limit === null) return [...$this->searchGrammaire($like, 20), ...$this->searchVocabulaire($like, 20)];
+        $limit = max(1, min(20, $limit));
+        $grammar = $this->searchGrammaire($like, $limit);
+        $remaining = $limit - count($grammar);
+        return $remaining === 0 ? $grammar : [...$grammar, ...$this->searchVocabulaire($like, $remaining)];
     }
 
     // =================================================
@@ -39,7 +43,7 @@ final class ChinoisSearchRepository extends AbstractRepository
     /**
      * @return list<ChinoisSearchItemData>
      */
-    private function searchGrammaire(string $like): array
+    private function searchGrammaire(string $like, int $limit): array
     {
         /** @var list<stdClass> $results */
         $results = $this->fetchAll(
@@ -57,7 +61,7 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             ORDER BY id DESC
 
-            LIMIT 20
+            LIMIT {$limit}
             ",
             ['search_titre' => $like, 'search_structure' => $like]
         );
@@ -72,7 +76,7 @@ final class ChinoisSearchRepository extends AbstractRepository
     /**
      * @return list<ChinoisSearchItemData>
      */
-    private function searchVocabulaire(string $like): array
+    private function searchVocabulaire(string $like, int $limit): array
     {
         /** @var list<stdClass> $results */
         $results = $this->fetchAll(
@@ -90,7 +94,7 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             ORDER BY id DESC
 
-            LIMIT 20
+            LIMIT {$limit}
             ",
             ['search_mot' => $like, 'search_pinyin' => $like]
         );

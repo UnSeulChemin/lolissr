@@ -68,13 +68,13 @@ final readonly class FigurineReadService
     // RECHERCHE
     // --------------------------------------------------------------------------
 
-    public function search(string|int $query = ''): FigurineSearchData
+    public function search(string|int $query = '', int $limit = 20): FigurineSearchData
     {
         $query = trim((string) $query);
 
-        $results = $this->searchRepository->search($query);
+        $results = $this->searchRepository->search($query, $limit);
 
-        return new FigurineSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new FigurineSearchData(results: \App\Support\Media\ImageAssets::withFingerprints(fn (): array => array_map($this->mapSearchItem(...), $results)), search: $query);
     }
 
     // --------------------------------------------------------------------------

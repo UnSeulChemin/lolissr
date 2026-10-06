@@ -15,8 +15,8 @@ final class NendoroidSearchRepository extends AbstractRepository
     protected string $table = 'nendoroid';
 
     /** @return list<Nendoroid> */
-    public function search(string $search): array
+    public function search(string $search, int $limit = 20): array
     {
-        return $this->searchCollectibles($search, Nendoroid::class);
+        return $this->searchCollectibles($search, Nendoroid::class, $limit);
     }
 }

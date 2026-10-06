@@ -16,8 +16,9 @@ final class MangaSearchRepository extends AbstractRepository
     /**
      * @return list<Manga>
      */
-    public function search(string $search): array
+    public function search(string $search, int $limit = 20): array
     {
+        $limit = max(1, min(20, $limit));
         $search = $this->normalizeSearch($search);
 
         if ($search === '')
@@ -30,16 +31,16 @@ final class MangaSearchRepository extends AbstractRepository
         if ($searchNumero !== null)
         {
             // Un nombre peut faire partie du titre, par exemple Kaiju No. 8.
-            $titleMatches = $this->fetchSearchResults($search, exactTitle: true);
+            $titleMatches = $this->fetchSearchResults($search, exactTitle: true, limit: $limit);
             if ($titleMatches !== [])
             {
                 return $titleMatches;
             }
 
-            return $this->fetchSearchResults($searchNumero['title'], $searchNumero['numero']);
+            return $this->fetchSearchResults($searchNumero['title'], $searchNumero['numero'], limit: $limit);
         }
 
-        return $this->fetchSearchResults($search);
+        return $this->fetchSearchResults($search, limit: $limit);
     }
 
     // --------------------------------------------------------------------------
@@ -87,7 +88,7 @@ final class MangaSearchRepository extends AbstractRepository
     /**
      * @return list<Manga>
      */
-    private function fetchSearchResults(string $title, ?int $numero = null, bool $exactTitle = false): array
+    private function fetchSearchResults(string $title, ?int $numero = null, bool $exactTitle = false, int $limit = 20): array
     {
         $operator = $exactTitle ? '=' : 'LIKE';
         $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu FROM {$this->readTable()} WHERE (livre {$operator} :search_livre OR slug {$operator} :search_slug)";
@@ -105,7 +106,7 @@ final class MangaSearchRepository extends AbstractRepository
             $params['numero'] = $numero;
         }
 
-        $sql .= ' ORDER BY livre ASC, numero ASC, id ASC LIMIT 20';
+        $sql .= " ORDER BY livre ASC, numero ASC, id ASC LIMIT {$limit}";
 
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll($sql, $params, Manga::class);

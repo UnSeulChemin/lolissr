@@ -15,8 +15,8 @@ final class PelucheSearchRepository extends AbstractRepository
     protected string $table = 'peluche';
 
     /** @return list<Peluche> */
-    public function search(string $search): array
+    public function search(string $search, int $limit = 20): array
     {
-        return $this->searchCollectibles($search, Peluche::class);
+        return $this->searchCollectibles($search, Peluche::class, $limit);
     }
 }

@@ -14,12 +14,15 @@ use App\Repositories\Artbook\ArtbookCollectionRepository;
 use App\Repositories\Artbook\ArtbookRepository;
 use App\Repositories\Artbook\ArtbookSearchRepository;
 use App\Repositories\Artbook\ArtbookStatsRepository;
+use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Support\Dates\DateFormatter;
 
 final readonly class ArtbookReadService
 {
+    use BuildsCollectionReadData;
+
     public function __construct(
         private ArtbookRepository $artbookRepository,
         private ArtbookCollectionRepository $collectionRepository,
@@ -35,33 +38,20 @@ final readonly class ArtbookReadService
 
     public function artbooks(int|string $page = 1): ?ArtbookListData
     {
-        $page = max(1, (int) $page);
-
-        $perPage = ApplicationConfig::pagination();
-
-        $totalArtbooks = $this->statsRepository->countAll();
-
-        if ($totalArtbooks === 0)
-        {
-            if ($page > 1) return null;
-            return new ArtbookListData(artbooks: [], currentPage: 1, totalArtbooks: 0, perPage: $perPage, totalPages: 1);
-        }
-
-        $totalPages = (int) ceil($totalArtbooks / $perPage);
-
-        if ($page > $totalPages)
-        {
-            return null;
-        }
-
-        $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
+        $data = $this->collectionPage(
+            $page,
+            $this->statsRepository->countAll(),
+            $this->collectionRepository->findPaginated(...),
+            $this->mapSeriesItem(...)
+        );
+        if ($data === null) return null;
 
         return new ArtbookListData(
-            artbooks: array_map($this->mapSeriesItem(...), $artbooks),
-            currentPage: $page,
-            totalArtbooks: $totalArtbooks,
-            perPage: $perPage,
-            totalPages: $totalPages
+            artbooks: $data['items'],
+            currentPage: $data['currentPage'],
+            totalArtbooks: $data['totalWaifus'],
+            perPage: $data['perPage'],
+            totalPages: $data['totalPages']
         );
     }
 
@@ -85,13 +75,13 @@ final readonly class ArtbookReadService
     // RECHERCHE
     // --------------------------------------------------------------------------
 
-    public function search(string|int $query = ''): ArtbookSearchData
+    public function search(string|int $query = '', int $limit = 20): ArtbookSearchData
     {
         $query = trim((string) $query);
 
-        $results = $this->searchRepository->search($query);
+        $results = $this->searchRepository->search($query, $limit);
 
-        return new ArtbookSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new ArtbookSearchData(results: \App\Support\Media\ImageAssets::withFingerprints(fn (): array => array_map($this->mapSearchItem(...), $results)), search: $query);
     }
 
     // --------------------------------------------------------------------------

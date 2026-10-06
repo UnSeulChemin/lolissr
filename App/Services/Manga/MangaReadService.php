@@ -122,13 +122,13 @@ final readonly class MangaReadService
     // RECHERCHE
     // --------------------------------------------------------------------------
 
-    public function search(string|int $query = ''): MangaSearchData
+    public function search(string|int $query = '', int $limit = 20): MangaSearchData
     {
         $query = trim((string) $query);
 
-        $results = $this->searchRepository->search($query);
+        $results = $this->searchRepository->search($query, $limit);
 
-        return new MangaSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new MangaSearchData(results: \App\Support\Media\ImageAssets::withFingerprints(fn (): array => array_map($this->mapSearchItem(...), $results)), search: $query);
     }
 
     // --------------------------------------------------------------------------

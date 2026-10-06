@@ -33,6 +33,26 @@ foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
             $check($row->thumbnail === 'cover' && $row->extension === 'webp', "$kind: projection changed");
         }
     }
+    $limited = $repository->search('Origin', 5);
+    $check(array_map(static fn ($item): int => $item->numero, $limited) === [1, 2, 3, 4, 5], "$kind: limited search changed order");
+    $check(count($repository->search('Origin', 0)) === 1 && count($repository->search('Origin', PHP_INT_MAX)) === 20,
+        "$kind: invalid limits are not bounded");
     foreach (['   ', 'absent', '!!!'] as $query) $check($repository->search($query) === [], "$kind: empty/no-match search changed");
 }
 echo "PASS: three collectible searches preserve normalization, matching, model types, ordering and limits.\n";
+
+$db->exec(owned_fixture_sql($db, 'CREATE TABLE chinois_grammaire (id INT PRIMARY KEY, titre TEXT, structure TEXT, explication TEXT, niveau TEXT)'));
+$db->exec(owned_fixture_sql($db, 'CREATE TABLE chinois_vocabulaire (id INT PRIMARY KEY, mot TEXT, pinyin TEXT, traduction TEXT, langue TEXT)'));
+for ($i = 1; $i <= 8; $i++)
+    $db->exec(owned_fixture_sql($db, "INSERT INTO chinois_vocabulaire VALUES ($i, 'needle', 'needle', 'Translation', 'mandarin')"));
+for ($i = 1; $i <= 2; $i++)
+    $db->exec(owned_fixture_sql($db, "INSERT INTO chinois_grammaire VALUES ($i, 'needle', 'needle', 'Explanation', 'HSK1')"));
+$learning = new \App\Repositories\Chinois\ChinoisSearchRepository($db);
+$signature = static fn (array $items): array => array_map(static fn ($item): string => $item->type . ':' . $item->id, $items);
+$check($signature($learning->search('needle', 5)) === array_slice($signature($learning->search('needle')), 0, 5),
+    'Limited learning search must fill remaining slots with vocabulary');
+for ($i = 3; $i <= 8; $i++)
+    $db->exec(owned_fixture_sql($db, "INSERT INTO chinois_grammaire VALUES ($i, 'needle', 'needle', 'Explanation', 'HSK1')"));
+$check($signature($learning->search('needle', 5)) === array_slice($signature($learning->search('needle')), 0, 5),
+    'Limited learning search must preserve grammar priority');
+echo "PASS: bounded search limits and grammar/vocabulary priority.\n";
