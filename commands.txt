@@ -50,6 +50,8 @@ composer git:reset
 TESTS
 =========================================
 
+!! Identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env pour les tests HTTP
+
 = Tous les controles
 = check + (Tests navigateur Edge, schéma MySQL, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
@@ -60,9 +62,6 @@ composer check
 
 
 
-
-= Certains tests necessitent MySQL ; les donnees de test sont temporaires
-= Identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env pour les tests HTTP
 
 
 =========================================
