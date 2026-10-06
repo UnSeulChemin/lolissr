@@ -12,7 +12,7 @@ import { debug, debugError } from '../../core/debug/debug.js';
 
 import { generateSlug } from '../../core/slug.js';
 
-import { invalidateNendoroidPages } from '../cache.js';
+import { invalidateNendoroidPages } from '../cache-invalidation.js';
 
 // =================================================
 // CONFIGURATION

@@ -16,7 +16,7 @@ import { FrontendError } from '../../core/errors/frontend-error.js';
 
 import { deleteModal } from '../../core/modal/modal.js';
 
-import { invalidateGrammarPages } from '../cache.js';
+import { invalidateGrammarPages } from '../cache-invalidation.js';
 
 // =================================================
 // ÉTAT
@@ -150,7 +150,7 @@ async function deleteGrammaire(button)
 // INITIALISATION
 // =================================================
 
-export function initDeleteGrammaire()
+export function initDeleteGrammar()
 {
     if (initialized)
     {

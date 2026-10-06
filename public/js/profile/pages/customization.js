@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { appUrl } from '../../core/url.js';
 
-import { invalidateProfilePages } from '../cache.js';
+import { invalidateProfilePages } from '../cache-invalidation.js';
 
 // =================================================
 // OUVERTURE TITRE FENÊTRE MODALE

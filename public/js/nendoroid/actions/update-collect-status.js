@@ -14,7 +14,7 @@ import { handleError } from '../../core/errors/error-handler.js';
 
 import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { invalidateNendoroidPages } from '../cache.js';
+import { invalidateNendoroidPages } from '../cache-invalidation.js';
 
 import { updateHeaderUser } from '../../profile/ui/header-user.js';
 

@@ -10,7 +10,7 @@ export async function runBrowserScenario()
     check(highlightSearchTerm('<a+b>', 'a+b') === `&lt;${mark('a+b')}&gt;`, 'Literal query or escaping changed');
     check(highlightSearchTerm('<script>', '') === '&lt;script&gt;', 'Empty query bypassed escaping');
     check(highlightSearchTerm('one TWO', 'one two') === `${mark('one')} ${mark('TWO')}`, 'Multiword query changed');
-    const {invalidateMangaPages} = await import('./js/manga/cache.js');
+    const {invalidateMangaPages} = await import('./js/manga/cache-invalidation.js');
     const {shouldRefreshRoute} = await import('./js/router/pages/route-invalidation.js');
     const {appUrl} = await import('./js/core/url.js');
     let invalidations = 0;

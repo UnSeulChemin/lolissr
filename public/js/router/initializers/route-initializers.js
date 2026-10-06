@@ -125,37 +125,37 @@ const initUpdateNendoroidCollectStatus = lazyInitializer(
 
 const initCreateChinoisPage = lazyInitializer(() => import('../../chinois/pages/create.js'), 'initCreatePage');
 
-const initFlashcardsVocabulairePage = lazyInitializer(
-    () => import('../../chinois/pages/flashcards-vocabulaire.js'),
-    'initFlashcardsVocabulairePage'
+const initVocabularyFlashcardsPage = lazyInitializer(
+    () => import('../../chinois/pages/flashcards-vocabulary.js'),
+    'initVocabularyFlashcardsPage'
 );
 
-const initFlashcardsGrammairePage = lazyInitializer(
-    () => import('../../chinois/pages/flashcards-grammaire.js'),
-    'initFlashcardsGrammairePage'
+const initGrammarFlashcardsPage = lazyInitializer(
+    () => import('../../chinois/pages/flashcards-grammar.js'),
+    'initGrammarFlashcardsPage'
 );
 
-const initToggleGrammaireMaitrise = lazyInitializer(
+const initToggleGrammarMastery = lazyInitializer(
     () => import('../../chinois/actions/toggle-grammar-mastery.js'),
-    'initToggleGrammaireMaitrise',
+    'initToggleGrammarMastery',
     '.grammar-ajax'
 );
 
-const initToggleVocabulaireMaitrise = lazyInitializer(
+const initToggleVocabularyMastery = lazyInitializer(
     () => import('../../chinois/actions/toggle-vocabulary-mastery.js'),
-    'initToggleVocabulaireMaitrise',
+    'initToggleVocabularyMastery',
     '.vocabulary-ajax'
 );
 
-const initDeleteGrammaire = lazyInitializer(
+const initDeleteGrammar = lazyInitializer(
     () => import('../../chinois/actions/delete-grammar.js'),
-    'initDeleteGrammaire',
+    'initDeleteGrammar',
     '.grammaire-delete'
 );
 
-const initDeleteVocabulaire = lazyInitializer(
+const initDeleteVocabulary = lazyInitializer(
     () => import('../../chinois/actions/delete-vocabulary.js'),
-    'initDeleteVocabulaire',
+    'initDeleteVocabulary',
     '.vocabulaire-delete'
 );
 
@@ -270,10 +270,10 @@ export const ROUTE_INITIALIZERS = [
         match: /^\/chinois(?:\/|$)/,
 
         initializers: [
-            ['ToggleGrammaireMaitrise', initToggleGrammaireMaitrise],
-            ['ToggleVocabulaireMaitrise', initToggleVocabulaireMaitrise],
-            ['DeleteGrammaire', initDeleteGrammaire],
-            ['DeleteVocabulaire', initDeleteVocabulaire]
+            ['ToggleGrammaireMaitrise', initToggleGrammarMastery],
+            ['ToggleVocabulaireMaitrise', initToggleVocabularyMastery],
+            ['DeleteGrammaire', initDeleteGrammar],
+            ['DeleteVocabulaire', initDeleteVocabulary]
         ]
     },
 
@@ -286,13 +286,13 @@ export const ROUTE_INITIALIZERS = [
     {
         match: /^\/chinois\/flashcards\/vocabulaire\/?$/,
 
-        initializers: [[ 'FlashcardsVocabulaire', initFlashcardsVocabulairePage ]]
+        initializers: [[ 'FlashcardsVocabulaire', initVocabularyFlashcardsPage ]]
     },
 
     {
         match: /^\/chinois\/flashcards\/grammaire\/?$/,
 
-        initializers: [[ 'FlashcardsGrammaire', initFlashcardsGrammairePage ]]
+        initializers: [[ 'FlashcardsGrammaire', initGrammarFlashcardsPage ]]
     },
 
     // --------------------------------------------------------------------------

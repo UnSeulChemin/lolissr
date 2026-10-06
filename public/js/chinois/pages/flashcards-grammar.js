@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { updateHeaderUser } from '../../profile/ui/header-user.js';
 
-import { invalidateGrammarPages } from '../cache.js';
+import { invalidateGrammarPages } from '../cache-invalidation.js';
 
 // =================================================
 // INITIALISATION
@@ -18,7 +18,7 @@ import { invalidateGrammarPages } from '../cache.js';
 
 const initializedContainers = new WeakSet();
 
-export function initFlashcardsGrammairePage()
+export function initGrammarFlashcardsPage()
 {
     const container = document.querySelector('.grammar-main-section');
 

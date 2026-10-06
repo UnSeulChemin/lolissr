@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { debug, debugError } from '../../core/debug/debug.js';
 
-import { invalidateGrammarPages } from '../cache.js';
+import { invalidateGrammarPages } from '../cache-invalidation.js';
 
 // =================================================
 // ÉTAT
@@ -144,7 +144,7 @@ async function toggleMastery(button)
 // INITIALISATION
 // =================================================
 
-export function initToggleGrammaireMaitrise()
+export function initToggleGrammarMastery()
 {
     if (initialized)
     {

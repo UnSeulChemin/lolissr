@@ -10,7 +10,7 @@ import { post } from '../../core/http.js';
 
 import { showToast } from '../../core/toast.js';
 
-import { invalidateMangaPages } from '../cache.js';
+import { invalidateMangaPages } from '../cache-invalidation.js';
 
 // =================================================
 // CONFIGURATION

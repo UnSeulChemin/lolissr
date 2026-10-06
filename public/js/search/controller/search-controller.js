@@ -129,7 +129,10 @@ export function initSearchController()
         'click',
         (event) =>
         {
-            if (!event.target.closest( '.js-header-search' ))
+            if (!event.target.closest('.js-header-search')
+                && (searchInput.value !== '' || searchResults.childElementCount > 0
+                    || searchDropdown.classList.contains('has-results')
+                    || searchDropdown.classList.contains('is-loading')))
             {
                 resetSearch(searchInput, searchResults, searchDropdown);
             }

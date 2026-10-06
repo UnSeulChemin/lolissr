@@ -5,7 +5,7 @@ export async function runBrowserScenario()
     const {invalidatePage} = await import('./js/router/pages/invalidation.js');
     const {setPrefetchedPage, getPrefetchedPage} = await import('./js/router/prefetch/prefetch-cache.js');
     const {shouldRefreshRoute, clearInvalidatedRoute} = await import('./js/router/pages/route-invalidation.js');
-    const {invalidateMangaPages} = await import('./js/manga/cache.js');
+    const {invalidateMangaPages} = await import('./js/manga/cache-invalidation.js');
     const {inFlight} = await import('./js/router/prefetch/prefetch-state.js');
     const {replaceContent} = await import('./js/router/navigation/page-dom.js');
     const check = (ok, message) =>

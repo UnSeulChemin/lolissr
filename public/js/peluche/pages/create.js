@@ -12,7 +12,7 @@ import { debug, debugError } from '../../core/debug/debug.js';
 
 import { generateSlug } from '../../core/slug.js';
 
-import { invalidatePeluchePages } from '../cache.js';
+import { invalidatePeluchePages } from '../cache-invalidation.js';
 
 // =================================================
 // CONFIGURATION

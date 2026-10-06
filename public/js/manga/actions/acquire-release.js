@@ -1,7 +1,7 @@
 import { post } from '../../core/http.js';
 import { showToast } from '../../core/toast.js';
 import { confirmModal } from '../../core/modal/confirm-modal.js';
-import { invalidateMangaPages } from '../cache.js';
+import { invalidateMangaPages } from '../cache-invalidation.js';
 import { navigateTo } from '../../router/navigation/navigation.js';
 import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 

@@ -16,7 +16,7 @@ import { FrontendError } from '../../core/errors/frontend-error.js';
 
 import { navigateTo } from '../../router/navigation/navigation.js';
 
-import { invalidateNendoroidPages } from '../cache.js';
+import { invalidateNendoroidPages } from '../cache-invalidation.js';
 
 import { deleteModal } from '../../core/modal/modal.js';
 

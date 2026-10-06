@@ -10,7 +10,7 @@ import { showToast } from '../../core/toast.js';
 
 import { updateHeaderUser } from '../../profile/ui/header-user.js';
 
-import { invalidateVocabularyPages } from '../cache.js';
+import { invalidateVocabularyPages } from '../cache-invalidation.js';
 
 // =================================================
 // INITIALISATION
@@ -18,7 +18,7 @@ import { invalidateVocabularyPages } from '../cache.js';
 
 const initializedContainers = new WeakSet();
 
-export function initFlashcardsVocabulairePage()
+export function initVocabularyFlashcardsPage()
 {
     const container = document.querySelector('.chinois-vocab-panel');
 

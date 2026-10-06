@@ -13,7 +13,7 @@ import { debug, debugError } from '../../core/debug/debug.js';
 import { generateSlug } from '../../core/slug.js';
 
 // À créer ensuite
-import { invalidateFigurinePages } from '../cache.js';
+import { invalidateFigurinePages } from '../cache-invalidation.js';
 
 // =================================================
 // CONFIGURATION

@@ -12,6 +12,7 @@ export function mountProfileModal(overlay, resolve)
     dialog.setAttribute('aria-modal', 'true');
     dialog.setAttribute('aria-label', dialog.querySelector('h3')?.textContent.trim() ?? 'Personnalisation');
     dialog.tabIndex = -1;
+    const buttons = [...dialog.querySelectorAll('button:not(:disabled)')];
     let closed = false;
     let unregister = () =>
     {};
@@ -37,7 +38,6 @@ export function mountProfileModal(overlay, resolve)
         }
         if (event.key === 'Tab')
         {
-            const buttons = [...dialog.querySelectorAll('button:not(:disabled)')];
             const index = buttons.indexOf(document.activeElement);
             event.preventDefault();
             if (!buttons.length) dialog.focus();
@@ -49,6 +49,6 @@ export function mountProfileModal(overlay, resolve)
     document.body.append(overlay);
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKey, true);
-    (dialog.querySelector('button') ?? dialog).focus();
+    (buttons[0] ?? dialog).focus();
     return close;
 }

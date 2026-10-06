@@ -16,7 +16,7 @@ import { FrontendError } from '../../core/errors/frontend-error.js';
 
 import { deleteModal } from '../../core/modal/modal.js';
 
-import { invalidateVocabularyPages } from '../cache.js';
+import { invalidateVocabularyPages } from '../cache-invalidation.js';
 
 // =================================================
 // ÉTAT
@@ -149,7 +149,7 @@ async function deleteVocabulaire(button)
 // INITIALISATION
 // =================================================
 
-export function initDeleteVocabulaire()
+export function initDeleteVocabulary()
 {
     if (initialized)
     {

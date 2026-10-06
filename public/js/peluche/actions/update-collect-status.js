@@ -14,7 +14,7 @@ import { handleError } from '../../core/errors/error-handler.js';
 
 import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { invalidatePeluchePages } from '../cache.js';
+import { invalidatePeluchePages } from '../cache-invalidation.js';
 
 import { updateHeaderUser } from '../../profile/ui/header-user.js';
 
