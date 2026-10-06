@@ -50,10 +50,14 @@ export async function runBrowserScenario()
         await tick(); await tick();
         check(favorite.action.endsWith('/retirer') && favorite.querySelector('button').getAttribute('aria-pressed') === 'true', 'Favorite add did not update control');
         favorite.dataset.favoritesPage = 'true';
+        const pagination = document.createElement('nav');
+        pagination.className = 'collection-pagination-wrapper';
+        grid.parentElement.append(pagination);
         submit(favorite);
         complete(new Response(JSON.stringify({success: true, message: 'Removed'}), {headers: {'Content-Type': 'application/json'}}));
         await tick(); await tick();
         check(!grid.isConnected, 'Favorite removal did not empty wishlist');
+        check(!pagination.isConnected, 'Empty favorites kept pagination');
         document.body.append(grid);
         grid.innerHTML = '<div class="collection-release-item"><form class="js-restore-recommendation"><button type="submit">Rétablir</button></form></div>';
         const restore = grid.querySelector('form');

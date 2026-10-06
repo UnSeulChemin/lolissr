@@ -22,7 +22,7 @@ use App\DTO\Common\Responses\ViewData;
             ><?= $i ?></a>
         <?php endfor; ?>
         <?php if ($showHiddenLink): ?>
-            <a class="collection-pagination-link collection-pagination-icon" data-prefetch href="<?= e($view->baseUri . 'manga/series/' . ($recommendationMode === 'hidden' ? 'recommandations' : 'recommandations-masquees')) ?>" title="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>" aria-label="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>"><?= $recommendationMode === 'hidden' ? '↩' : '🙈' ?></a>
+            <a class="collection-pagination-link collection-pagination-icon" <?= $recommendationMode === 'hidden' ? 'data-history-back' : 'data-prefetch' ?> href="<?= e($view->baseUri . 'manga/series/' . ($recommendationMode === 'hidden' ? 'recommandations' : 'recommandations-masquees')) ?>" title="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>" aria-label="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>"><?= $recommendationMode === 'hidden' ? '↩' : '🙈' ?></a>
         <?php endif; ?>
     </nav>
 <?php endif; ?>

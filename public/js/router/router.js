@@ -101,6 +101,14 @@ async function handleClick(event)
         return;
     }
 
+    if (link.hasAttribute('data-history-back') && window.history.length > 1)
+    {
+        event.preventDefault();
+        clearActiveFocus();
+        window.history.back();
+        return;
+    }
+
     event.preventDefault();
 
     clearActiveFocus();

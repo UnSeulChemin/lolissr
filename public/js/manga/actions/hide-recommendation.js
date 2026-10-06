@@ -36,6 +36,11 @@ export function initHideRecommendation()
                 });
                 if (grid && !grid.querySelector('.collection-release-item'))
                 {
+                    if (!restoring)
+                    {
+                        const page = grid.parentElement;
+                        page?.querySelector('.collection-pagination-wrapper')?.remove();
+                    }
                     grid.remove();
                 }
             }
