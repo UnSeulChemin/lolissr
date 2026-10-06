@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Http\Middleware;
 
 use Framework\Http\Exceptions\CsrfException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 use Framework\Http\Session;
 
 final class CsrfMiddleware implements MiddlewareInterface

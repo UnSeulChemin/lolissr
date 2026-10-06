@@ -7,7 +7,7 @@ namespace App\Http\Requests\Artbook;
 use App\DTO\Artbook\Inputs\ArtbookCreateData;
 
 use Framework\Config\UploadConfig;
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class ArtbookCreateRequest extends FormRequest
 {

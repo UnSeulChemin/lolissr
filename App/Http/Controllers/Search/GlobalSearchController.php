@@ -14,7 +14,7 @@ use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Peluche\PelucheReadService;
 
 use Framework\Debug\Profiler;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class GlobalSearchController extends Controller
 {

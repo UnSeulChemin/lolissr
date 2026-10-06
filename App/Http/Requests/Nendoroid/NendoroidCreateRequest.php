@@ -7,7 +7,7 @@ namespace App\Http\Requests\Nendoroid;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateData;
 
 use Framework\Config\UploadConfig;
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class NendoroidCreateRequest extends FormRequest
 {

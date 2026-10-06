@@ -6,7 +6,7 @@ require ROOT . '/scripts/Support/AtomicFile.php';
 
 use Framework\Application\BootstrapCache;
 use Framework\Config\Config;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Config\EnvironmentValidator;
 use Framework\Container\Container;
 use Framework\Routing\RouteCollection;
@@ -19,12 +19,12 @@ $check = static function (bool $condition, string $message): void
 $directory = sys_get_temp_dir() . '/bootstrap-cache-' . bin2hex(random_bytes(8));
 mkdir($directory, 0700);
 $path = $directory . '/compiled.php';
-Env::load(ROOT . '/.env.example');
-Env::set('DB_NAME', 'fixture');
-Env::set('DB_USER', 'fixture');
-Env::set('APP_ENV', 'production');
-Env::set('APP_DEBUG', false);
-Env::set('PROFILER_ENABLED', false);
+Environment::load(ROOT . '/.env.example');
+Environment::set('DB_NAME', 'fixture');
+Environment::set('DB_USER', 'fixture');
+Environment::set('APP_ENV', 'production');
+Environment::set('APP_DEBUG', false);
+Environment::set('PROFILER_ENABLED', false);
 EnvironmentValidator::validate();
 try
 {
@@ -37,7 +37,7 @@ try
         $check(array_key_exists($name, $cached['config']), 'Grouped configuration missing from cache: ' . $name);
         $check($cached['config'][$name] === Config::get($name), 'Cached configuration differs from source: ' . $name);
     }
-    Env::set('UPLOAD_MAX_PIXELS', 0);
+    Environment::set('UPLOAD_MAX_PIXELS', 0);
     $check(BootstrapCache::load($path) === null, 'Validation-only input did not invalidate cache.');
     try
     {
@@ -46,12 +46,12 @@ try
     }
     catch (RuntimeException)
     {}
-    Env::load(ROOT . '/.env.example');
-    Env::set('DB_NAME', 'fixture');
-    Env::set('DB_USER', 'fixture');
-    Env::set('APP_ENV', 'production');
-    Env::set('APP_DEBUG', false);
-    Env::set('PROFILER_ENABLED', false);
+    Environment::load(ROOT . '/.env.example');
+    Environment::set('DB_NAME', 'fixture');
+    Environment::set('DB_USER', 'fixture');
+    Environment::set('APP_ENV', 'production');
+    Environment::set('APP_DEBUG', false);
+    Environment::set('PROFILER_ENABLED', false);
     $check(BootstrapCache::load($path) !== null, 'Unchanged environment did not restore cache.');
     $expected = new RouteCollection();
     $register = require ROOT . '/Config/routes/web.php';
@@ -88,12 +88,12 @@ try
         printf("Config + routes, %d warm CLI iterations: normal %.3f ms; compiled %.3f ms.\n", $iterations, $normal, $optimized);
     }
 
-    Env::set('DB_NAME', 'changed');
+    Environment::set('DB_NAME', 'changed');
     $check(BootstrapCache::load($path) === null, 'Environment change reused stale configuration.');
-    Env::set('DB_NAME', 'fixture');
-    Env::set('APP_ENV', 'local');
-    Env::set('REGISTRATION_ENABLED', true);
-    Env::set('SQL_TOOL_ENABLED', true);
+    Environment::set('DB_NAME', 'fixture');
+    Environment::set('APP_ENV', 'local');
+    Environment::set('REGISTRATION_ENABLED', true);
+    Environment::set('SQL_TOOL_ENABLED', true);
     $check(BootstrapCache::load($path) === null, 'Route flag change reused stale routes.');
     AtomicFile::writeIfChanged($path, BootstrapCache::compile(), 0600);
     $cached = BootstrapCache::load($path);

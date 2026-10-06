@@ -13,7 +13,7 @@ use App\Services\Peluche\PelucheWriteService;
 
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class PelucheController extends Controller
 {

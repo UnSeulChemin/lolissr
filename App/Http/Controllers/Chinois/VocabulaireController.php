@@ -12,7 +12,7 @@ use App\Services\Chinois\ChinoisWriteService;
 
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class VocabulaireController extends Controller
 {

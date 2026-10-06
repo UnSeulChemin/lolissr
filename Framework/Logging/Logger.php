@@ -6,8 +6,8 @@ namespace Framework\Logging;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Container\ContainerRegistry;
-use Framework\Http\Request;
-use Framework\Http\RequestContext;
+use Framework\Http\Requests\Request;
+use Framework\Http\Requests\RequestContext;
 
 use JsonException;
 use Throwable;

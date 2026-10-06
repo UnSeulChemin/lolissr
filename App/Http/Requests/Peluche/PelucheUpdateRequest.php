@@ -6,7 +6,7 @@ namespace App\Http\Requests\Peluche;
 
 use App\DTO\Peluche\Inputs\PelucheUpdateData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class PelucheUpdateRequest extends FormRequest
 {

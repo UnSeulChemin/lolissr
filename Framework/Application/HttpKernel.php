@@ -6,7 +6,7 @@ namespace Framework\Application;
 
 use Framework\Debug\Profiler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 use Framework\Http\Session;
 use Framework\Routing\Router;
 

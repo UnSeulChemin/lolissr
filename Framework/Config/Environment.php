@@ -6,7 +6,7 @@ namespace Framework\Config;
 
 use RuntimeException;
 
-final class Env
+final class Environment
 {
     /**
      * @var array<string, mixed>

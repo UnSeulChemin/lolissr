@@ -8,7 +8,7 @@ use App\Services\Auth\AuthService;
 
 use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final readonly class AdminMiddleware implements MiddlewareInterface
 {

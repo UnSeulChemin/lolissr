@@ -5,7 +5,7 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Config\Config;
 use Framework\Container\Container;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;

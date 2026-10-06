@@ -8,7 +8,7 @@ use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
 use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class NendoroidRepository extends AbstractRepository
 {
@@ -92,7 +92,7 @@ final class NendoroidRepository extends AbstractRepository
 
     private function normalizeSlug(string $slug): string
     {
-        return Str::slug($slug);
+        return Strings::slug($slug);
     }
 
     /**
@@ -118,9 +118,9 @@ final class NendoroidRepository extends AbstractRepository
             'waifu' => trim((string) ($data['waifu'] ?? '')),
             'origin' => trim((string) ($data['origin'] ?? '')),
             'company' => trim((string) ($data['company'] ?? '')),
-            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+            'release_date' => Strings::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
+            'commentaire' => Strings::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

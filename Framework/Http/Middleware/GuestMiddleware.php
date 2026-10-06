@@ -6,7 +6,7 @@ namespace Framework\Http\Middleware;
 
 use Framework\Auth\AuthenticationInterface;
 use Framework\Http\Exceptions\AlreadyAuthenticatedException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final readonly class GuestMiddleware implements MiddlewareInterface
 {

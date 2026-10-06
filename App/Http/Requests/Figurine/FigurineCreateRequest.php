@@ -7,7 +7,7 @@ namespace App\Http\Requests\Figurine;
 use App\DTO\Figurine\Inputs\FigurineCreateData;
 
 use Framework\Config\UploadConfig;
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class FigurineCreateRequest extends FormRequest
 {

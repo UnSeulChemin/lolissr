@@ -10,8 +10,8 @@ use App\Services\Profile\ProfileAchievementCatalog;
 use App\Services\Profile\ProfileStatsService;
 use App\Services\User\UserLevelService;
 
-use Framework\Http\Request;
-use Framework\Support\Str;
+use Framework\Http\Requests\Request;
+use Framework\Support\Strings;
 
 final class ProfileController extends Controller
 {
@@ -124,10 +124,10 @@ final class ProfileController extends Controller
     /** @param list<string> $categories */
     private function resolveSection(string $section, array $categories): string
     {
-        $slug = Str::asciiSlug($section);
+        $slug = Strings::asciiSlug($section);
         foreach (array_unique($categories) as $category)
         {
-            if (Str::asciiSlug($category) === $slug) return $category;
+            if (Strings::asciiSlug($category) === $slug) return $category;
         }
 
         return 'tout';

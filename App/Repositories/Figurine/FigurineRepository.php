@@ -8,7 +8,7 @@ use App\DTO\Figurine\Inputs\FigurineUpdateData;
 use App\Models\Figurine\Figurine;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class FigurineRepository extends AbstractRepository
 {
@@ -94,7 +94,7 @@ final class FigurineRepository extends AbstractRepository
 
     private function normalizeSlug(string $slug): string
     {
-        return Str::slug($slug);
+        return Strings::slug($slug);
     }
 
     /**
@@ -125,9 +125,9 @@ final class FigurineRepository extends AbstractRepository
                 ? (float) $data['height_cm']
                 : null,
             'company' => trim((string) ($data['company'] ?? '')),
-            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+            'release_date' => Strings::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
+            'commentaire' => Strings::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

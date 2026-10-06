@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Framework\Config\ApplicationConfig;
 use Framework\Config\Config;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Container\ContainerRegistry;
 use Framework\Http\Session;
 
@@ -50,7 +50,7 @@ if (! function_exists('env'))
 {
     function env(string $key, mixed $default = null): mixed
     {
-        return Env::get($key, $default);
+        return Environment::get($key, $default);
     }
 }
 
@@ -58,7 +58,7 @@ if (! function_exists('env_bool'))
 {
     function env_bool(string $key, bool $default = false): bool
     {
-        return Env::bool($key, $default);
+        return Environment::bool($key, $default);
     }
 }
 
@@ -66,7 +66,7 @@ if (! function_exists('env_int'))
 {
     function env_int(string $key, int $default = 0): int
     {
-        return Env::int($key, $default);
+        return Environment::int($key, $default);
     }
 }
 

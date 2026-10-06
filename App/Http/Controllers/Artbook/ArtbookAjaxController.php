@@ -10,7 +10,7 @@ use App\Services\Artbook\ArtbookReadService;
 use App\Services\Artbook\ArtbookWriteService;
 
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class ArtbookAjaxController extends Controller
 {

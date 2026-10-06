@@ -13,7 +13,7 @@ use App\Services\Manga\MangaWriteService;
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 Bootstrap::loadEnvOnly();
 $check = static function (bool $ok, string $message): void

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO\Artbook\Inputs;
 
-use Framework\Support\DateNormalizer;
-use Framework\Support\Str;
+use Framework\Support\Dates\DateNormalizer;
+use Framework\Support\Strings;
 
 final readonly class ArtbookCreateData
 {
@@ -30,7 +30,7 @@ final readonly class ArtbookCreateData
         $artbook = trim((string) ($data['artbook'] ?? ''));
 
         $typeSource = (string) ($data['type_source'] ?? '');
-        $source = Str::nullableTrim($data['source'] ?? null);
+        $source = Strings::nullableTrim($data['source'] ?? null);
 
         $auteur = $typeSource === 'auteur'
             ? $source
@@ -45,9 +45,9 @@ final readonly class ArtbookCreateData
             auteur: $auteur,
             serie: $serie,
             company: trim((string) ($data['company'] ?? '')),
-            release_date: DateNormalizer::normalize(Str::nullableTrim($data['release_date'] ?? null)),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
-            slug: Str::slug((string) ($data['slug'] ?? $artbook)),
+            release_date: DateNormalizer::normalize(Strings::nullableTrim($data['release_date'] ?? null)),
+            commentaire: Strings::nullableTrim($data['commentaire'] ?? null),
+            slug: Strings::slug((string) ($data['slug'] ?? $artbook)),
             numero: max(1, (int) ($data['numero'] ?? 1))
         );
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Validation\Concerns;
 
-use Framework\Support\DateNormalizer;
+use Framework\Support\Dates\DateNormalizer;
 
 trait ValidatesDates
 {

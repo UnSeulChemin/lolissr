@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Media;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class ThumbnailName
 {
@@ -18,7 +18,7 @@ final class ThumbnailName
 
     public static function generate(string $name, int $numero): string
     {
-        $slug = Str::slug($name);
+        $slug = Strings::slug($name);
 
         if ($slug === '' || $numero <= 0)
         {

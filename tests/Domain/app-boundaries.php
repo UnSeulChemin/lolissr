@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Framework\Config\Config;
 use Framework\Container\Container;
 use Framework\Database\Database;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 $check = static function (bool $condition, string $message): void
 {

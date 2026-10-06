@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Chinois\Inputs;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final readonly class ChinoisGrammaireCreateData
 {
@@ -32,7 +32,7 @@ final readonly class ChinoisGrammaireCreateData
             niveau: trim((string) ($data['niveau'] ?? '')),
             titre: trim((string) ($data['titre'] ?? '')),
             structure: trim((string) ($data['structure'] ?? '')),
-            abreviation: Str::nullableTrim($data['abreviation'] ?? null),
+            abreviation: Strings::nullableTrim($data['abreviation'] ?? null),
             phrase: trim((string) ($data['phrase'] ?? '')),
             pinyin: trim((string) ($data['pinyin'] ?? '')),
             traduction: trim((string) ($data['traduction'] ?? '')),

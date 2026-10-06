@@ -4,7 +4,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Cache\Cache;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 
 if (($argv[1] ?? '') === 'lock')
 {
@@ -25,8 +25,8 @@ $check = static function (bool $condition, string $message): void
 $directory = sys_get_temp_dir() . '/cache-contention-' . bin2hex(random_bytes(8));
 mkdir($directory);
 (new ReflectionProperty(Cache::class, 'directory'))->setValue(null, $directory);
-Env::set('CACHE_ENABLED', true);
-Env::set('LOG_ENABLED', false);
+Environment::set('CACHE_ENABLED', true);
+Environment::set('LOG_ENABLED', false);
 $path = $directory . '/' . sha1('busy') . '.cache';
 file_put_contents($path, '{"expires_at":1,"value":"expired"}');
 $process = proc_open([PHP_BINARY, __FILE__, 'lock', $path . '.metadata.lock'], [

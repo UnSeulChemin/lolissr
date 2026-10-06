@@ -14,7 +14,7 @@ $check = static function (bool $condition, string $message): void
 $php = <<<'PHP'
 <?php
 namespace Example;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 use App\Models\User\User;
 use App\Cache\Home\DashboardCache;
 final class Example
@@ -29,7 +29,7 @@ final class Example
 }
 PHP;
 $formatted = $formatter->format($php, 'php');
-$check(str_contains($formatted, "use App\\Cache\\Home\\DashboardCache;\nuse App\\Models\\User\\User;\n\nuse Framework\\Http\\Request;"), 'PHP imports are not grouped and sorted.');
+$check(str_contains($formatted, "use App\\Cache\\Home\\DashboardCache;\nuse App\\Models\\User\\User;\n\nuse Framework\\Http\\Requests\\Request;"), 'PHP imports are not grouped and sorted.');
 $check(str_contains($formatted, "public function value(int \$id): array\n    {"), 'Compact PHP signature or Allman brace missing.');
 $check(str_contains($formatted, "return ['id' => \$id];"), 'Short PHP array is not compact.');
 $check($formatter->format($formatted, 'php') === $formatted, 'PHP formatter is not idempotent.');
@@ -39,7 +39,7 @@ $check(str_contains($formatter->format($section, 'php'), '// CRÉATION'), 'Secti
 $literals = <<<'PHP'
 <?php
 $text = <<<'TEXT'
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 use App\Models\User\User;
 
 

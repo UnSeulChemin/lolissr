@@ -6,7 +6,7 @@ namespace App\Http\Requests\Nendoroid;
 
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class NendoroidUpdateRequest extends FormRequest
 {

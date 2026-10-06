@@ -7,7 +7,7 @@ namespace App\Repositories\Chinois;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 use stdClass;
 
@@ -222,7 +222,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
                 'position' => $position,
                 'titre' => trim($titre),
                 'structure' => trim($structure),
-                'abreviation' => Str::nullableTrim($abreviation),
+                'abreviation' => Strings::nullableTrim($abreviation),
                 'phrase' => trim($phrase),
                 'pinyin' => trim($pinyin),
                 'traduction' => trim($traduction),

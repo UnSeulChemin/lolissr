@@ -15,7 +15,7 @@ use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;
 
 use Framework\Config\ApplicationConfig;
-use Framework\Support\DateFormatter;
+use Framework\Support\Dates\DateFormatter;
 
 final readonly class FigurineReadService
 {

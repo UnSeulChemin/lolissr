@@ -12,7 +12,7 @@ use App\Repositories\Auth\UserRepository;
 use App\Repositories\Profile\ProfileUnlockStatsRepository;
 use App\Services\Profile\ProfileImageCatalog;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class ProfileAjaxController extends Controller
 {

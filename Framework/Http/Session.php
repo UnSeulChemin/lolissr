@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
+use Framework\Http\Requests\Request;
+
 use RuntimeException;
 
 final class Session

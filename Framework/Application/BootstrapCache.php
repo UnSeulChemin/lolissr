@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Application;
 
 use Framework\Config\Config;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Config\EnvironmentValidator;
 use Framework\Container\Container;
 use Framework\Routing\Route;
@@ -47,7 +47,7 @@ final class BootstrapCache
         // Les actions anonymes ne sont pas sérialisables : conserver l’amorçage habituel
         // jusqu’à leur déplacement dans des contrôleurs. Les groupes anonymes sont déjà résolus.
         $serialized = serialize($routes);
-        $keys = Env::accessedKeys();
+        $keys = Environment::accessedKeys();
         sort($keys);
         $payload = [
             'version' => self::VERSION,
@@ -119,7 +119,7 @@ final class BootstrapCache
         $values = [];
         foreach ($keys as $key)
         {
-            $values[$key] = [Env::has($key), Env::get($key)];
+            $values[$key] = [Environment::has($key), Environment::get($key)];
         }
         return hash('sha256', serialize($values));
     }

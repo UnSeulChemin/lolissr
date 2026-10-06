@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Framework\Http;
+namespace Framework\Http\Responses;
 
+use Framework\Http\Session;
 use Framework\Logging\Logger;
 
 use JsonException;

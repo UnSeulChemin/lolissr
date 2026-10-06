@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\DTO\Common\Responses\ViewData;
 use App\Services\Profile\ProfileImageCatalog;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 /** @var ViewData $view */
 /** @var string $section */
@@ -37,7 +37,7 @@ foreach ($achievements as $item)
             <?php $label = match ($key)
             { 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
             <a class="profile-summary-link"
-               href="<?= e($view->baseUri . 'profil/succes' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
+               href="<?= e($view->baseUri . 'profil/succes' . ($key === 'tout' ? '' : '/' . Strings::asciiSlug($key))) ?>"
                aria-label="<?= e($key === 'tout' ? 'Tous les succès' : $label) ?>"
                title="<?= e($key === 'tout' ? 'Tous les succès' : $label) ?>"
                <?= $section === $key ? 'aria-current="page"' : '' ?>>

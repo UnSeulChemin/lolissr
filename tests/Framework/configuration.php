@@ -20,7 +20,7 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Config\Config;
 use Framework\Config\DatabaseConfig;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Config\EnvironmentValidator;
 
 $check = static function (bool $condition, string $message): void
@@ -32,16 +32,16 @@ mkdir($directory, 0700);
 $path = $directory . '/.env';
 try
 {
-    Env::load(ROOT . '/.env.example');
-    Env::set('DB_NAME', 'fixture');
-    Env::set('DB_USER', 'fixture');
+    Environment::load(ROOT . '/.env.example');
+    Environment::set('DB_NAME', 'fixture');
+    Environment::set('DB_USER', 'fixture');
     foreach (['APP_PAGINATION', 'DB_PORT', 'DB_SLOW_QUERY_THRESHOLD', 'UPLOAD_MAX_SIZE',
         'UPLOAD_MAX_WIDTH', 'UPLOAD_MAX_HEIGHT', 'UPLOAD_MAX_PIXELS', 'CACHE_TTL', 'LOG_RETENTION_DAYS'] as $key)
     {
-        $original = Env::get($key);
+        $original = Environment::get($key);
         foreach ([true, false, 1.0, null, 'true', '1.5', '0', '-1'] as $invalid)
         {
-            Env::set($key, $invalid);
+            Environment::set($key, $invalid);
             try
             {
                 EnvironmentValidator::validate();
@@ -52,65 +52,65 @@ try
         }
         foreach ([1, '42'] as $valid)
         {
-            Env::set($key, $valid);
+            Environment::set($key, $valid);
             EnvironmentValidator::validate();
-            $check(Env::int($key) === (int) $valid, 'Valid integer rejected: ' . $key);
+            $check(Environment::int($key) === (int) $valid, 'Valid integer rejected: ' . $key);
         }
-        Env::set($key, $original);
+        Environment::set($key, $original);
     }
     foreach ([true, false, 1.0, null, 'true', '1.5'] as $invalid)
     {
-        Env::set('AUDIT_VALUE', $invalid);
-        $check(Env::int('AUDIT_VALUE', 7) === 7, 'Integer helper accepted an invalid type.');
+        Environment::set('AUDIT_VALUE', $invalid);
+        $check(Environment::int('AUDIT_VALUE', 7) === 7, 'Integer helper accepted an invalid type.');
     }
-    Env::clear();
+    Environment::clear();
 
     foreach (['true' => true, 'false' => false, '(false)' => false, 'null' => null, 'empty' => '', '42' => '42'] as $raw => $expected)
     {
         file_put_contents($path, 'AUDIT_VALUE=' . $raw . "\n");
-        Env::load($path);
-        $check(Env::get('AUDIT_VALUE', 'fallback') === $expected, 'File conversion differs: ' . $raw);
-        Env::clear();
+        Environment::load($path);
+        $check(Environment::get('AUDIT_VALUE', 'fallback') === $expected, 'File conversion differs: ' . $raw);
+        Environment::clear();
         putenv('AUDIT_VALUE=' . $raw);
-        $check(Env::get('AUDIT_VALUE', 'fallback') === $expected, 'System conversion differs: ' . $raw);
-        Env::clear();
+        $check(Environment::get('AUDIT_VALUE', 'fallback') === $expected, 'System conversion differs: ' . $raw);
+        Environment::clear();
         putenv('AUDIT_VALUE');
     }
     file_put_contents($path, "AUDIT_VALUE=\"false\"\nDB_PASS=\"  example  \"\n");
-    Env::load($path);
+    Environment::load($path);
     Config::clear();
-    $check(Env::get('AUDIT_VALUE') === 'false', 'Quoted literal converted.');
+    $check(Environment::get('AUDIT_VALUE') === 'false', 'Quoted literal converted.');
     $check(DatabaseConfig::pass() === '  example  ', 'Quoted password trimmed.');
-    Env::clear();
+    Environment::clear();
     putenv('DB_PASS=  system password  ');
     Config::clear();
     $check(DatabaseConfig::pass() === '  system password  ', 'System password trimmed.');
     putenv('DB_PASS');
 
-    Env::clear();
+    Environment::clear();
     putenv('AUDIT_VALUE=process-original');
     $_ENV['AUDIT_VALUE'] = null;
     $_SERVER['AUDIT_VALUE'] = 'server-original';
     file_put_contents($path, "AUDIT_VALUE=file\n");
-    Env::load($path);
-    Env::set('AUDIT_VALUE', 'second');
-    Env::set('AUDIT_VALUE', null);
-    $check(Env::get('AUDIT_VALUE', 'fallback') === null, 'Explicit null lost.');
+    Environment::load($path);
+    Environment::set('AUDIT_VALUE', 'second');
+    Environment::set('AUDIT_VALUE', null);
+    $check(Environment::get('AUDIT_VALUE', 'fallback') === null, 'Explicit null lost.');
     file_put_contents($path, '');
-    Env::load($path);
+    Environment::load($path);
     $check(getenv('AUDIT_VALUE') === 'process-original', 'Process environment not restored.');
     $check(array_key_exists('AUDIT_VALUE', $_ENV) && $_ENV['AUDIT_VALUE'] === null, 'Original ENV null lost.');
     $check($_SERVER['AUDIT_VALUE'] === 'server-original', 'Original SERVER value lost.');
-    $check(Env::get('AUDIT_VALUE') === 'server-original', 'Restored lookup precedence changed.');
-    Env::clear();
+    $check(Environment::get('AUDIT_VALUE') === 'server-original', 'Restored lookup precedence changed.');
+    Environment::clear();
     unset($_ENV['AUDIT_VALUE'], $_SERVER['AUDIT_VALUE']);
     putenv('AUDIT_VALUE');
-    Env::set('AUDIT_VALUE', 'temporary');
-    Env::clear();
-    $check(! Env::has('AUDIT_VALUE'), 'Originally absent variable retained.');
+    Environment::set('AUDIT_VALUE', 'temporary');
+    Environment::clear();
+    $check(! Environment::has('AUDIT_VALUE'), 'Originally absent variable retained.');
     putenv('AUDIT_VALUE=');
-    Env::set('AUDIT_VALUE', 'temporary');
-    Env::clear();
+    Environment::set('AUDIT_VALUE', 'temporary');
+    Environment::clear();
     $check(getenv('AUDIT_VALUE') === '', 'Original empty process value lost.');
     putenv('AUDIT_VALUE');
 
@@ -119,7 +119,7 @@ try
         file_put_contents($path, "# comment\n\nAUDIT_VALUE=" . $raw . "\n");
         try
         {
-            Env::load($path);
+            Environment::load($path);
             throw new LogicException('Unclosed quote accepted.');
         }
         catch (RuntimeException $error)
@@ -131,14 +131,14 @@ try
     foreach (['""' => '', "''" => '', '"false"' => 'false', "' spaced '" => ' spaced ', "O'Reilly" => "O'Reilly"] as $raw => $expected)
     {
         file_put_contents($path, 'AUDIT_VALUE=' . $raw . "\n");
-        Env::load($path);
-        $check(Env::get('AUDIT_VALUE') === $expected, 'Valid literal changed.');
+        Environment::load($path);
+        $check(Environment::get('AUDIT_VALUE') === $expected, 'Valid literal changed.');
     }
 
     file_put_contents($path, "\n# comment\n\nINVALID_DECLARATION\n");
     try
     {
-        Env::load($path);
+        Environment::load($path);
         throw new LogicException('Malformed declaration accepted.');
     }
     catch (RuntimeException $error)
@@ -162,7 +162,7 @@ try
 }
 finally
 {
-    Env::clear();
+    Environment::clear();
     unset($_ENV['AUDIT_VALUE'], $_SERVER['AUDIT_VALUE']);
     putenv('AUDIT_VALUE');
     putenv('DB_PASS');

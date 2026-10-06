@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Sql\SqlExecutionService;
 
 use Framework\Http\Exceptions\ValidationException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 use Throwable;
 

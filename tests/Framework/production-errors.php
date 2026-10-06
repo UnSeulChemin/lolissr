@@ -4,17 +4,17 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Application\Bootstrap;
-use Framework\Config\Env;
-use Framework\Http\ErrorHandler;
+use Framework\Config\Environment;
+use Framework\Http\Errors\HttpErrorHandler;
 use Framework\Logging\Logger;
 
 if (($argv[1] ?? '') === 'child')
 {
-    Env::set('APP_DEBUG', false);
-    Env::set('LOG_ENABLED', true);
+    Environment::set('APP_DEBUG', false);
+    Environment::set('LOG_ENABLED', true);
     (new ReflectionProperty(Logger::class, 'directory'))->setValue(null, $argv[2]);
     (new ReflectionMethod(Bootstrap::class, 'configureDebug'))->invoke(null);
-    ErrorHandler::register();
+    HttpErrorHandler::register();
     @trigger_error('suppressed fixture', E_USER_WARNING);
     trigger_error('private production warning fixture', E_USER_WARNING);
     exit(42);

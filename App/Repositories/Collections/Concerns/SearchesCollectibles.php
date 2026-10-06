@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Collections\Concerns;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 trait SearchesCollectibles
 {
@@ -18,7 +18,7 @@ trait SearchesCollectibles
         $search = trim(preg_replace('/\s+/', ' ', trim($search)) ?? '');
         if ($search === '') return [];
 
-        $slug = Str::slug($search);
+        $slug = Strings::slug($search);
 
         return $this->fetchAll(
             "SELECT slug, numero, origin, waifu, thumbnail, extension

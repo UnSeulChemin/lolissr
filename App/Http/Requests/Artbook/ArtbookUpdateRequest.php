@@ -6,7 +6,7 @@ namespace App\Http\Requests\Artbook;
 
 use App\DTO\Artbook\Inputs\ArtbookUpdateData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class ArtbookUpdateRequest extends FormRequest
 {

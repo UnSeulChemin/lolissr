@@ -2,18 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Framework\Http;
+namespace Framework\Http\Errors;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\JsonResponseException;
+use Framework\Http\Requests\Request;
+use Framework\Http\Responses\Response;
+use Framework\Http\Session;
 use Framework\Logging\Logger;
 
 use Closure;
 use ErrorException;
 use Throwable;
 
-final class ErrorHandler
+final class HttpErrorHandler
 {
     private const INTERNAL_ERROR_MESSAGE = 'Une erreur interne est survenue.';
 

@@ -7,7 +7,7 @@ namespace App\Http\Requests\Peluche;
 use App\DTO\Peluche\Inputs\PelucheCreateData;
 
 use Framework\Config\UploadConfig;
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class PelucheCreateRequest extends FormRequest
 {

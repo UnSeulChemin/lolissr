@@ -20,7 +20,7 @@ trait ValidatesValues
             return $this;
         }
 
-        $slug = \Framework\Support\Str::slug($value);
+        $slug = \Framework\Support\Strings::slug($value);
         if ($slug === '' || strlen($slug) > $maxLength)
         {
             $this->addError($field, "Le slug normalisé doit contenir entre 1 et {$maxLength} caractères.");

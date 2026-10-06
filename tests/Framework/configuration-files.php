@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Framework\Application\BootstrapCache;
 use Framework\Config\Config;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 
 $project = dirname(__DIR__, 2);
 $directory = sys_get_temp_dir() . '/config-files-' . bin2hex(random_bytes(8));
@@ -25,9 +25,9 @@ try
 {
     copy($project . '/Framework/Config/EnvironmentValidator.php', $directory . '/Framework/Config/EnvironmentValidator.php');
     file_put_contents($directory . '/Config/routes/web.php', '<?php return static function ($router): void {};');
-    Env::load($project . '/.env.example');
-    Env::set('DB_NAME', 'fixture');
-    Env::set('DB_USER', 'fixture');
+    Environment::load($project . '/.env.example');
+    Environment::set('DB_NAME', 'fixture');
+    Environment::set('DB_USER', 'fixture');
 
     foreach (['missing', 'missing.key'] as $key)
     {
@@ -71,7 +71,7 @@ try
 finally
 {
     Config::clear();
-    Env::clear();
+    Environment::clear();
     foreach (glob($directory . '/Config/*.php') ?: [] as $file) unlink($file);
     if (is_file($directory . '/compiled.php')) unlink($directory . '/compiled.php');
     unlink($directory . '/Framework/Config/EnvironmentValidator.php');

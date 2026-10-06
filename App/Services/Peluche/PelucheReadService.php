@@ -15,7 +15,7 @@ use App\Repositories\Peluche\PelucheRepository;
 use App\Repositories\Peluche\PelucheSearchRepository;
 
 use Framework\Config\ApplicationConfig;
-use Framework\Support\DateFormatter;
+use Framework\Support\Dates\DateFormatter;
 
 final readonly class PelucheReadService
 {

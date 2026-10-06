@@ -7,7 +7,7 @@ namespace App\Repositories\Manga;
 use App\Models\Manga\Manga;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class MangaSearchRepository extends AbstractRepository
 {
@@ -53,7 +53,7 @@ final class MangaSearchRepository extends AbstractRepository
 
     private function slugSearch(string $search): string
     {
-        return Str::slug($search);
+        return Strings::slug($search);
     }
 
     /**

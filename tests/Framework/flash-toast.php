@@ -4,7 +4,7 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Http\Controllers\Controller;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 session_save_path(sys_get_temp_dir());
 session_id('toast-test-' . bin2hex(random_bytes(8)));

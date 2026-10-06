@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Support;
 
-final class Str
+final class Strings
 {
     private function __construct()
     {

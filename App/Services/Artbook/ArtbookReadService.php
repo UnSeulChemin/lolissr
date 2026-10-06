@@ -16,7 +16,7 @@ use App\Repositories\Artbook\ArtbookSearchRepository;
 use App\Repositories\Artbook\ArtbookStatsRepository;
 
 use Framework\Config\ApplicationConfig;
-use Framework\Support\DateFormatter;
+use Framework\Support\Dates\DateFormatter;
 
 final readonly class ArtbookReadService
 {

@@ -13,9 +13,9 @@ use App\Support\Assets\PageStyles;
 use Framework\Config\ApplicationConfig;
 use Framework\Debug\Profiler;
 use Framework\Http\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
-use Framework\Http\Request;
-use Framework\Http\Response;
+use Framework\Http\Requests\FormRequest;
+use Framework\Http\Requests\Request;
+use Framework\Http\Responses\Response;
 use Framework\Http\Session;
 
 use RuntimeException;

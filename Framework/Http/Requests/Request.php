@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Http;
+namespace Framework\Http\Requests;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Http\Exceptions\BaseHttpException;

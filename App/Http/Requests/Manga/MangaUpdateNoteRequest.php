@@ -6,7 +6,7 @@ namespace App\Http\Requests\Manga;
 
 use App\DTO\Manga\Inputs\MangaUpdateNoteData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class MangaUpdateNoteRequest extends FormRequest
 {

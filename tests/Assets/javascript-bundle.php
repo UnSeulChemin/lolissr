@@ -32,7 +32,7 @@ foreach ([$manifest['entry'], ...$manifest['preloads']] as $path)
 }
 foreach (['local', 'production'] as $environment)
 {
-    \Framework\Config\Env::set('APP_ENV', $environment);
+    \Framework\Config\Environment::set('APP_ENV', $environment);
     \Framework\Config\Config::clear();
     $view = new \App\DTO\Common\Responses\ViewData('/lolissr/', new \App\DTO\Common\Responses\FlashToastData(null, null));
     $pageStylesheets = [];

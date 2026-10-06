@@ -6,7 +6,7 @@ namespace App\DTO\Manga\Inputs;
 
 use App\Support\Manga\MangaNoteNormalizer;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final readonly class MangaUpdateData
 {
@@ -30,7 +30,7 @@ final readonly class MangaUpdateData
             statut: trim((string) ($data['statut'] ?? 'en_cours')),
             jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
             livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
+            commentaire: Strings::nullableTrim($data['commentaire'] ?? null)
         );
     }
 }

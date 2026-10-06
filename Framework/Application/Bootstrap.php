@@ -6,16 +6,16 @@ namespace Framework\Application;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Config\Config;
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Config\EnvironmentValidator;
 use Framework\Container\Container;
 use Framework\Container\ContainerRegistry;
 use Framework\Database\Database;
 use Framework\Debug\Profiler;
-use Framework\Http\ErrorHandler;
+use Framework\Http\Errors\HttpErrorHandler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
-use Framework\Http\Request;
-use Framework\Http\RequestContext;
+use Framework\Http\Requests\Request;
+use Framework\Http\Requests\RequestContext;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
 
@@ -34,7 +34,7 @@ final class Bootstrap
 
     public static function loadEnvOnly(): void
     {
-        Env::load(base_path('.env'));
+        Environment::load(base_path('.env'));
         Config::clear();
 
         EnvironmentValidator::validate();
@@ -54,7 +54,7 @@ final class Bootstrap
         header_remove('X-Powered-By');
         try
         {
-            Env::load(base_path('.env'));
+            Environment::load(base_path('.env'));
             Config::clear();
             $compiled = BootstrapCache::load(BootstrapCache::path());
             if ($compiled !== null)
@@ -185,10 +185,10 @@ final class Bootstrap
     {
         if ($renderer !== null)
         {
-            ErrorHandler::setRenderer($renderer);
+            HttpErrorHandler::setRenderer($renderer);
         }
 
-        ErrorHandler::register();
+        HttpErrorHandler::register();
     }
 
     private static function configureDebug(): void

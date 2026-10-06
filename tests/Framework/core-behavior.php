@@ -6,12 +6,12 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Cache\Cache;
 use Framework\Config\Config;
-use Framework\Config\Env;
-use Framework\Http\Request;
+use Framework\Config\Environment;
+use Framework\Http\Requests\Request;
 use Framework\Http\Session;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
-use Framework\Support\DateNormalizer;
+use Framework\Support\Dates\DateNormalizer;
 use Framework\Validation\Validator;
 
 $check = static function (bool $condition, string $message): void
@@ -57,7 +57,7 @@ foreach (['first', 'second'] as $fallback)
 $check(Config::get('fixture') === $items->getValue()['fixture'], 'Whole configuration file changed.');
 foreach (['/first', '/second', '/'] as $baseUri)
 {
-    Env::set('APP_BASE_URI', $baseUri);
+    Environment::set('APP_BASE_URI', $baseUri);
     Config::clear();
     $check(base_uri() === rtrim($baseUri, '/'), 'Base URI ignored configuration reload.');
     $check(view_base_uri() === rtrim($baseUri, '/') . '/', 'View base URI ignored reload.');
@@ -70,7 +70,7 @@ try
     $container->get('cycle');
     throw new RuntimeException('Circular dependency accepted.');
 }
-catch (\Framework\Container\ContainerResolutionException $exception)
+catch (\Framework\Container\Exceptions\ContainerResolutionException $exception)
 {
     $check(str_contains($exception->getMessage(), 'cycle -> cycle'), 'Resolution chain lost.');
 }
@@ -121,7 +121,7 @@ foreach ([0, '0', '0.0', ' 12.5 '] as $number)
 
 foreach ([false, true] as $trustProxy)
 {
-    Env::set('TRUST_PROXY', $trustProxy);
+    Environment::set('TRUST_PROXY', $trustProxy);
     Config::clear();
     foreach ([
         [['HTTPS' => 'on'], true],
@@ -135,7 +135,7 @@ foreach ([false, true] as $trustProxy)
         $check((new Request(server: $server))->isHttps() === $expected, 'HTTPS detection changed.');
     }
 }
-Env::set('TRUST_PROXY', false);
+Environment::set('TRUST_PROXY', false);
 Config::clear();
 
 $routes = new RouteCollection();
@@ -187,7 +187,7 @@ $fixture = $directory . '/image.png';
 file_put_contents($fixture, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a5XcAAAAASUVORK5CYII='));
 try
 {
-    Env::set('CACHE_ENABLED', true);
+    Environment::set('CACHE_ENABLED', true);
     Config::clear();
     $calls = 0;
     $compute = static function () use (&$calls): mixed

@@ -6,7 +6,7 @@ namespace App\Http\Requests\Chinois;
 
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class ChinoisVocabulaireCreateRequest extends FormRequest
 {

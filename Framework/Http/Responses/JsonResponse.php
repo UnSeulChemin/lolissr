@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Http;
+namespace Framework\Http\Responses;
 
 final readonly class JsonResponse
 {

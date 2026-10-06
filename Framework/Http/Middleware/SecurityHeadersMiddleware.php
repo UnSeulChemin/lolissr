@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
-use Framework\Http\Request;
-use Framework\Http\RequestContext;
+use Framework\Http\Requests\Request;
+use Framework\Http\Requests\RequestContext;
 use Framework\Security\ContentSecurityPolicy;
 
 final class SecurityHeadersMiddleware implements MiddlewareInterface

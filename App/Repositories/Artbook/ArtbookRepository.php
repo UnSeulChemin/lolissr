@@ -9,7 +9,7 @@ use App\Models\Artbook\Artbook;
 use App\Repositories\AbstractRepository;
 
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class ArtbookRepository extends AbstractRepository
 {
@@ -126,7 +126,7 @@ final class ArtbookRepository extends AbstractRepository
 
     private function normalizeSlug(string $slug): string
     {
-        return Str::slug($slug);
+        return Strings::slug($slug);
     }
 
     /**
@@ -145,12 +145,12 @@ final class ArtbookRepository extends AbstractRepository
             'lu' => 0,
 
             'artbook' => trim((string) ($data['artbook'] ?? '')),
-            'auteur' => Str::nullableTrim($data['auteur'] ?? null),
-            'serie' => Str::nullableTrim($data['serie'] ?? null),
+            'auteur' => Strings::nullableTrim($data['auteur'] ?? null),
+            'serie' => Strings::nullableTrim($data['serie'] ?? null),
             'company' => trim((string) ($data['company'] ?? '')),
-            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+            'release_date' => Strings::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
+            'commentaire' => Strings::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

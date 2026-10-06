@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Framework\Routing;
 
 use Framework\Container\Container;
-use Framework\Container\ParameterPlan;
+use Framework\Container\ParameterMetadata;
 use Framework\Debug\Profiler;
 use Framework\Http\Exceptions\MethodNotAllowedException;
 use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 use Closure;
 use ReflectionMethod;
@@ -291,7 +291,7 @@ final class Router
     {
         $arguments = [];
 
-        foreach (ParameterPlan::forMethod($reflection) as $parameter)
+        foreach (ParameterMetadata::forMethod($reflection) as $parameter)
         {
             if ($parameter->dependency !== null)
             {

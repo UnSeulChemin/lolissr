@@ -8,7 +8,7 @@ use App\DTO\Common\ServiceResult;
 use App\Http\Controllers\Controller;
 use App\Services\Chinois\ChinoisReadService;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class FlashcardsController extends Controller
 {

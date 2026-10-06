@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Container;
 
+use Framework\Container\Exceptions\ContainerResolutionException;
 use Framework\Debug\Profiler;
 
 use ReflectionClass;
@@ -32,7 +33,7 @@ final class Container
      */
     private array $reflections = [];
 
-    /** @var array<class-string, list<ParameterPlan>> */
+    /** @var array<class-string, list<ParameterMetadata>> */
     private array $dependencyPlans = [];
 
     public function __construct()
@@ -217,13 +218,13 @@ final class Container
     /**
      * @param class-string $class
      * @param ReflectionClass<object> $reflection
-     * @return list<ParameterPlan>
+     * @return list<ParameterMetadata>
      */
     private function dependencyPlan(string $class, ReflectionClass $reflection): array
     {
         if (isset($this->dependencyPlans[$class])) return $this->dependencyPlans[$class];
         $constructor = $reflection->getConstructor();
-        return $this->dependencyPlans[$class] = $constructor !== null ? ParameterPlan::forMethod($constructor) : [];
+        return $this->dependencyPlans[$class] = $constructor !== null ? ParameterMetadata::forMethod($constructor) : [];
     }
 
     // =================================================

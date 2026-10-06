@@ -10,7 +10,7 @@ use App\Services\Peluche\PelucheReadService;
 use App\Services\Peluche\PelucheWriteService;
 
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class PelucheAjaxController extends Controller
 {

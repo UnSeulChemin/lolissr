@@ -9,7 +9,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 
 // Métadonnées communes des paramètres ; les valeurs par défaut sont évaluées à chaque appel.
-final readonly class ParameterPlan
+final readonly class ParameterMetadata
 {
     public string $name;
     public ?string $dependency;

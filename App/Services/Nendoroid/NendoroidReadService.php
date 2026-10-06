@@ -15,7 +15,7 @@ use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Repositories\Nendoroid\NendoroidSearchRepository;
 
 use Framework\Config\ApplicationConfig;
-use Framework\Support\DateFormatter;
+use Framework\Support\Dates\DateFormatter;
 
 final readonly class NendoroidReadService
 {

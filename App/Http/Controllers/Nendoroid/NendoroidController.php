@@ -13,7 +13,7 @@ use App\Services\Nendoroid\NendoroidWriteService;
 
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class NendoroidController extends Controller
 {

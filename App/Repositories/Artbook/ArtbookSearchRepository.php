@@ -7,7 +7,7 @@ namespace App\Repositories\Artbook;
 use App\Models\Artbook\Artbook;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class ArtbookSearchRepository extends AbstractRepository
 {
@@ -39,7 +39,7 @@ final class ArtbookSearchRepository extends AbstractRepository
 
     private function slugSearch(string $search): string
     {
-        return Str::slug($search);
+        return Strings::slug($search);
     }
 
     /**

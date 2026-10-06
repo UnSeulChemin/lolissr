@@ -9,7 +9,7 @@ use App\Repositories\AbstractRepository;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
 use App\Support\Manga\MangaNoteNormalizer;
 
-use Framework\Support\Str;
+use Framework\Support\Strings;
 
 final class MangaRepository extends AbstractRepository
 {
@@ -165,11 +165,11 @@ final class MangaRepository extends AbstractRepository
             $slug,
             $numero,
             [
-                'editeur' => Str::nullableTrim($editeur),
+                'editeur' => Strings::nullableTrim($editeur),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $this->calculateNote($jacquette, $livreNote),
-                'commentaire' => Str::nullableTrim($commentaire)
+                'commentaire' => Strings::nullableTrim($commentaire)
             ]
         );
 
@@ -349,7 +349,7 @@ final class MangaRepository extends AbstractRepository
 
     private function normalizeSlug(string $slug): string
     {
-        return Str::slug($slug);
+        return Strings::slug($slug);
     }
 
     /**
@@ -395,14 +395,14 @@ final class MangaRepository extends AbstractRepository
             'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
             'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
             'livre' => trim((string) ($data['livre'] ?? '')),
-            'editeur' => Str::nullableTrim($data['editeur'] ?? null),
+            'editeur' => Strings::nullableTrim($data['editeur'] ?? null),
             'numero' => max(1, (int) ($data['numero'] ?? 1)),
             'lu' => 0,
             'statut' => trim((string) ($data['statut'] ?? 'en_cours')),
             'jacquette' => $jacquette,
             'livre_note' => $livreNote,
             'note' => $this->calculateNote($jacquette, $livreNote),
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
+            'commentaire' => Strings::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

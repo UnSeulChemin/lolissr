@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Errors;
 
 use App\Http\Controllers\Controller;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class ErrorController extends Controller
 {

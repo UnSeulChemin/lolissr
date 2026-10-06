@@ -11,7 +11,7 @@ use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class MangaAjaxController extends Controller
 {
@@ -121,7 +121,7 @@ final class MangaAjaxController extends Controller
     private function buildRedirectPath(string $slug, bool $seriesStillExists): string
     {
         return $seriesStillExists
-            ? sprintf('%s/%s/%s', $this->baseUri, self::SERIES_PATH, rawurlencode(\Framework\Support\Str::slug($slug)))
+            ? sprintf('%s/%s/%s', $this->baseUri, self::SERIES_PATH, rawurlencode(\Framework\Support\Strings::slug($slug)))
             : sprintf('%s/%s', $this->baseUri, self::SERIES_PATH);
     }
 }

@@ -13,7 +13,7 @@ use App\Services\Manga\MangaWriteService;
 
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\NotFoundException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class MangaController extends Controller
 {

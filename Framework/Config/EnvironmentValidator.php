@@ -69,7 +69,7 @@ final class EnvironmentValidator
     {
         foreach (self::REQUIRED_VARIABLES as $key)
         {
-            if (! Env::has($key) || trim((string) Env::get($key, '')) === '')
+            if (! Environment::has($key) || trim((string) Environment::get($key, '')) === '')
             {
                 throw new RuntimeException(
                     "Missing required environment variable: {$key}"
@@ -101,7 +101,7 @@ final class EnvironmentValidator
 
     private static function validateBaseUri(): void
     {
-        $baseUri = trim((string) Env::get('APP_BASE_URI', ''));
+        $baseUri = trim((string) Environment::get('APP_BASE_URI', ''));
 
         if ($baseUri === '/')
         {
@@ -128,7 +128,7 @@ final class EnvironmentValidator
 
     private static function validateTimezone(): void
     {
-        $timezone = trim((string) Env::get('APP_TIMEZONE', ''));
+        $timezone = trim((string) Environment::get('APP_TIMEZONE', ''));
 
         if ($timezone === '' || ! in_array($timezone, timezone_identifiers_list(), true))
         {
@@ -146,12 +146,12 @@ final class EnvironmentValidator
     {
         foreach (self::POSITIVE_INTEGER_VARIABLES as $key)
         {
-            if (! Env::has($key))
+            if (! Environment::has($key))
             {
                 continue;
             }
 
-            $value = Env::get($key);
+            $value = Environment::get($key);
             $integer = is_int($value) || is_string($value)
                 ? filter_var($value, FILTER_VALIDATE_INT)
                 : false;
@@ -167,7 +167,7 @@ final class EnvironmentValidator
 
     private static function validateDatabasePort(): void
     {
-        $port = Env::int('DB_PORT');
+        $port = Environment::int('DB_PORT');
 
         if ($port < 1 || $port > 65535)
         {
@@ -183,8 +183,8 @@ final class EnvironmentValidator
         foreach (['APP_DEBUG', 'PROFILER_ENABLED', 'SQL_TOOL_ENABLED', 'REGISTRATION_ENABLED',
             'CACHE_ENABLED', 'LOG_ENABLED', 'TRUST_PROXY'] as $key)
         {
-            if (! Env::has($key)) continue;
-            $value = Env::get($key);
+            if (! Environment::has($key)) continue;
+            $value = Environment::get($key);
             if ($value === null || (is_string($value) && trim($value) === '')
                 || ! is_scalar($value)
                 || filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) === null)
@@ -206,7 +206,7 @@ final class EnvironmentValidator
 
     private static function validateCsvList(string $key): void
     {
-        if (! Env::has($key))
+        if (! Environment::has($key))
         {
             // Les formats de téléversement ont des valeurs par défaut explicites dans Config/settings/uploads.php.
             return;
@@ -214,7 +214,7 @@ final class EnvironmentValidator
 
         $values = array_values(
             array_filter(
-                array_map(static fn (string $value): string => trim($value), explode(',', (string) Env::get($key, ''))),
+                array_map(static fn (string $value): string => trim($value), explode(',', (string) Environment::get($key, ''))),
                 static fn (string $value): bool => $value !== ''
             )
         );
@@ -246,7 +246,7 @@ final class EnvironmentValidator
 
     private static function assertDisabledInProduction(string $key): void
     {
-        if (Env::bool($key, false))
+        if (Environment::bool($key, false))
         {
             throw new RuntimeException(
                 "{$key} must be false in production."
@@ -260,7 +260,7 @@ final class EnvironmentValidator
 
     private static function environment(): string
     {
-        return strtolower(trim((string) Env::get('APP_ENV', '')));
+        return strtolower(trim((string) Environment::get('APP_ENV', '')));
     }
 
     private static function containsDotSegment(string $path): bool

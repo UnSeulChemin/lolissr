@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Home;
 use App\Cache\Home\DashboardCache;
 use App\Http\Controllers\Controller;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class HomeController extends Controller
 {

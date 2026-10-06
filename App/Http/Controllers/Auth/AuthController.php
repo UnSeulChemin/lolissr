@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\LoginThrottleService;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class AuthController extends Controller
 {

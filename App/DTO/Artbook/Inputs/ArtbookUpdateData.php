@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO\Artbook\Inputs;
 
-use Framework\Support\DateNormalizer;
-use Framework\Support\Str;
+use Framework\Support\Dates\DateNormalizer;
+use Framework\Support\Strings;
 
 final readonly class ArtbookUpdateData
 {
@@ -33,9 +33,9 @@ final readonly class ArtbookUpdateData
             source: trim((string) ($data['source'] ?? '')),
             company: trim((string) ($data['company'] ?? '')),
             release_date: DateNormalizer::normalize(
-                Str::nullableTrim(is_string($data['release_date'] ?? null) ? $data['release_date'] : null)
+                Strings::nullableTrim(is_string($data['release_date'] ?? null) ? $data['release_date'] : null)
             ),
-            commentaire: Str::nullableTrim(is_string($data['commentaire'] ?? null) ? $data['commentaire'] : null)
+            commentaire: Strings::nullableTrim(is_string($data['commentaire'] ?? null) ? $data['commentaire'] : null)
         );
     }
 }

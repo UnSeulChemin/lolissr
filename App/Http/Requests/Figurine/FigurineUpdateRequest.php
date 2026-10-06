@@ -6,7 +6,7 @@ namespace App\Http\Requests\Figurine;
 
 use App\DTO\Figurine\Inputs\FigurineUpdateData;
 
-use Framework\Http\FormRequest;
+use Framework\Http\Requests\FormRequest;
 
 final class FigurineUpdateRequest extends FormRequest
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 interface MiddlewareInterface
 {

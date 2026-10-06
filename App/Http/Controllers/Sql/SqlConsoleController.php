@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Sql;
 use App\Http\Controllers\Controller;
 use App\Services\Sql\SqlExecutionService;
 
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 use Throwable;
 

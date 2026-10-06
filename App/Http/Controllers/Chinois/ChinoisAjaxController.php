@@ -11,7 +11,7 @@ use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
 
 use Framework\Http\Exceptions\ValidationException;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 final class ChinoisAjaxController extends Controller
 {

@@ -6,18 +6,18 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Http\Controllers\Controller;
 
-use Framework\Config\Env;
+use Framework\Config\Environment;
 use Framework\Debug\Profiler;
-use Framework\Http\Request;
-use Framework\Http\Response;
+use Framework\Http\Requests\Request;
+use Framework\Http\Responses\Response;
 use Framework\Http\Session;
 use Framework\Logging\Logger;
 
 if (($argv[1] ?? '') === 'profiler-child')
 {
-    Env::set('APP_DEBUG', true);
-    Env::set('PROFILER_ENABLED', true);
-    Env::set('LOG_ENABLED', true);
+    Environment::set('APP_DEBUG', true);
+    Environment::set('PROFILER_ENABLED', true);
+    Environment::set('LOG_ENABLED', true);
     (new ReflectionProperty(Logger::class, 'directory'))->setValue(null, $argv[2]);
     $startedAt = hrtime(true);
     usleep(20_000);

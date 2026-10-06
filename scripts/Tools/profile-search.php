@@ -8,7 +8,7 @@ define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
-\Framework\Config\Env::set('PROFILER_ENABLED', 'true');
+\Framework\Config\Environment::set('PROFILER_ENABLED', 'true');
 \Framework\Config\Config::clear();
 
 // This CLI supplies an explicit owner without opening an authenticated session.

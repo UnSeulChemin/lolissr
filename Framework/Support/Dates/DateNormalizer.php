@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Support;
+namespace Framework\Support\Dates;
 
 use DateTimeImmutable;
 

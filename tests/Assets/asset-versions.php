@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
-\Framework\Config\Env::set('APP_ENV', 'production');
+\Framework\Config\Environment::set('APP_ENV', 'production');
 \Framework\Config\Config::clear();
 
 $manifest = require ROOT . '/Config/assets/versions.php';

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http\Exceptions;
 
-use Framework\Http\JsonResponse;
+use Framework\Http\Responses\JsonResponse;
 
 use Exception;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO\Figurine\Inputs;
 
-use Framework\Support\DateNormalizer;
-use Framework\Support\Str;
+use Framework\Support\Dates\DateNormalizer;
+use Framework\Support\Strings;
 
 final readonly class FigurineUpdateData
 {
@@ -34,8 +34,8 @@ final readonly class FigurineUpdateData
                 ? (float) $data['height_cm']
                 : null,
             company: trim((string) $data['company']),
-            release_date: DateNormalizer::normalize(Str::nullableTrim($data['release_date'] ?? null)),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
+            release_date: DateNormalizer::normalize(Strings::nullableTrim($data['release_date'] ?? null)),
+            commentaire: Strings::nullableTrim($data['commentaire'] ?? null)
         );
     }
 }

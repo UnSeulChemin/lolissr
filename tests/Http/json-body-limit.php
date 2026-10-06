@@ -5,7 +5,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Application\Bootstrap;
-use Framework\Http\Request;
+use Framework\Http\Requests\Request;
 
 Bootstrap::loadEnvOnly();
 $limit = Request::MAX_JSON_BODY_BYTES;
