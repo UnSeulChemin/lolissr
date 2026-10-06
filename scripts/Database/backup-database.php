@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
 
+if (PHP_SAPI !== 'cli')
+{
+    http_response_code(404);
+    exit;
+}
+
 const MAX_BACKUPS = 20;
 const MIN_BACKUP_SIZE = 100;
 
