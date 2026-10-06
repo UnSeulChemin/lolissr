@@ -1,167 +1,220 @@
-=========================================
+﻿=========================================
 COMMANDES DU PROJET
 =========================================
 
-= Commande unique avant de mettre en production (sur le poste de developpement)
-composer preflight
-= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test.
-= Compile les assets et lance tous les controles ; les tests utilisent des fixtures temporaires.
-= S'arrete au premier echec. Ne publie pas et n'applique aucune migration.
-
-= Diagnostic seul (aucune migration ni modification des donnees)
-composer doctor
-
-= Actualisation automatique Windows : sorties manga a 09:00, recommandations a 09:15.
-= Les deux taches tournent aussi a l'ouverture de session, en arriere-plan.
-= Le PC doit etre allume et Apache/MySQL disponibles ; aucune commande manuelle quotidienne necessaire.
-= Les horaires restent separes : aucune tache unique a 09:00 n'a ete mise en place.
-
-= Actualiser les recommandations (categories et auteurs), couvertures et editions du compte local 1
-composer manga:recommendations -- 1
-
-= Catalogue existant ou JSON modifie manuellement : republier sa revision sans appel reseau
-composer manga:catalog-revision
-= Remplacer 1 par l'identifiant du compte local concerne.
-
-= Installer/reinstaller la tache recommandations (09:15 et ouverture de session)
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1 -OwnerId 1
-
-= Journal des recommandations automatiques
-storage/logs/manga-recommendations-sync.log
-
-= Actualiser les tomes a venir (Mangacollec, invite)
-composer manga:sync
-
-= Installer/reinstaller l'actualisation Windows (09:00 et ouverture de session)
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-schedule.ps1
-
-= Journal de l'actualisation automatique
-storage/logs/manga-releases-sync.log
-
-= Sur un autre serveur : planifier quotidiennement depuis la racine
-php scripts/Manga/sync-releases.php
-
-= Correspondances des editions / nouvelles series ambigues
-Config/settings/manga-releases.php
-
-= Exécuter depuis la racine du projet
+= Executer depuis la racine du projet
 C:\wamp64\www\lolissr
 
-= Afficher les commandes Composer disponibles
+= Afficher toutes les commandes disponibles et leurs descriptions
 composer run-script --list
-
-= Profiler la recherche globale pour un utilisateur (lecture seule, MySQL requis)
-composer search:profile -- 1
-
-= Mesurer des recherches precises
-composer search:profile -- 1 "a" "Berserk" "Berserk 1"
-
-= Mesurer la limite du menu de recherche globale (cinq resultats par categorie)
-composer search:profile -- 1 a Berserk --limit=5
-
-= Ajouter les listes paginees et les statistiques (lecture seule, sans cache HTTP)
-composer search:profile -- 1 --lists
-
-= Choisir les pages pour comparer les OFFSET (10 pages maximum, de 1 a 9999)
-composer search:profile -- 1 "a" --pages=1,5,20
-
-= Mesurer les lectures HTTP sur cinq passages, top 10 par mediane dans la console et le rapport HTML
-composer http:profile
-
-= Choisir le nombre de passages (1 a 20 ; seules les requetes GET sont repetees)
-php tests/Http/run-http.php --repeat=10
-
-= Temps HTTP avec reseau et session ; premier passage inclus, sans mesure du rendu navigateur
-= Rapport : tests/Http/reports/lolissr-http-report.html
-
-= Remplacer 1 par l'identifiant de l'utilisateur a mesurer
-
-
-=========================================
-TESTS & QUALITÉ DE CODE
-=========================================
-
-= Analyse PHP + tests HTTP / SPA + régressions
-composer check
-
-= Suite complete : navigateur, schema MySQL, isolation des comptes, images et dependances de production compris
-composer check:all
-
-= Prerequis : Apache et MySQL demarres, Microsoft Edge installe,
-= identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env et Composer disponible
-= Extension PHP pdo_sqlite activee pour les fixtures SQLite (dependance Composer de developpement)
-= Les tests d'isolation creent puis suppriment des comptes et donnees de test
-= La suite s'arrete au premier echec avec un code de sortie non nul
-
-= Tests cibles manga (creation, sorties, XP et pagination)
-composer tests:manga
-
-= Tests cibles recherche et comparaison HTTP/SPA
-composer tests:search
-
-= Tests cibles assets CSS/JS et images (MySQL requis pour les images de profil)
-composer tests:assets
-
------------------------------------------
-
-PHPStan
-
-= Analyse statique PHP
-composer phpstan
-
------------------------------------------
-
-Tests HTTP / SPA
-
-= Vérifier les routes HTTP et la navigation SPA
-composer http-tests
-
-= Prérequis
-Apache local démarré
-HTTP_TEST_USERNAME et HTTP_TEST_PASSWORD dans .env
-
------------------------------------------
-
-Tests de régression
-
-= Vérifier le framework, les fonctionnalités et les builds
-composer regression-tests
-
-= Certains tests nécessitent MySQL local
-
------------------------------------------
-
-Tests navigateur
-
-= Lancer les scénarios Microsoft Edge
-composer browser-tests
 
 
 =========================================
 GIT
 =========================================
 
-= Compiler les assets, créer un commit et publier sur origin/master
+= Compiler les assets, creer un commit APP_NAME / APP_VERSION et pousser sur origin/master
 composer publish:git
 
-= Utilise APP_NAME et APP_VERSION pour le message du commit
-
------------------------------------------
-
-Reset Git
-
 = Annuler les modifications locales et supprimer les fichiers non suivis
+= Execute git reset --hard HEAD et git clean -fd ; fichiers ignores conserves
 composer git:reset
 
-= Effectue git reset --hard HEAD puis git clean -fd
-= Les fichiers ignorés sont conservés
+
+=========================================
+DEVELOPPEMENT
+=========================================
+
+= Installer les dependances
+composer install
+
+= Compiler CSS / JavaScript et actualiser leurs versions
+composer assets:build
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+= Analyse PHP + tests HTTP / SPA + regressions
+composer check
+
+= Diagnostic de configuration, services et assets
+composer doctor
+
+
+=========================================
+AVANT LIVRAISON
+=========================================
+
+= Compiler les assets, verifier le formatage et lancer tous les controles
+composer preflight
+
+= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
+= S'arrete au premier echec ; ne publie pas et n'applique aucune migration
+
+= Generer une archive avec images, assets actifs et dependances de production
+composer release:zip
+
+= Mise a jour en conservant les images du serveur
+composer release:zip -- --without-images
+
+= Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
+= Envoyer avec FileZilla ; la base est livree separement
+= Premiere installation : copier .env.example vers .env sur le serveur et renseigner MySQL / APP_BASE_URI
+= En production : APP_ENV=production et APP_DEBUG=false
+
+= Apres installation ou modification de configuration sur le serveur cible : compiler le bootstrap
+composer bootstrap:cache
+
+= Desactiver le cache de configuration et de routes
+composer bootstrap:clear
+
+
+=========================================
+TESTS CIBLES
+=========================================
+
+= Tous les controles, sans recompiler les assets
+composer check:all
+
+= Creation manga, recommandations, sorties, XP et pagination
+composer tests:manga
+
+= Recherche et comparaison HTTP / SPA
+composer tests:search
+
+= CSS / JavaScript, versions, miniatures et profils
+composer tests:assets
+
+= Analyse statique PHP seule
+composer phpstan
+
+= Tests HTTP / SPA seuls
+composer http-tests
+
+= Scenarios Microsoft Edge seuls
+composer browser-tests
+
+= Framework, domaines et assets
+composer regression-tests
+
+= Verifier le formatage sans modifier les fichiers
+composer dx:check
+
+= Certains tests necessitent MySQL ; les donnees de test sont temporaires
+= Identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env pour les tests HTTP
+
+
+=========================================
+IMAGES
+=========================================
+
+= Uploads par formulaire et scripts : empreintes actualisees automatiquement
+
+= Optimiser les profils, migrer leurs extensions et actualiser les manifestes
+composer images:build
+
+= Apres ajout, remplacement ou suppression MANUELLE d'une image de profil
+= Actualise la version globale et les empreintes individuelles de toutes les images
+composer images:manifest
+
+= Apres remplacement MANUEL d'autres images, variantes .grid comprises
+= Reconstruction requise meme si la taille et les dates sont conservees
+composer images:fingerprints
+
+= Auditer les miniatures sans modification
+composer images:optimize
+
+= Optimiser avec sauvegarde et generer les variantes .grid
+composer images:optimize -- --apply
+
+= Generer uniquement les variantes .grid de 600 px
+composer images:variants -- --apply
+
+= Sauvegardes des originaux
+storage/backups/images/
+
+
+=========================================
+MANGA
+=========================================
+
+= Windows : sorties a 09:00, recommandations a 09:15 et ouverture de session
+= PC allume, Apache/MySQL disponibles ; aucune commande quotidienne necessaire
+
+= Actualiser manuellement les tomes a venir
+composer manga:sync
+
+= Actualiser manuellement les recommandations du compte local
+= Remplacer 1 par l'identifiant du compte concerne
+composer manga:recommendations -- 1
+
+= Apres modification manuelle du catalogue JSON : republier sa revision sans reseau
+composer manga:catalog-revision
+
+= Installer/reinstaller la tache Windows des sorties
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-schedule.ps1
+
+= Installer/reinstaller la tache Windows des recommandations pour le compte 1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1 -OwnerId 1
+
+= Sur un autre serveur : planifier les deux commandes d'actualisation
+
+= Journaux des actualisations
+storage/logs/manga-releases-sync.log
+storage/logs/manga-recommendations-sync.log
+
+= Correspondances des editions
+Config/settings/manga-releases.php
+
+
+=========================================
+BASE DE DONNEES
+=========================================
+
+= Sauvegarder la base du .env dans storage/backups/database/
+= MYSQLDUMP_PATH permet de choisir mysqldump si necessaire
+composer backup
+
+= Creer un fichier SQL de migration, puis l'editer
+composer db:migration -- ajout-table
+
+= Appliquer les migrations apres sauvegarde
+composer db:migrate
+
+= Voir l'etat des migrations sans modification
+composer db:migrate:status
+
+= Ne pas executer le meme SQL dans /sql ni modifier une migration deja appliquee
+
+= Enregistrer une migration deja appliquee, apres verification manuelle
+composer db:migrate:baseline -- YYYY-MM-DD-NN-description.sql
+
+= Une migration failed/running demande verification et reparation avant baseline
+
+= Verifier le schema avec des fixtures temporaires
+composer db:check
+
+= Verifier l'isolation des comptes et sessions
+composer users:check
+
+= Auditer les index redondants sans modification
+composer db:deduplicate-indexes
+
+= Supprimer les index identifies comme redondants
+composer db:deduplicate-indexes -- --apply
+
+= Auditer les recompenses XP sans modification
+composer xp:backfill -- USER_ID
+
+= Attribuer uniquement les recompenses XP manquantes
+composer xp:backfill -- USER_ID --apply
 
 
 =========================================
 MAINTENANCE
 =========================================
 
-= Vider logs / cache / sessions et régénérer l'autoload
+= Vider logs / cache / sessions et regenerer l'autoload
 composer dev:reset
 
 = Vider uniquement les logs
@@ -170,210 +223,48 @@ composer logs:clear
 = Vider uniquement le cache
 composer cache:clear
 
-= Supprimer les sessions et déconnecter les utilisateurs
+= Vider les sessions et deconnecter les utilisateurs
 composer sessions:clear
 
-= Auditer les miniatures sans modifier les fichiers
-composer images:optimize
-
-= Redimensionner et compresser les miniatures avec sauvegarde des originaux
-composer images:optimize -- --apply
-
-= Cette commande génère aussi les variantes .grid de 600 px pour les collections
-= Générer uniquement les variantes, en conservant les images principales
-composer images:variants -- --apply
-
-= Après ajout, remplacement ou suppression manuelle d'une image de profil : actualiser son manifeste
-composer images:manifest
-
-= Apres remplacement manuel des images : recalculer les empreintes SHA-256 des originaux et variantes .grid
-composer images:fingerprints
-= Taille et dates identiques : reconstruction obligatoire ; uploads et scripts actualisent automatiquement les empreintes
-= Pour une image de profil, images:manifest actualise aussi la version globale et les empreintes individuelles
-
-= En production : APP_ENV=production et APP_DEBUG=false, puis compiler le bootstrap sur le serveur cible
-composer bootstrap:cache
-
-= Originaux conservés dans storage\backups\images\ ; état dans storage\thumbnail-optimization.json
-= storage\backups\images\manifest.json relie chaque chemin à ses sauvegardes originales
-
-= Sur le serveur déployé, nettoyer régulièrement les anciens bundles JavaScript
+= Sur le serveur : nettoyer les anciens bundles selon la retention de sept jours
+= Ne pas supprimer les chunks en fonction du seul manifeste actif
 composer js:prune
 
-= La rétention démarre lors de la première observation ; suppression après sept jours
 
-= Emplacements
-storage\logs\
-storage\cache\
-storage\sessions\
+=========================================
+MESURES
+=========================================
+
+= Mesurer la recherche, les listes et les pages sans modification de la base
+= Remplacer 1 par le compte ; le cache applicatif peut etre actualise
+composer search:profile -- 1 Berserk --limit=5 --lists --pages=1,20
+
+= Mesurer cinq passages HTTP
+= Rapport : tests/Http/reports/lolissr-http-report.html
+composer http:profile
 
 
 =========================================
-CACHE DE BOOTSTRAP
+OUTILS OCCASIONNELS
 =========================================
 
-= Compiler la configuration et les routes sur le serveur cible
-composer bootstrap:cache
-
-= Désactiver le cache de configuration et de routes
-composer bootstrap:clear
-
-
-=========================================
-BASE DE DONNÉES
-=========================================
-
-= Creer automatiquement un fichier SQL vide (nom en minuscules avec tirets)
-composer db:migration -- ajout-table
-= Ouvrir le fichier affiche, ecrire le SQL et sauvegarder ; ensuite composer db:migrate.
-= Ne pas executer le meme SQL dans /sql avant la migration ; ne pas modifier un fichier deja applique.
-
-= Voir les migrations et leur etat (base du .env, lecture seule)
-composer db:migrate:status
-
-= Appliquer les migrations manquantes apres sauvegarde
-composer db:migrate
-
-= Enregistrer une migration deja appliquee, sans rejouer le SQL (verification manuelle obligatoire)
-composer db:migrate:baseline -- YYYY-MM-DD-NN-description.sql
-composer db:migrate:baseline -- 2026-10-04-user-ownership.sql
-
-= La cible est la base du .env. Sauvegarder avant db:migrate.
-= Une migration failed/running bloque le rejeu : verifier et reparer manuellement avant baseline.
-= Ne pas modifier les fichiers SQL deja enregistres ; ajouter une migration corrective.
-
-= Sauvegarder la base avec les paramètres DB du .env
-composer backup
-
-= Emplacement des sauvegardes
-storage\backups\database\
-
-= Chemin personnalisé de mysqldump si nécessaire
-MYSQLDUMP_PATH dans .env
-
------------------------------------------
-
-Index
-
-= Auditer les index redondants sans modifier la base
-composer db:deduplicate-indexes
-
-= Supprimer les index redondants identifiés
-composer db:deduplicate-indexes -- --apply
-
-= Vérifier le schéma MySQL et ses contraintes avec des fixtures temporaires
-composer db:check
-
-= Vérifier deux comptes et deux sessions HTTP (fixtures dédiées créées puis supprimées)
-composer users:check
-
-= Isolation des collections, apprentissages, XP, succès et cache par utilisateur
-scripts\Database\migrations\2026-10-04-user-ownership.sql
-
-= Audit et SQL de migration du 04/10/2026 (déjà appliquée localement)
-scripts\Database\migrations\2026-10-04-schema-consistency.sql
-
-= Vérifier le schéma MySQL et ses contraintes avec des fixtures temporaires
-composer db:check
-
-= Audit et SQL de migration du 04/10/2026 (déjà appliquée localement)
-scripts\Database\migrations\2026-10-04-schema-consistency.sql
-
-
-=========================================
-RÉCOMPENSES XP
-=========================================
-
-= Remplacer USER_ID par l'identifiant numérique de l'utilisateur
-
-= Auditer les récompenses XP sans modifier les données
-composer xp:backfill -- USER_ID
-
-= Ajouter uniquement les récompenses manquantes
-composer xp:backfill -- USER_ID --apply
-
-
-=========================================
-RELEASE
-=========================================
-
-= Générer une archive de livraison
-composer release:zip
-
-= Premiere installation : archive avec images, assets actifs et vendor de production.
-= Decompresser puis envoyer le contenu avec FileZilla ; importer la BDD separement.
-= Copier .env.example vers .env SUR LE SERVEUR et renseigner ses acces MySQL et APP_BASE_URI.
-= Le modele livre utilise APP_ENV=production et desactive les options de debug.
-
-= Mise a jour sans renvoyer les images (conserver public/images sur le serveur)
-composer release:zip -- --without-images
-
-= Utilise APP_NAME et APP_VERSION dans .env
-= Compile les assets et génère une archive avec les dépendances de production
-= Exclut logs, caches, sessions, sauvegardes, tests et .env local ; images incluses par defaut
-
-= Emplacement des archives
-releases\LoliSSR_vX.X.X.zip
-
-
-=========================================
-COMPOSER
-=========================================
-
-= Installer les dépendances
-composer install
-
-= Installer les dépendances de production
+= Installer les dependances de production
 composer install --no-dev --optimize-autoloader
 
-= Régénérer l'autoload
+= Regenerer l'autoload
 composer dump-autoload
 
-= Vérifier composer.json et composer.lock
+= Verifier la configuration Composer
 composer validate
 
-= Synchroniser composer.lock sans mettre à jour les dépendances
+= Synchroniser le lock sans changer les versions
 composer update --lock
-
-
-=========================================
-AI REFACTORING DX
-=========================================
-
-= Vérifier les écarts sans modifier les fichiers
-composer dx:check
-
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
-
-= Configuration par défaut
-scripts/Tools/dx.json
-
-= Après le formatage
-composer assets:build
-composer check
-
-= Le regroupement métier des méthodes reste manuel
-
-
-=========================================
-ASSETS
-=========================================
-
-= Compiler CSS / JavaScript et actualiser les versions
-composer assets:build
 
 = Compiler uniquement le CSS
 composer css:build
 
-= Installer esbuild pour compiler et vérifier le JavaScript
-composer js:install
-
 = Compiler uniquement le JavaScript
 composer js:build
 
-= Supprimer les anciens bundles JavaScript après leur délai de rétention
-composer js:prune
-
-= Générer les images de profil
-composer images:build
+= Installer esbuild
+composer js:install
