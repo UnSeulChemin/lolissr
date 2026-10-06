@@ -100,8 +100,14 @@ final class MangaRecommendationService
     {
         $owner = user();
         if ($owner === null) return [];
-        $path = $this->hiddenPath ?? base_path('storage/manga-recommendations-hidden-' . $owner->id . '.json');
-        $contents = is_file($path) ? file_get_contents($path) : false;
+        return self::hiddenForOwner($owner->id, $this->hiddenPath);
+    }
+
+    /** @return list<string> */
+    public static function hiddenForOwner(int $ownerId, ?string $customPath = null): array
+    {
+        $path = $customPath ?? base_path('storage/manga-recommendations-hidden-' . $ownerId . '.json');
+        $contents = is_file($path) ? @file_get_contents($path) : false;
         $data = $contents === false ? null : json_decode($contents, true);
         return is_array($data) ? array_values(array_filter($data, 'is_string')) : [];
     }

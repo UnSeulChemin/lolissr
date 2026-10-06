@@ -44,11 +44,15 @@ try
     $assert(count($authorResult) === 1 && $authorResult[0]['id'] === $id(1) && str_contains($authorResult[0]['reason'], 'Auteur partagé'), 'Author recommendations used unrelated authors or categories');
     $manySeries = $series;
     $manyIds = [$id(0)];
-    for ($i = 10; $i < 70; $i++)
+    for ($i = 10; $i < 80; $i++)
     { $manySeries[] = ['id' => $id($i), 'title' => 'Suggestion ' . $i]; $manyIds[] = $id($i); }
     $manyCatalog = ['series' => $manySeries, 'kinds' => [['title' => 'Aventure', 'series_ids' => $manyIds]]];
     $assert(count(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'])) === 56, 'Recommendations were not capped at 56');
     $assert(!in_array($id(10), array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', [$id(10)]), 'id'), true), 'Hidden IDs were not excluded before ranking');
+    $fiveHidden = array_slice(array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile']), 'id'), 0, 5);
+    $replacements = MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', $fiveHidden);
+    $assert(count($replacements) === 56 && array_intersect($fiveHidden, array_column($replacements, 'id')) === [], 'Five hidden suggestions were not replaced before the limit');
+    $assert(MangaRecommendationService::hiddenForOwner(1, $hidden) === [], 'CLI and page preferences differ');
     $GLOBALS['testCurrentUser'] = null;
     $assert($service->all() === [], 'Anonymous recommendations leaked');
     unset($GLOBALS['testCurrentUser']);

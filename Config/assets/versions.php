@@ -23,7 +23,7 @@ return array (
   'css/components/modals/profile-title-modal.css' => 'a19975c97263ffbd3133870c7c7267c6e0b2ebb50c742f4352ae5c1070a2b5bc',
   'css/components/profile-avatar.css' => 'a0c7fa398450b2854914499593143c03e85d65fb3a4945c1fa112c46758f2e53',
   'css/components/status-toggle.css' => '824d8e5ea9567dccd2e3d263a70408460c72693b83af7e958f05c6ff4a91b466',
-  'css/components/summary.css' => '01e608e14a5df978f192263938affee42d0b1b549ed5aff411d796d511f3c640',
+  'css/components/summary.css' => '9218bce96f3bf33acfb24fec62be8e78ba7b8ab0d01e46b1bc72ffcb8f10d2ff',
   'css/components/toast.css' => '149659235b3485c4443f3d2d3b1e1c4a35f2769623d17421aab2596fdd37ad88',
   'css/pages/chinois/grammar.css' => 'fcc830327e9f7f0b8bef6a440de6a2db1fa362ba121de6eb03857c3758b6b010',
   'css/pages/chinois/vocabulary.css' => '407868cc6e4d77a9d1520b79967da9c6642c9084911c88b883d6c2cc66f9017a',

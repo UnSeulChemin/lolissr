@@ -62,10 +62,11 @@ foreach (array_keys($authorIds) as $authorId)
     catch (Throwable)
     { echo 'Author bibliography unavailable for ' . $authorId . "\n"; }
 }
+$hidden = \App\Services\Manga\MangaRecommendationService::hiddenForOwner($owner);
 $candidates = [];
 foreach ($collections as $titles)
     foreach (['categories', 'authors'] as $mode)
-    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode) as $recommendation)
+    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden) as $recommendation)
         $candidates[$recommendation['id']] = $recommendation;
 foreach ($candidates as $id => $recommendation)
 {
