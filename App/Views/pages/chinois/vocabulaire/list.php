@@ -25,7 +25,7 @@ use App\DTO\Common\Responses\ViewData;
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 
-                    <a
+                    <a draggable="false"
                         class="
                             collection-pagination-link
                             <?= $currentPage === $i

@@ -32,7 +32,7 @@ use App\DTO\Figurine\Responses\FigurineListItemData;
 
                     ?>
 
-                    <a
+                    <a draggable="false"
                         class="<?= e($paginationClass) ?>"
                         data-prefetch
                         href="<?= e("{$view->baseUri}figurine/figurines/page/{$i}") ?>"

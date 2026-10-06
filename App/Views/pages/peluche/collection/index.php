@@ -32,7 +32,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
                     ?>
 
-                    <a
+                    <a draggable="false"
                         class="<?= e($paginationClass) ?>"
                         data-prefetch
                         href="<?= e("{$view->baseUri}peluche/peluches/page/{$i}") ?>"

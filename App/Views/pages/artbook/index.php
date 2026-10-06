@@ -34,7 +34,7 @@ use App\DTO\Common\Responses\ViewData;
 
                     ?>
 
-                    <a
+                    <a draggable="false"
                         class="<?= $class ?>"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>manga/artbooks/page/<?= $i ?>"

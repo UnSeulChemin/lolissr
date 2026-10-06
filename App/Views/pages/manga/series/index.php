@@ -36,7 +36,7 @@ $isSerieView =
 
                     ?>
 
-                    <a
+                    <a draggable="false"
                         class="<?= $class ?>"
                         data-prefetch
                         <?= $currentPage === $i ? 'aria-current="page"' : '' ?>
