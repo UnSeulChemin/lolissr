@@ -63,7 +63,12 @@ $columns = $database->query("SELECT TABLE_NAME, COLUMN_TYPE FROM information_sch
     AND TABLE_NAME IN ('manga','artbook','figurine','nendoroid','peluche','chinois_grammaire','chinois_vocabulaire','users')")->fetchAll();
 $check(count($columns) === 8, 'Expected identity columns are missing');
 foreach ($columns as $column) $check($column->COLUMN_TYPE === 'int unsigned', 'Identity type differs: ' . $column->TABLE_NAME);
-$mismatches = $database->query('SELECT COUNT(*) FROM manga m JOIN manga_series_rewards r ON r.slug = m.slug AND r.user_id = m.user_id
-    WHERE m.xp_series_rewarded = 0')->fetchColumn();
-$check((int) $mismatches === 0, 'Series history and reward flags disagree');
+// A newly acquired unread volume may have a zero flag despite existing history.
+// History is persistent; flags transfer only when the series is fully read again.
+// Check the history constraints without imposing an invalid invariant on live data.
+$database->exec('CREATE TEMPORARY TABLE schema_series_rewards LIKE manga_series_rewards');
+$database->exec("INSERT INTO schema_series_rewards (user_id, slug) VALUES (1, 'schema-fixture'), (2, 'schema-fixture')");
+$check((int) $database->query('SELECT COUNT(*) FROM schema_series_rewards')->fetchColumn() === 2,
+    'Series history must remain isolated by owner');
+$reject("INSERT INTO schema_series_rewards (user_id, slug) VALUES (1, 'schema-fixture')", 1062);
 echo "PASS: actual MySQL schema accepts optional manga fields, rejects invalid ratings/flags, preserves uniqueness and aligns identities/profile defaults/history. Temporary fixtures only.\n";

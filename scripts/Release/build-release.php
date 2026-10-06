@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
 
+if (PHP_SAPI !== 'cli')
+{ http_response_code(404); exit; }
+if (array_diff(array_slice($argv, 1), ['--without-images']) !== [])
+{
+    fwrite(STDERR, "Usage: composer release:zip [-- --without-images]\n");
+    exit(1);
+}
+$includeImages = !in_array('--without-images', array_slice($argv, 1), true);
 define('ROOT', dirname(__DIR__, 2));
 
 require ROOT . '/vendor/autoload.php';
@@ -30,11 +38,15 @@ if (! class_exists(ZipArchive::class))
 }
 
 $releaseName = $projectName . '_v' . $version;
+if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/', $releaseName))
+{
+    fail('APP_NAME and APP_VERSION must form a safe archive filename (letters, digits, dots, underscores and hyphens).');
+}
 require __DIR__ . '/../Assets/build-assets.php';
 $releasesDirectory = ROOT . DIRECTORY_SEPARATOR . 'releases';
 $temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp-' . bin2hex(random_bytes(8));
 $buildDirectory = $temporaryRoot . DIRECTORY_SEPARATOR . $releaseName;
-$zipFile = $releasesDirectory . DIRECTORY_SEPARATOR . $releaseName . '.zip';
+$zipFile = $releasesDirectory . DIRECTORY_SEPARATOR . $releaseName . ($includeImages ? '' : '-without-images') . '.zip';
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
@@ -56,6 +68,10 @@ ensureDirectory($releasesDirectory);
 removeDirectory($temporaryRoot);
 
 ensureDirectory($buildDirectory);
+register_shutdown_function(static function () use ($temporaryRoot): void
+{
+    removeDirectory($temporaryRoot);
+});
 
 $directories = ['App', 'Config', 'Framework', 'scripts'];
 
@@ -64,7 +80,19 @@ foreach ($directories as $directory)
     copyDirectory(ROOT . DIRECTORY_SEPARATOR . $directory, $buildDirectory . DIRECTORY_SEPARATOR . $directory);
 }
 
-copyPublicDirectory(ROOT . DIRECTORY_SEPARATOR . 'public', $buildDirectory . DIRECTORY_SEPARATOR . 'public');
+copyPublicDirectory(ROOT . DIRECTORY_SEPARATOR . 'public', $buildDirectory . DIRECTORY_SEPARATOR . 'public', $includeImages);
+
+// Old bundles remain on the live server for open pages, but are not needed in a new delivery.
+$assets = require $buildDirectory . '/Config/assets.php';
+foreach (array_keys($assets) as $path)
+{
+    if (!is_file($buildDirectory . '/public/' . $path)) unset($assets[$path]);
+}
+AtomicFile::writeIfChanged($buildDirectory . '/Config/assets.php', "<?php\n\ndeclare(strict_types=1);\n\nreturn " . var_export($assets, true) . ";\n");
+
+$environmentTemplate = (string) file_get_contents(ROOT . '/.env.example');
+$environmentTemplate = preg_replace('/^(APP_ENV)=.*$/m', '$1=production', $environmentTemplate);
+$environmentTemplate = preg_replace('/^(APP_DEBUG|PROFILER_ENABLED|SQL_TOOL_ENABLED|REGISTRATION_ENABLED)=.*$/m', '$1=false', (string) $environmentTemplate);
 
 $rootFiles = ['composer.json', 'composer.lock', '.env.example'];
 
@@ -72,6 +100,8 @@ foreach ($rootFiles as $file)
 {
     copyRequiredFile($file, $buildDirectory);
 }
+
+AtomicFile::writeIfChanged($buildDirectory . '/.env.example', (string) $environmentTemplate);
 
 require_once __DIR__ . '/../Support/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
@@ -114,6 +144,7 @@ foreach ($runtimeDirectories as $directory)
 }
 
 verifyRelease($buildDirectory);
+echo 'Images included: ' . ($includeImages ? 'yes' : 'no (existing server images must be retained)') . PHP_EOL;
 createArchive($buildDirectory, $zipFile);
 
 removeDirectory($temporaryRoot);
@@ -134,9 +165,17 @@ echo PHP_EOL;
 
 exit(0);
 
-function copyPublicDirectory(string $source, string $destination): void
+function copyPublicDirectory(string $source, string $destination, bool $includeImages): void
 {
-    copyDirectory($source, $destination, [normalizePath($source . DIRECTORY_SEPARATOR . 'images')]);
+    $excluded = [normalizePath($source . '/js/dist')];
+    if (!$includeImages) $excluded[] = normalizePath($source . '/images');
+    copyDirectory($source, $destination, $excluded);
+    $manifest = require ROOT . '/Config/javascript.php';
+    foreach ($manifest['files'] as $file)
+    {
+        if (!str_starts_with($file, 'js/dist/') || str_contains($file, '..')) fail('Invalid JavaScript manifest path.');
+        copyFile($source . '/' . $file, $destination . '/' . $file);
+    }
 }
 
 /**
@@ -159,6 +198,7 @@ function copyDirectory(string $source, string $destination, array $excludedPaths
     foreach ($iterator as $item)
     {
         $sourcePath = $item->getPathname();
+        if ($item->isLink()) fail('Symbolic links are not supported in releases: ' . $sourcePath);
         $normalizedSourcePath = normalizePath($sourcePath);
 
         foreach ($excludedPaths as $excludedPath)
@@ -257,7 +297,9 @@ function verifyRelease(string $buildDirectory): void
 
         $extension = strtolower($item->getExtension());
 
-        if (in_array($extension, ['log', 'sql', 'zip', 'rar', '7z'], true))
+        $relative = normalizePath(substr($item->getPathname(), strlen($buildDirectory) + 1));
+        $migration = str_starts_with($relative, 'scripts/Database/migrations/') && $extension === 'sql';
+        if (in_array($extension, ['log', 'sql', 'zip', 'rar', '7z'], true) && !$migration)
         {
             fail('Forbidden file detected: ' . $item->getPathname());
         }

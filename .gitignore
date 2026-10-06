@@ -57,6 +57,7 @@
 # Notes personnelles et fichiers temporaires d'editeur
 /notes.txt
 /note.txt
+/AVANT-PRODUCTION.txt
 *.swp
 *.swo
 *~

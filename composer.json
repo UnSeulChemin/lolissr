@@ -29,6 +29,8 @@
     },
 
     "scripts": {
+        "doctor": "@php scripts/Tools/doctor.php",
+        "preflight": ["@php scripts/Tools/doctor.php --before-build", "@assets:build", "@doctor", "@dx:check", "@check:all"],
         "check": ["@phpstan", "@http-tests", "@regression-tests"],
         "check:all": [
             "@check",
@@ -151,6 +153,8 @@
     },
 
     "scripts-descriptions": {
+        "doctor": "[Diagnostic] Verifie PHP, configuration, stockage, MySQL, migrations, assets et acces HTTP local.",
+        "preflight": "[Production] Avant publication : diagnostic, build, formatage et suite complete. Apache/MySQL/Edge et identifiants de test requis ; utilise des fixtures temporaires.",
         "db:migrate": "[Donnees] Applique les migrations SQL manquantes dans la base du .env.",
         "db:migrate:status": "[Donnees] Affiche les migrations sans modifier la base.",
         "db:migrate:baseline": "[Donnees] FILE.sql : enregistre une migration deja appliquee, sans executer son SQL.",

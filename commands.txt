@@ -2,6 +2,15 @@
 COMMANDES DU PROJET
 =========================================
 
+= Commande unique avant de mettre en production (sur le poste de developpement)
+composer preflight
+= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test.
+= Compile les assets et lance tous les controles ; les tests utilisent des fixtures temporaires.
+= S'arrete au premier echec. Ne publie pas et n'applique aucune migration.
+
+= Diagnostic seul (aucune migration ni modification des donnees)
+composer doctor
+
 = Actualiser les tomes a venir (Mangacollec, invite)
 composer manga:sync
 
@@ -260,9 +269,17 @@ RELEASE
 = Générer une archive de livraison
 composer release:zip
 
+= Premiere installation : archive avec images, assets actifs et vendor de production.
+= Decompresser puis envoyer le contenu avec FileZilla ; importer la BDD separement.
+= Copier .env.example vers .env SUR LE SERVEUR et renseigner ses acces MySQL et APP_BASE_URI.
+= Le modele livre utilise APP_ENV=production et desactive les options de debug.
+
+= Mise a jour sans renvoyer les images (conserver public/images sur le serveur)
+composer release:zip -- --without-images
+
 = Utilise APP_NAME et APP_VERSION dans .env
 = Compile les assets et génère une archive avec les dépendances de production
-= Exclut les données locales, les tests et .env
+= Exclut logs, caches, sessions, sauvegardes, tests et .env local ; images incluses par defaut
 
 = Emplacement des archives
 releases\LoliSSR_vX.X.X.zip
