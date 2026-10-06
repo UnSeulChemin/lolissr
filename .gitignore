@@ -56,6 +56,7 @@
 
 # Notes personnelles et fichiers temporaires d'editeur
 /roadmap.txt
+/MANGACOLLEC-API.txt
 /AVANT-PRODUCTION.txt
 *.swp
 *.swo
