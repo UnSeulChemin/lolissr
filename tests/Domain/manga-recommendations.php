@@ -43,15 +43,34 @@ try
     $authorResult = MangaRecommendationService::fromCatalog($authorCatalog, ['Etoile'], 'authors');
     $assert(count($authorResult) === 1 && $authorResult[0]['id'] === $id(1) && str_contains($authorResult[0]['reason'], 'Auteur partagé'), 'Author recommendations used unrelated authors or categories');
     $manySeries = $series;
+    foreach (['categories', 'authors'] as $mode)
+    {
+        $confirmedResult = MangaRecommendationService::fromCatalog(
+            ['series' => $series, 'kinds' => $authorCatalog['authors'], 'authors' => $authorCatalog['authors']],
+            ['Different local edition name'], $mode, [], [$id(0)]
+        );
+        $assert(count($confirmedResult) === 1 && $confirmedResult[0]['id'] === $id(1), 'Confirmed identity failed to exclude a renamed owned series or score its relations');
+    }
+    $ambiguousCatalog = ['series' => [
+        ['id' => $id(0), 'title' => 'Same title'], ['id' => $id(1), 'title' => 'Same title'],
+        ['id' => $id(2), 'title' => 'Unrelated suggestion']
+    ], 'kinds' => [['title' => 'Aventure', 'series_ids' => [$id(0), $id(2)]]]];
+    $assert(MangaRecommendationService::fromCatalog($ambiguousCatalog, ['Same title']) === [], 'Ambiguous titles influenced recommendation scores');
+    $confirmedMapping = MangaRecommendationService::confirmedSeriesIds(
+        ['edition_series' => ['0ed3326d-c9f1-462a-b21c-74aa8cdd9456' => $id(0)]],
+        [['slug' => 'to-love-trouble-official-data-book', 'livre' => 'Local title']], 1
+    );
+    $assert($confirmedMapping === [$id(0)], 'Configured edition identity was not resolved');
+    $assert(MangaRecommendationService::confirmedSeriesIds(['edition_series' => ['0ed3326d-c9f1-462a-b21c-74aa8cdd9456' => $id(0)]], [], 1) === [], 'Removed owned series remained excluded by a cached identity');
     $manyIds = [$id(0)];
     for ($i = 10; $i < 80; $i++)
     { $manySeries[] = ['id' => $id($i), 'title' => 'Suggestion ' . $i]; $manyIds[] = $id($i); }
     $manyCatalog = ['series' => $manySeries, 'kinds' => [['title' => 'Aventure', 'series_ids' => $manyIds]]];
-    $assert(count(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'])) === 56, 'Recommendations were not capped at 56');
+    $assert(count(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'])) === 40, 'Recommendations were not capped at 40');
     $assert(!in_array($id(10), array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', [$id(10)]), 'id'), true), 'Hidden IDs were not excluded before ranking');
     $fiveHidden = array_slice(array_column(MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile']), 'id'), 0, 5);
     $replacements = MangaRecommendationService::fromCatalog($manyCatalog, ['Etoile'], 'categories', $fiveHidden);
-    $assert(count($replacements) === 56 && array_intersect($fiveHidden, array_column($replacements, 'id')) === [], 'Five hidden suggestions were not replaced before the limit');
+    $assert(count($replacements) === 40 && array_intersect($fiveHidden, array_column($replacements, 'id')) === [], 'Five hidden suggestions were not replaced before the limit');
     $assert(MangaRecommendationService::hiddenForOwner(1, $hidden) === [], 'CLI and page preferences differ');
     $GLOBALS['testCurrentUser'] = null;
     $assert($service->all() === [], 'Anonymous recommendations leaked');

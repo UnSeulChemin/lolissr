@@ -20,22 +20,48 @@ $client = new MangacollecClient();
 $series = $client->get('/series');
 $kinds = $client->get('/kinds');
 if (!is_array($series['series'] ?? null) || !is_array($kinds['kinds'] ?? null)) throw new RuntimeException('Incomplete recommendation catalog');
+foreach ($series['series'] as &$entry)
+    $entry['normalized_title'] = \App\Services\Manga\MangaRecommendationService::normalize($entry['title']);
+unset($entry);
 $path = ROOT . '/storage/manga-recommendations.json';
 $previous = is_file($path) ? json_decode((string) file_get_contents($path), true) : [];
-$catalog = ['series' => $series['series'], 'kinds' => $kinds['kinds'], 'covers' => is_array($previous['covers'] ?? null) ? $previous['covers'] : [], 'details' => is_array($previous['details'] ?? null) ? $previous['details'] : [], 'authors' => is_array($previous['authors'] ?? null) ? $previous['authors'] : []];
+$catalog = ['series' => $series['series'], 'kinds' => $kinds['kinds'], 'covers' => is_array($previous['covers'] ?? null) ? $previous['covers'] : [], 'details' => is_array($previous['details'] ?? null) ? $previous['details'] : [], 'authors' => is_array($previous['authors'] ?? null) ? $previous['authors'] : [], 'edition_series' => is_array($previous['edition_series'] ?? null) ? $previous['edition_series'] : []];
 $db = new \Framework\Database\Database();
 $collections = [];
-$statement = $db->prepare('SELECT DISTINCT user_id, livre FROM manga WHERE user_id = :owner');
+$statement = $db->prepare('SELECT DISTINCT user_id, slug, livre FROM manga WHERE user_id = :owner');
 $statement->execute(['owner' => $owner]);
-foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row)
+$rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+foreach ($rows as $row)
     $collections[$row['user_id']][] = $row['livre'];
+$settings = require ROOT . '/Config/settings/manga-releases.php';
+$releasesPath = ROOT . '/storage/manga-releases.json';
+$releases = is_file($releasesPath) ? json_decode((string) file_get_contents($releasesPath), true) : [];
+$editionIds = [];
+foreach ($rows as $row)
+{
+    $editionId = $settings['editions'][$row['slug']] ?? ($releases['users'][(string) $owner][$row['slug']]['edition_id'] ?? null);
+    if (is_string($editionId)) $editionIds[$editionId] = true;
+}
+foreach (array_keys($editionIds) as $editionId)
+{
+    try
+    {
+        $detail = $client->get('/editions/' . rawurlencode($editionId));
+        foreach ($detail['editions'] ?? [] as $edition)
+            if ($edition['id'] === $editionId) $catalog['edition_series'][$editionId] = $edition['series_id'];
+    }
+    catch (Throwable)
+    { echo 'Series identity unavailable for edition ' . $editionId . "\n"; }
+}
+$confirmedIds = \App\Services\Manga\MangaRecommendationService::confirmedSeriesIds($catalog, $rows, $owner);
+$confirmedSet = array_fill_keys($confirmedIds, true);
 $ownedTitles = [];
 foreach ($collections as $titles)
     foreach ($titles as $title) $ownedTitles[\App\Services\Manga\MangaRecommendationService::normalize($title)] = true;
 $authorIds = [];
 foreach ($series['series'] as $entry)
 {
-    if (!isset($ownedTitles[\App\Services\Manga\MangaRecommendationService::normalize($entry['title'])])) continue;
+    if (!isset($ownedTitles[$entry['normalized_title']]) && !isset($confirmedSet[$entry['id']])) continue;
     try
     {
         $detail = $client->get('/series/' . rawurlencode($entry['id']));
@@ -66,7 +92,7 @@ $hidden = \App\Services\Manga\MangaRecommendationService::hiddenForOwner($owner)
 $candidates = [];
 foreach ($collections as $titles)
     foreach (['categories', 'authors'] as $mode)
-    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden) as $recommendation)
+    foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden, $confirmedIds) as $recommendation)
         $candidates[$recommendation['id']] = $recommendation;
 foreach ($candidates as $id => $recommendation)
 {
