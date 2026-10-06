@@ -175,11 +175,13 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
             fetchSearchResults(`${basePath}recherche?q=${encodeURIComponent(query)}`, abortController.signal),
             loadRenderer()
         ]);
-        const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = []} = data;
+        const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = [], categories = [], authors = []} = data;
         const shortcuts = findSearchShortcuts(query);
         if (version !== searchVersion || searchInput.value !== rawValue) return;
 
         renderResults({
+            categories,
+            authors,
             mangas,
             artbooks,
             chinois,

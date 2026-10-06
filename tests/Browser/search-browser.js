@@ -60,7 +60,11 @@ export async function runBrowserScenario()
     window.fetch = async () =>
     {
         requests++;
-        return new Response(JSON.stringify({success: true, data: {figurines: [{slug: 'test', numero: 1, waifu: 'Test', origin: 'Test'}]}}), {headers: {'Content-Type': 'application/json'}});
+        return new Response(JSON.stringify({success: true, data: {
+            figurines: [{slug: 'test', numero: 1, waifu: 'Test', origin: 'Test'}],
+            categories: [{title: 'Romance', url: 'manga/series/recommandations/categorie/romance'}],
+            authors: [{title: 'Kentaro Yabuki', url: 'manga/series/recommandations-auteurs/auteur/kentaro-yabuki'}]
+        }}), {headers: {'Content-Type': 'application/json'}});
     };
     const form = document.createElement('form');
     form.className = 'js-header-search';
@@ -90,6 +94,8 @@ export async function runBrowserScenario()
         };
         await search();
         check(requests === 1, 'Duplicate initialization requested twice');
+        check(form.querySelector('a[href$="/categorie/romance"]')?.textContent.includes('Romance'), 'Category result lost its label or link');
+        check(form.querySelector('a[href$="/auteur/kentaro-yabuki"]')?.textContent.includes('Kentaro Yabuki'), 'Author result lost its label or link');
         form.querySelector('.search-result-item strong').dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
         check(form.querySelector('.search-result-item').classList.contains('is-active'), 'Delegated hover failed');
         input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));

@@ -15,7 +15,8 @@ $db->exec('CREATE TABLE manga (user_id INT, slug TEXT, livre TEXT, numero INT)')
 $db->exec("INSERT INTO manga VALUES (1, 'owned', 'Étoile', 1), (1, 'owned', 'Étoile', 2), (2, 'foreign', 'Foreign', 1)");
 $path = tempnam(sys_get_temp_dir(), 'recommendations-');
 $hidden = tempnam(sys_get_temp_dir(), 'hidden-recommendations-');
-$service = new MangaRecommendationService(new MangaRepository($db), $path, $hidden);
+$favorites = tempnam(sys_get_temp_dir(), 'favorite-recommendations-');
+$service = new MangaRecommendationService(new MangaRepository($db), $path, $hidden, $favorites);
 $assert = static function (bool $condition, string $message): void
 { if (!$condition) throw new RuntimeException($message); };
 $id = static fn (int $n): string => sprintf('00000000-0000-0000-0000-%012d', $n);
@@ -31,9 +32,19 @@ try
     $result = $service->all();
     $assert(count($result) === 1 && $result[0]['title'] === 'Suggestion', 'Owned/adult series or another owner influenced suggestions');
     $assert(str_contains($result[0]['reason'], 'Aventure'), 'Suggestion lost its explanation');
+    $assert($service->searchFilters('aventure')['categories'][0]['url'] === 'manga/series/recommandations/categorie/aventure', 'Category search lost its filter link');
+    $assert($service->searchFilters('missing')['categories'] === [], 'Unrelated categories matched search');
+    $fiveKinds = [];
+    for ($n = 1; $n <= 6; $n++) $fiveKinds[] = ['title' => 'Category ' . $n, 'series_ids' => [$id(0), $id(1)]];
+    $topFive = MangaRecommendationService::fromCatalog(['series' => $series, 'kinds' => $fiveKinds], ['Etoile']);
+    $assert(count($topFive[0]['categories']) === 6, 'Recommendation metadata dropped categories beyond the fifth badge');
     $assert($result[0]['score'] === 1 && $result[0]['categories'][0]['points'] === 1, 'Multiple owned volumes inflated category points');
     $assert($service->hide('invalid')->status === 422, 'Invalid hidden UUID accepted');
+    $assert($service->setFavorite('invalid', true)->status === 422, 'Invalid favorite accepted');
+    $assert($service->setFavorite($id(99), true)->status === 404, 'Unknown favorite accepted');
+    $assert($service->setFavorite($id(1), true)->success && $service->setFavorite($id(1), true)->success && count($service->favorites()) === 1, 'Favorites were not saved idempotently');
     $assert($service->hide($id(1))->success && $service->all() === [], 'Hidden suggestion remained visible');
+    $assert(count($service->favorites()) === 1, 'Hiding a suggestion removed its favorite');
     $assert((new MangaRecommendationService(new MangaRepository($db), $path, $hidden))->hidden() === [$id(1)], 'Hidden preferences did not persist');
     file_put_contents($hidden, '[]');
     $authorCatalog = ['series' => $series, 'kinds' => [], 'authors' => [
@@ -41,6 +52,9 @@ try
         ['title' => 'Autre auteur', 'series_ids' => [$id(2), $id(3)]]
     ]];
     $authorResult = MangaRecommendationService::fromCatalog($authorCatalog, ['Etoile'], 'authors');
+    file_put_contents($path, json_encode($authorCatalog, JSON_THROW_ON_ERROR));
+    $authorFilters = $service->searchFilters('auteur');
+    $assert(count($authorFilters['authors']) === 1 && str_starts_with($authorFilters['authors'][0]['url'], 'manga/series/recommandations-auteurs/auteur/'), 'Author search included an unrelated author or lost its link');
     $assert(count($authorResult) === 1 && $authorResult[0]['id'] === $id(1) && str_contains($authorResult[0]['reason'], 'Auteur partagé'), 'Author recommendations used unrelated authors or categories');
     $manySeries = $series;
     foreach (['categories', 'authors'] as $mode)
@@ -73,9 +87,12 @@ try
     $assert(count($replacements) === 40 && array_intersect($fiveHidden, array_column($replacements, 'id')) === [], 'Five hidden suggestions were not replaced before the limit');
     $assert(MangaRecommendationService::hiddenForOwner(1, $hidden) === [], 'CLI and page preferences differ');
     $GLOBALS['testCurrentUser'] = null;
+    $assert($service->favorites() === [] && $service->setFavorite($id(1), false)->status === 401, 'Anonymous favorite access accepted');
     $assert($service->all() === [], 'Anonymous recommendations leaked');
     unset($GLOBALS['testCurrentUser']);
     file_put_contents($path, '{');
+    $assert(count($service->favorites()) === 1 && $service->favorites()[0]['title'] === 'Suggestion', 'Catalog refresh lost saved favorite data');
+    $assert($service->setFavorite($id(1), false)->success && $service->favorites() === [], 'Favorite removal failed');
     $assert($service->all() === [], 'Corrupt catalog broke recommendations');
 }
 finally
@@ -83,6 +100,8 @@ finally
     unset($GLOBALS['testCurrentUser']);
     unlink($path);
     unlink($hidden);
+    unlink($favorites);
+    if (is_file($favorites . '.lock')) unlink($favorites . '.lock');
     if (is_file($hidden . '.lock')) unlink($hidden . '.lock');
 }
 echo "PASS: recommendations use current owner, exclude owned/adult series, explain categories and tolerate corrupt catalogs.\n";

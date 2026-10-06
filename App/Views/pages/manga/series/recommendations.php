@@ -7,10 +7,13 @@ declare(strict_types=1);
 /** @var int $totalPages */
 /** @var string $paginationPath */
 /** @var string $recommendationMode */
+/** @var list<string> $favoriteIds */
 ?>
 <section class="layout-container dashboard-page">
     <?php if ($recommendations === []): ?>
-        <p class="collection-empty">Pas encore de suggestions disponibles pour ta collection.</p>
+        <?php if ($recommendationMode !== 'favorites'): ?>
+            <p class="collection-empty">Pas encore de suggestions disponibles pour ta collection.</p>
+        <?php endif; ?>
     <?php else: ?>
         <section class="collection-grid u-grid u-justify-center" data-rank-offset="<?= $rankOffset ?>">
             <?php foreach ($recommendations as $rank => $recommendation): ?>
@@ -18,8 +21,10 @@ declare(strict_types=1);
                 <div class="card collection-card collection-card-link collection-recommendation-card u-flex">
                     <span class="recommendation-rank" aria-label="<?= e('Rang ' . ($rankOffset + $rank + 1)) ?>"><?= $rankOffset + $rank + 1 ?></span>
                     <div class="recommendation-categories">
-                        <?php foreach ($recommendation['categories'] as $category): ?>
-                            <?php if ($recommendationMode === 'authors'): ?>
+                        <?php foreach (array_slice($recommendation['categories'], 0, 3) as $category): ?>
+                            <?php if ($recommendationMode === 'favorites'): ?>
+                                <span class="recommendation-category"><?= $category['points'] ?> <?= e($category['title']) ?></span>
+                            <?php elseif ($recommendationMode === 'authors'): ?>
                                 <a class="recommendation-category" href="<?= e($view->baseUri . 'manga/series/recommandations-auteurs/auteur/' . \Framework\Support\Strings::asciiSlug($category['title'])) ?>"><?= $category['points'] ?> <?= e($category['title']) ?></a>
                             <?php else: ?>
                             <a class="recommendation-category" href="<?= e($view->baseUri . 'manga/series/recommandations/categorie/' . rawurlencode(mb_strtolower($category['title']))) ?>" title="<?= e($category['points'] . ' séries de ta collection : ' . $category['title']) ?>"><?= $category['points'] ?> <?= e($category['title']) ?></a>
@@ -45,10 +50,17 @@ declare(strict_types=1);
                     </p>
                     </a>
                 </div>
+                <?php $isFavorite = in_array($recommendation['id'], $favoriteIds, true); ?>
+                <form class="js-favorite-recommendation" data-favorites-page="<?= $recommendationMode === 'favorites' ? 'true' : 'false' ?>" method="post" action="<?= e($view->baseUri . 'manga/series/recommandations/' . $recommendation['id'] . '/favoris' . ($isFavorite ? '/retirer' : '')) ?>">
+                    <?= csrf_field() ?>
+                    <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit" aria-pressed="<?= $isFavorite ? 'true' : 'false' ?>"><?= $isFavorite ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' ?></button>
+                </form>
+                <?php if ($recommendationMode !== 'favorites'): ?>
                 <form class="js-hide-recommendation" method="post" action="<?= e($view->baseUri . 'manga/series/recommandations/' . $recommendation['id'] . '/masquer') ?>">
                     <?= csrf_field() ?>
                     <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit">Masquer cette suggestion</button>
                 </form>
+                <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </section>

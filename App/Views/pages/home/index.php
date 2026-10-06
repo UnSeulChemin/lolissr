@@ -311,6 +311,10 @@ $hasMostRepresented =
             <h3 class="home-card-title">✍️ Séries des mêmes auteurs</h3>
             <p class="home-card-title">Des séries écrites ou dessinées par les auteurs de mes mangas</p>
         </a>
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/favoris') ?>">
+            <h3 class="home-card-title">♥ Ma liste d’envies</h3>
+            <p class="home-card-title">Mes séries favorites à découvrir plus tard</p>
+        </a>
     </section>
 
     <?php if ($hasTopLongestSeries): ?>

@@ -61,6 +61,8 @@ function appendSection(
 export function renderResults(
     {
         mangas,
+        categories = [],
+        authors = [],
         artbooks,
         chinois,
         figurines,
@@ -96,6 +98,13 @@ export function renderResults(
             index
         });
 
+    for (const [title, results] of [['✨ CATÉGORIES MANGA', categories], ['✍️ AUTEURS MANGA', authors]])
+    {
+        index = appendSection({title, results: results.slice(0, 5),
+            buildItem: item => buildShortcutSearchResult(item, basePath, rawValue),
+            searchResults, setupResultItem, index});
+    }
+
     index = appendSection({
             title: '📕 ARTBOOKS',
 
@@ -108,19 +117,7 @@ export function renderResults(
             index
         });
 
-    index = appendSection({
-            title: '⛩️ CHINOIS',
-
-            results: chinois.slice(0, 5),
-
-            buildItem: (item) =>
-                    buildChineseResult(item, basePath),
-            searchResults,
-            setupResultItem,
-            index
-        });
-
-    index = appendSection({
+index = appendSection({
             title: '🎀 FIGURINES',
 
             results: figurines.slice(0, 5),
@@ -151,6 +148,18 @@ export function renderResults(
 
             buildItem: (peluche) =>
                     buildPelucheResult(peluche, rawValue, basePath),
+            searchResults,
+            setupResultItem,
+            index
+        });
+
+    index = appendSection({
+            title: '⛩️ CHINOIS',
+
+            results: chinois.slice(0, 5),
+
+            buildItem: (item) =>
+                    buildChineseResult(item, basePath),
             searchResults,
             setupResultItem,
             index

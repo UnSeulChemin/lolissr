@@ -25,6 +25,7 @@ final class GlobalSearchController extends Controller
         private readonly FigurineReadService $figurines,
         private readonly NendoroidReadService $nendoroids,
         private readonly PelucheReadService $peluches,
+        private readonly \App\Services\Manga\MangaRecommendationService $recommendations,
         Request $request
     )
     {
@@ -34,7 +35,10 @@ final class GlobalSearchController extends Controller
     public function search(): never
     {
         $query = trim($this->stringInput('q'));
+        $filters = Profiler::measure('search.recommendations', fn (): array => $this->recommendations->searchFilters($query));
         $this->jsonResult(ServiceResult::success(data: [
+            'categories' => $filters['categories'],
+            'authors' => $filters['authors'],
             'mangas' => Profiler::measure('search.mangas', fn (): array => $this->mangas->search($query, 5)->results),
             'artbooks' => Profiler::measure('search.artbooks', fn (): array => $this->artbooks->search($query, 5)->results),
             'chinois' => Profiler::measure('search.chinois', fn (): array => $this->chinois->search($query, 5)->results),

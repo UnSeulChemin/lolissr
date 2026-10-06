@@ -84,6 +84,10 @@ $router->prefix('manga')->group(function (Router $router): void
         $router->get('notes', [MangaController::class, 'notes']);
         $router->get('notes/page/{page:int}', [MangaController::class, 'notes']);
         $router->get('recommandations', [MangaController::class, 'recommendations']);
+        $router->get('favoris', [MangaController::class, 'favoriteRecommendations']);
+        $router->get('favoris/page/{page:int}', [MangaController::class, 'favoriteRecommendations']);
+        $router->post('recommandations/{id}/favoris', [MangaController::class, 'saveFavoriteRecommendation'], [CsrfMiddleware::class]);
+        $router->post('recommandations/{id}/favoris/retirer', [MangaController::class, 'removeFavoriteRecommendation'], [CsrfMiddleware::class]);
         $router->get('recommandations/page/{page:int}', [MangaController::class, 'recommendations']);
         $router->get('recommandations/categorie/{category}', [MangaController::class, 'recommendations']);
         $router->get('recommandations/categorie/{category}/page/{page:int}', [MangaController::class, 'recommendations']);

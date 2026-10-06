@@ -39,10 +39,25 @@ export async function runBrowserScenario()
         complete(new Response(JSON.stringify({success: false, message: 'Erreur'}), {status: 500, headers: {'Content-Type': 'application/json'}}));
         await tick(); await tick();
         check(grid.children.length === 1 && !second.querySelector('button').disabled, 'Error removed card or left control disabled');
+        const favorite = document.createElement('form');
+        favorite.className = 'js-favorite-recommendation';
+        favorite.action = `${location.origin}/favorites-test/favoris`;
+        favorite.innerHTML = '<button type="submit">Ajouter</button>';
+        grid.firstElementChild.append(favorite);
+        submit(favorite); submit(favorite);
+        check(requests === 3, 'Favorite double submit sent duplicate requests');
+        complete(new Response(JSON.stringify({success: true, message: 'Saved'}), {headers: {'Content-Type': 'application/json'}}));
+        await tick(); await tick();
+        check(favorite.action.endsWith('/retirer') && favorite.querySelector('button').getAttribute('aria-pressed') === 'true', 'Favorite add did not update control');
+        favorite.dataset.favoritesPage = 'true';
+        submit(favorite);
+        complete(new Response(JSON.stringify({success: true, message: 'Removed'}), {headers: {'Content-Type': 'application/json'}}));
+        await tick(); await tick();
+        check(!grid.isConnected, 'Favorite removal did not empty wishlist');
         runCleanup();
         submit(second);
-        check(requests === 2, 'SPA cleanup left a live submit handler');
-        return ['one AJAX request', 'card removal and ranking', 'error preserves card', 'SPA cleanup'];
+        check(requests === 4, 'SPA cleanup left a live submit handler');
+        return ['one AJAX request', 'card removal and ranking', 'error preserves card', 'favorite add and duplicate prevention', 'favorite removal and empty wishlist', 'SPA cleanup'];
     }
     finally
     {

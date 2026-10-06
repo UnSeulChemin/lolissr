@@ -37,7 +37,7 @@ function lazyInitializer(loadModule, exportName, selector = null)
 // =================================================
 
 const initCreateMangaPage = lazyInitializer(() => import('../../manga/pages/create.js'), 'initCreatePage');
-const initHideRecommendation = lazyInitializer(() => import('../../manga/actions/hide-recommendation.js'), 'initHideRecommendation', '.js-hide-recommendation');
+const initHideRecommendation = lazyInitializer(() => import('../../manga/actions/hide-recommendation.js'), 'initHideRecommendation', '.js-hide-recommendation, .js-favorite-recommendation');
 const initAcquireRelease = lazyInitializer(() => import('../../manga/actions/acquire-release.js'), 'initAcquireRelease');
 
 const initEditMangaPage = lazyInitializer(() => import('../../manga/pages/edit.js'), 'initEditPage');

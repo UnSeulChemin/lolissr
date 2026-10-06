@@ -8,7 +8,7 @@ use App\Repositories\Manga\MangaRepository;
 
 final class MangaRecommendationService
 {
-    public function __construct(private readonly MangaRepository $repository, private readonly ?string $catalogPath = null, private readonly ?string $hiddenPath = null)
+    public function __construct(private readonly MangaRepository $repository, private readonly ?string $catalogPath = null, private readonly ?string $hiddenPath = null, private readonly ?string $favoritesPath = null)
     {}
 
     public static function normalize(string $title): string
@@ -100,7 +100,7 @@ final class MangaRecommendationService
             $image = is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 ? 'images/manga/upcoming/' . $cover . '.jpg' : null;
             arsort($reasons[$id], SORT_NUMERIC);
             $categories = [];
-            foreach (array_slice($reasons[$id], 0, 3, true) as $title => $points)
+            foreach ($reasons[$id] as $title => $points)
                 $categories[] = ['title' => $title, 'points' => $points];
             $details = $catalog['details'] ?? [];
             $detail = is_array($details) ? ($details[$id] ?? []) : [];
@@ -156,6 +156,80 @@ final class MangaRecommendationService
         $contents = is_file($path) ? @file_get_contents($path) : false;
         $data = $contents === false ? null : json_decode($contents, true);
         return is_array($data) ? array_values(array_filter($data, 'is_string')) : [];
+    }
+
+    /** @return list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> */
+    public function favorites(): array
+    {
+        if (user() === null) return [];
+        $path = $this->favoritesPath ?? base_path('storage/manga-recommendations-favorites-' . user()->id . '.json');
+        $contents = is_file($path) ? @file_get_contents($path) : false;
+        /** @var array<string, array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}>|null $entries */
+        $entries = $contents === false ? null : json_decode($contents, true);
+        return is_array($entries) ? array_values($entries) : [];
+    }
+
+    public function setFavorite(string $id, bool $save): \App\DTO\Common\ServiceResult
+    {
+        $owner = user();
+        if ($owner === null) return \App\DTO\Common\ServiceResult::error('Connexion requise', status: 401);
+        if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) return \App\DTO\Common\ServiceResult::error('Suggestion invalide', status: 422);
+        $entry = null;
+        if ($save)
+        {
+            foreach ([...$this->favorites(), ...$this->all(), ...$this->all('authors')] as $candidate)
+                if ($candidate['id'] === $id)
+                { $entry = $candidate; break; }
+            if ($entry === null) return \App\DTO\Common\ServiceResult::error('Suggestion introuvable', status: 404);
+        }
+        $path = $this->favoritesPath ?? base_path('storage/manga-recommendations-favorites-' . $owner->id . '.json');
+        $lock = fopen($path . '.lock', 'c');
+        if ($lock === false) throw new \RuntimeException('Cannot lock favorites');
+        $temporary = false;
+        try
+        {
+            if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock favorites');
+            $entries = array_column($this->favorites(), null, 'id');
+            if ($save) $entries[$id] = $entry;
+            else unset($entries[$id]);
+            $temporary = tempnam(dirname($path), '.build-');
+            if ($temporary === false) throw new \RuntimeException('Cannot stage favorites');
+            $json = json_encode($entries, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            if (file_put_contents($temporary, $json) !== strlen($json) || !chmod($temporary, 0600) || !rename($temporary, $path))
+                throw new \RuntimeException('Cannot save favorites');
+        }
+        finally
+        {
+            if ($temporary !== false && is_file($temporary)) unlink($temporary);
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+        return \App\DTO\Common\ServiceResult::success($save ? 'Série ajoutée aux favoris' : 'Série retirée des favoris');
+    }
+
+    /** @return array{categories: list<array{title: string, url: string, symbol: string, description: string}>, authors: list<array{title: string, url: string, symbol: string, description: string}>} */
+    public function searchFilters(string $query): array
+    {
+        $result = ['categories' => [], 'authors' => []];
+        $query = self::normalize($query);
+        if ($query === '' || user() === null) return $result;
+        foreach (['categories', 'authors'] as $mode)
+        {
+            $titles = [];
+            foreach ($this->all($mode) as $entry)
+                foreach ($entry['categories'] as $badge) $titles[$badge['title']] = true;
+            $titles = array_keys($titles);
+            sort($titles, SORT_NATURAL | SORT_FLAG_CASE);
+            foreach ($titles as $title)
+            {
+                if (!str_contains(self::normalize($title), $query)) continue;
+                $result[$mode][] = ['title' => $title,
+                    'url' => $mode === 'authors' ? 'manga/series/recommandations-auteurs/auteur/' . \Framework\Support\Strings::asciiSlug($title) : 'manga/series/recommandations/categorie/' . rawurlencode(mb_strtolower($title)),
+                    'symbol' => $mode === 'authors' ? '✍️' : '✨', 'description' => $mode === 'authors' ? 'Recommandations de cet auteur' : 'Recommandations de cette catégorie'];
+                if (count($result[$mode]) === 5) break;
+            }
+        }
+        return $result;
     }
 
     public function hide(string $id): \App\DTO\Common\ServiceResult

@@ -67,6 +67,10 @@ $tests[] = ['category' => 'Manga', 'label' => 'Non possédés page 1', 'path' =>
 $tests[] = ['category' => 'Manga', 'label' => 'Sorties page hors limite', 'path' => '/manga/series/a-paraitre/page/999999', 'expected_status' => 404];
 
 // Recommendation reads: discover actual pages for the authenticated audit account.
+$tests[] = ['category' => 'Manga', 'label' => 'Favoris', 'path' => '/manga/series/favoris'];
+$tests[] = ['category' => 'Manga', 'label' => 'Favoris SPA', 'path' => '/manga/series/favoris/page/1', 'json' => true, 'headers' => ['Accept: application/json', 'X-Page-Format: fragment']];
+$tests[] = ['category' => 'Manga', 'label' => 'Favoris hors limite', 'path' => '/manga/series/favoris/page/999999', 'expected_status' => 404];
+$tests[] = ['category' => 'Manga', 'label' => 'Favoris exige CSRF', 'method' => 'POST', 'path' => '/manga/series/recommandations/00000000-0000-0000-0000-000000000001/favoris', 'headers' => ['Accept: application/json'], 'expected_status' => 419, 'json' => true];
 $tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen'];
 $tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie SPA', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen/page/1', 'json' => true, 'headers' => ['Accept: application/json', 'X-Page-Format: fragment']];
 $tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie hors limite', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen/page/999999', 'expected_status' => 404];

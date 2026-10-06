@@ -2,11 +2,11 @@
 // CONSTRUCTION DES RACCOURCIS DE RECHERCHE
 // =================================================
 
-import { escapeHtml } from '../utils/search-utils.js';
+import { escapeHtml, highlightSearchTerm } from '../utils/search-utils.js';
 
 import { createResultItem } from './search-result-item.js';
 
-export function buildShortcutSearchResult(shortcut, basePath)
+export function buildShortcutSearchResult(shortcut, basePath, query = '')
 {
     const title = shortcut.title ?? '';
 
@@ -34,8 +34,9 @@ export function buildShortcutSearchResult(shortcut, basePath)
             <span class="search-result-content">
 
                 <strong class="search-result-title">
-                    ${escapeHtml(
+                    ${highlightSearchTerm(
                         title,
+                        query,
                     )}
                 </strong>
 
