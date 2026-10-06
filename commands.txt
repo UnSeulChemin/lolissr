@@ -24,6 +24,17 @@ composer assets:build
 
 
 =========================================
+DX
+=========================================
+
+= Verifier le formatage sans modifier les fichiers
+composer dx:check
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+
+=========================================
 GIT
 =========================================
 
@@ -37,28 +48,20 @@ composer git:reset
 
 
 =========================================
-DX
-=========================================
-
-= Verifier le formatage sans modifier les fichiers
-composer dx:check
-
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
-
-
-=========================================
 TESTS
 =========================================
 
 !! Identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env pour les tests HTTP
 
+= Analyse PHP + tests HTTP / SPA + regressions (mangas, recherche, assets, etc.)
+composer check
+
 = Tous les controles
 = check + (Tests navigateur Edge, schéma MySQL, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
 
-= Analyse PHP + tests HTTP / SPA + regressions (mangas, recherche, assets, etc.)
-composer check
+
+
 
 
 =========================================
