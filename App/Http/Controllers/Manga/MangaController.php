@@ -95,7 +95,7 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/recommendations', ['recommendations' => array_slice($items, $offset, $perPage),
             'currentPage' => $page, 'totalPages' => $totalPages, 'rankOffset' => $offset,
             'recommendationMode' => $mode,
-            'favoriteIds' => array_column($this->recommendationService->favorites(), 'id'),
+            'favoriteIds' => array_column($mode === 'favorites' ? $items : $this->recommendationService->favorites(), 'id'),
             'paginationPath' => 'manga/series/' . ($mode === 'hidden' ? 'recommandations-masquees' : ($mode === 'favorites' ? 'favoris' : ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations'))) . ($author !== '' ? ($mode === 'authors' ? '/auteur/' : '/categorie/') . rawurlencode($author) : '')]);
     }
 

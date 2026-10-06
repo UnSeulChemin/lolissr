@@ -94,6 +94,8 @@ foreach ($collections as $titles)
     foreach (['categories', 'authors'] as $mode)
     foreach (\App\Services\Manga\MangaRecommendationService::fromCatalog($catalog, $titles, $mode, $hidden, $confirmedIds) as $recommendation)
         $candidates[$recommendation['id']] = $recommendation;
+foreach (\App\Services\Manga\MangaRecommendationService::favoriteIdsForOwner($owner) as $favoriteId)
+    $candidates[$favoriteId] = true;
 foreach (array_keys($candidates) as $id)
 {
     try

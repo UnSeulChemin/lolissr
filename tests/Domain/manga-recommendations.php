@@ -49,6 +49,8 @@ try
     $updatedFavorite = $service->favorites()[0];
     $assert($updatedFavorite['volumeCount'] === 7 && $updatedFavorite['edition'] === 'Updated edition' && $updatedFavorite['firstRelease'] === '07/10/2026', 'Saved favorites kept obsolete catalog metadata');
     $assert($service->hide($id(1))->success && $service->all() === [], 'Hidden suggestion remained visible');
+    $assert(MangaRecommendationService::favoriteIdsForOwner(1, $favorites) === [$id(1)], 'Sync dropped a favorite absent from current recommendations');
+    $assert(MangaRecommendationService::favoriteIdsForOwner(0, $favorites) === [], 'Sync accepted an invalid owner');
     $assert(count($service->favorites()) === 1, 'Hiding a suggestion removed its favorite');
     $assert((new MangaRecommendationService(new MangaRepository($db), $path, $hidden))->hidden() === [$id(1)], 'Hidden preferences did not persist');
     $assert($service->hiddenSuggestions()[0]['title'] === 'Suggestion', 'Hidden list lost its catalog title');

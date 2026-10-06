@@ -112,7 +112,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -142,7 +141,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -161,7 +159,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -200,7 +197,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -220,7 +216,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -252,7 +247,6 @@ export async function navigateTo(to, options = {})
 
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
