@@ -8,7 +8,7 @@ export {
 
 export {
     buildChineseResult
-} from './search-chinese-builder.js';
+} from './search-chinois-builder.js';
 
 export {
     buildFigurineResult
