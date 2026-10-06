@@ -1,0 +1,1 @@
+import{a}from"./chunk-MZSPTS77.js";import{a as n}from"./chunk-GZNDPYT5.js";function o(){a(n(),{descendants:!1}),a(n("profil")),a(n("manga")),a(window.location.pathname,{descendants:!1})}export{o as a};

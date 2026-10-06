@@ -1,4 +1,5 @@
 const scrollPositions = new Map();
+const SCROLL_HISTORY_LIMIT = 200;
 const stateKey = '__appScrollEntry';
 let activeEntry = null;
 
@@ -18,6 +19,8 @@ export function saveScrollPosition()
 {
     if (activeEntry === null) activateScrollEntry();
     scrollPositions.set(activeEntry, {x: window.scrollX, y: window.scrollY});
+    while (scrollPositions.size > SCROLL_HISTORY_LIMIT)
+        scrollPositions.delete(scrollPositions.keys().next().value);
 }
 
 export function restoreScrollPosition()

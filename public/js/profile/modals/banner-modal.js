@@ -58,14 +58,11 @@ export function bannerModal(banners)
 
             const close = mountProfileModal(overlay, resolve);
 
-            overlay
-                .querySelectorAll('.banner-modal-item:not(:disabled)')
-                .forEach(
-                    (button) =>
-                    {
-                        button.addEventListener('click', () => close(button.dataset.banner));
-                    }
-                );
+            overlay.addEventListener('click', event =>
+            {
+                const button = event.target.closest('.banner-modal-item');
+                if (button && overlay.contains(button) && !button.disabled) close(button.dataset.banner);
+            });
 
             overlay.addEventListener(
                 'click',

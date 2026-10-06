@@ -44,14 +44,11 @@ export function titleModal(titles)
 
             const close = mountProfileModal(overlay, resolve);
 
-            overlay
-                .querySelectorAll('.title-modal-item:not(:disabled)')
-                .forEach(
-                    (button) =>
-                    {
-                        button.addEventListener('click', () => close( button.dataset.title ));
-                    }
-                );
+            overlay.addEventListener('click', event =>
+            {
+                const button = event.target.closest('.title-modal-item');
+                if (button && overlay.contains(button) && !button.disabled) close(button.dataset.title);
+            });
 
             overlay.addEventListener(
                 'click',

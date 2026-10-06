@@ -71,14 +71,11 @@ export function frameModal(frames, avatar)
 
             const close = mountProfileModal(overlay, resolve);
 
-            overlay
-                .querySelectorAll('.frame-modal-item:not(:disabled)')
-                .forEach(
-                    (button) =>
-                    {
-                        button.addEventListener('click', () => close(button.dataset.frame));
-                    }
-                );
+            overlay.addEventListener('click', event =>
+            {
+                const button = event.target.closest('.frame-modal-item');
+                if (button && overlay.contains(button) && !button.disabled) close(button.dataset.frame);
+            });
 
             overlay.addEventListener(
                 'click',

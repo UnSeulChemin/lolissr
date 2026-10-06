@@ -14,6 +14,22 @@ import { fetchPage } from './fetch-page.js';
 // RÉSOLUTION
 // =================================================
 
+function waitForPrefetch(promise, signal)
+{
+    if (!signal) return promise;
+    if (signal.aborted) return Promise.reject(new DOMException('Navigation aborted', 'AbortError'));
+    return new Promise((resolve, reject) =>
+    {
+        const abort = () =>
+        {
+            signal.removeEventListener('abort', abort);
+            reject(new DOMException('Navigation aborted', 'AbortError'));
+        };
+        signal.addEventListener('abort', abort, {once: true});
+        promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', abort));
+    });
+}
+
 export async function resolvePage(target, forceRefresh, signal)
 {
     start('resolve');
@@ -78,7 +94,7 @@ export async function resolvePage(target, forceRefresh, signal)
 
         debug('ROUTER', 'reuse-prefetch', target);
 
-        const prefetched = await inFlight;
+        const prefetched = await waitForPrefetch(inFlight, signal);
         if (signal?.aborted)
         {
             throw new DOMException('Navigation aborted', 'AbortError');

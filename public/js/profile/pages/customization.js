@@ -6,14 +6,6 @@ import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 
 import { get, post } from '../../core/http.js';
 
-import { avatarModal } from '../modals/avatar-modal.js';
-
-import { bannerModal } from '../modals/banner-modal.js';
-
-import { frameModal } from '../modals/frame-modal.js';
-
-import { titleModal } from '../../core/modal/modal.js';
-
 import { showToast } from '../../core/toast.js';
 
 import { appUrl } from '../../core/url.js';
@@ -26,7 +18,10 @@ import { invalidateProfilePages } from '../cache.js';
 
 async function openTitleModal(signal)
 {
-    const data = await get(appUrl('profil/ajax/titles'), { signal });
+    const [data, {titleModal}] = await Promise.all([
+        get(appUrl('profil/ajax/titles'), { signal }),
+        import('../modals/title-modal.js')
+    ]);
 
     if (signal.aborted) return;
 
@@ -75,7 +70,10 @@ async function openTitleModal(signal)
 
 async function openAvatarModal(signal)
 {
-    const data = await get(appUrl('profil/ajax/avatars'), { signal });
+    const [data, {avatarModal}] = await Promise.all([
+        get(appUrl('profil/ajax/avatars'), { signal }),
+        import('../modals/avatar-modal.js')
+    ]);
 
     if (signal.aborted) return;
 
@@ -127,7 +125,10 @@ async function openAvatarModal(signal)
 
 async function openBannerModal(signal)
 {
-    const data = await get(appUrl('profil/ajax/banners'), { signal });
+    const [data, {bannerModal}] = await Promise.all([
+        get(appUrl('profil/ajax/banners'), { signal }),
+        import('../modals/banner-modal.js')
+    ]);
 
     if (signal.aborted) return;
 
@@ -164,7 +165,10 @@ async function openBannerModal(signal)
 
 async function openFrameModal(signal)
 {
-    const data = await get(appUrl('profil/ajax/frames'), { signal });
+    const [data, {frameModal}] = await Promise.all([
+        get(appUrl('profil/ajax/frames'), { signal }),
+        import('../modals/frame-modal.js')
+    ]);
 
     if (signal.aborted) return;
 
