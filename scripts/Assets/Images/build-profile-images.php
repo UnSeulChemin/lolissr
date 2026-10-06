@@ -8,6 +8,9 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
+require_once __DIR__ . '/../../Support/BuildLock.php';
+BuildLock::acquire(dirname(__DIR__, 3));
+
 // Replace large static PNGs with lossless WebP, then migrate stored extensions.
 // Animated PNGs are excluded.
 if (!extension_loaded('gd') || !function_exists('imagewebp') || !defined('IMG_WEBP_LOSSLESS'))

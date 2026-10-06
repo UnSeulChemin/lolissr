@@ -93,11 +93,12 @@ final readonly class UploadService
             {
                 try
                 {
-                    ThumbnailOptimizer::optimize($destination);
+                    // Successful optimization already publishes the final fingerprint.
+                    if (!ThumbnailOptimizer::optimize($destination))
+                        \App\Support\Media\ImageAssets::refreshFingerprint($destination);
                     if (str_contains(str_replace('\\', '/', $destination), '/images/profil/'))
                         \App\Support\Media\ImageAssets::invalidateProfileVersion();
                     else ThumbnailOptimizer::createGrid($destination);
-                    \App\Support\Media\ImageAssets::refreshFingerprint($destination);
                 }
                 catch (\Throwable $exception)
                 {
