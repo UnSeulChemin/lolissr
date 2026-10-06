@@ -3,6 +3,17 @@ import { post } from '../../core/http.js';
 import { showToast } from '../../core/toast.js';
 import { registerCleanup } from '../../router/lifecycle/cleanup.js';
 import { invalidateMangaPages } from '../cache-invalidation.js';
+import { navigateTo } from '../../router/navigation/navigate.js';
+
+async function refreshRecommendations()
+{
+    if (!document.querySelector('[data-recommendation-url]')) return;
+    const url = new URL(location.href);
+    url.searchParams.set('reconcile', '1');
+    await navigateTo(url.href, { force: true, updateHistory: false });
+    const canonical = document.querySelector('[data-recommendation-url]')?.dataset.recommendationUrl;
+    if (canonical) history.replaceState(history.state, '', canonical);
+}
 
 export function initHideRecommendation()
 {
@@ -18,11 +29,13 @@ export function initHideRecommendation()
         button.disabled = true;
         const removing = form.action.endsWith('/retirer');
         const restoring = form.matches('.js-restore-recommendation');
+        let invalidated = false;
         try
         {
             const response = await post(form.action, {}, { signal: controller.signal });
             if (response?.success !== true) throw new Error(response?.message || 'Impossible de modifier les favoris');
             invalidateMangaPages();
+            invalidated = true;
             if (controller.signal.aborted || !form.isConnected) return;
             if (restoring || (removing && form.dataset.favoritesPage === 'true'))
             {
@@ -51,13 +64,14 @@ export function initHideRecommendation()
                 button.setAttribute('aria-pressed', removing ? 'false' : 'true');
             }
             showToast(response.message, 'success');
+            if (restoring || (removing && form.dataset.favoritesPage === 'true')) await refreshRecommendations();
         }
         catch (error)
         {
             if (!controller.signal.aborted) showToast(error?.data?.message || error.message, 'error');
         }
         finally
-        { invalidateMangaPages(); button.disabled = false; }
+        { if (!invalidated) invalidateMangaPages(); button.disabled = false; }
     }, { signal: controller.signal });
     document.addEventListener('submit', async event =>
     {
@@ -67,6 +81,8 @@ export function initHideRecommendation()
         const button = form.querySelector('button[type="submit"]');
         if (!button || button.disabled) return;
         button.disabled = true;
+        let submitted = false;
+        let invalidated = false;
         try
         {
             const confirmed = await confirmModal({
@@ -75,9 +91,11 @@ export function initHideRecommendation()
                 confirmText: 'Oui, masquer'
             });
             if (!confirmed || controller.signal.aborted || !form.isConnected) return;
+            submitted = true;
             const response = await post(form.action, {}, { signal: controller.signal });
             if (response?.success !== true) throw new Error(response?.message || 'Impossible de masquer la suggestion');
             invalidateMangaPages();
+            invalidated = true;
             if (!form.isConnected || controller.signal.aborted) return;
             const grid = form.closest('.collection-grid');
             form.closest('.collection-release-item')?.remove();
@@ -95,6 +113,7 @@ export function initHideRecommendation()
                 grid.replaceWith(empty);
             }
             showToast(response.message, 'success');
+            await refreshRecommendations();
         }
         catch (error)
         {
@@ -102,7 +121,7 @@ export function initHideRecommendation()
         }
         finally
         {
-            invalidateMangaPages();
+            if (submitted && !invalidated) invalidateMangaPages();
             button.disabled = false;
         }
     }, { signal: controller.signal });

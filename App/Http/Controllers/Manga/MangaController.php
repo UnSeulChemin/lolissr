@@ -83,6 +83,10 @@ final class MangaController extends Controller
             $items = array_values(array_filter($items, static fn (array $item): bool => in_array($author, array_map($mode === 'categories' ? 'mb_strtolower' : [\Framework\Support\Strings::class, 'asciiSlug'], array_column($item['categories'], 'title')), true)));
         $perPage = max(1, \Framework\Config\ApplicationConfig::pagination());
         $totalPages = max(1, (int) ceil(count($items) / $perPage));
+        if ($this->stringInput('reconcile') === '1' && $page > $totalPages)
+        {
+            $page = $totalPages;
+        }
         if ($page < 1 || $page > $totalPages) throw new NotFoundException('Page introuvable');
         $offset = ($page - 1) * $perPage;
         $this->title = $mode === 'authors' ? 'Manga | Mêmes auteurs' : 'Manga | Recommandations';

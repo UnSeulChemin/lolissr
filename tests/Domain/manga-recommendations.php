@@ -43,6 +43,11 @@ try
     $assert($service->setFavorite('invalid', true)->status === 422, 'Invalid favorite accepted');
     $assert($service->setFavorite($id(99), true)->status === 404, 'Unknown favorite accepted');
     $assert($service->setFavorite($id(1), true)->success && $service->setFavorite($id(1), true)->success && count($service->favorites()) === 1, 'Favorites were not saved idempotently');
+    $updatedCatalog = json_decode(file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
+    $updatedCatalog['details'][$id(1)] = ['volumeCount' => 7, 'edition' => 'Updated edition', 'firstRelease' => '2026-10-07'];
+    file_put_contents($path, json_encode($updatedCatalog, JSON_THROW_ON_ERROR));
+    $updatedFavorite = $service->favorites()[0];
+    $assert($updatedFavorite['volumeCount'] === 7 && $updatedFavorite['edition'] === 'Updated edition' && $updatedFavorite['firstRelease'] === '07/10/2026', 'Saved favorites kept obsolete catalog metadata');
     $assert($service->hide($id(1))->success && $service->all() === [], 'Hidden suggestion remained visible');
     $assert(count($service->favorites()) === 1, 'Hiding a suggestion removed its favorite');
     $assert((new MangaRecommendationService(new MangaRepository($db), $path, $hidden))->hidden() === [$id(1)], 'Hidden preferences did not persist');

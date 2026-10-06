@@ -8,6 +8,22 @@ use App\Repositories\Manga\MangaRepository;
 
 final class MangaRecommendationService
 {
+    private ?string $catalogFingerprint = null;
+    /** @var array<mixed>|null */
+    private ?array $catalogData = null;
+
+    /** @return array<mixed>|null */
+    private function catalog(): ?array
+    {
+        $path = $this->catalogPath ?? base_path('storage/manga-recommendations.json');
+        $fingerprint = is_file($path) ? @hash_file('sha256', $path) : false;
+        if ($fingerprint === false) return null;
+        if ($fingerprint === $this->catalogFingerprint) return $this->catalogData;
+        $contents = @file_get_contents($path);
+        $decoded = $contents === false ? null : json_decode($contents, true);
+        $this->catalogFingerprint = $fingerprint;
+        return $this->catalogData = is_array($decoded) ? $decoded : null;
+    }
     public function __construct(private readonly MangaRepository $repository, private readonly ?string $catalogPath = null, private readonly ?string $hiddenPath = null, private readonly ?string $favoritesPath = null)
     {}
 
@@ -25,12 +41,26 @@ final class MangaRecommendationService
     {
         if (user() === null) return [];
         $path = $this->catalogPath ?? base_path('storage/manga-recommendations.json');
-        $contents = is_file($path) ? @file_get_contents($path) : false;
-        $catalog = $contents === false ? null : json_decode($contents, true);
-        if (!is_array($catalog)) return [];
         $rows = $this->repository->releaseCollection();
         $titles = array_column($rows, 'livre');
-        return self::fromCatalog($catalog, $titles, $mode, $this->hidden(), self::confirmedSeriesIds($catalog, $rows, user()->id));
+        $hidden = $this->hidden();
+        $ownerId = user()->id;
+        $compute = function () use ($rows, $titles, $mode, $hidden, $ownerId): array
+        {
+            $catalog = $this->catalog();
+            if (!is_array($catalog)) return [];
+            return self::fromCatalog($catalog, $titles, $mode, $hidden, self::confirmedSeriesIds($catalog, $rows, $ownerId));
+        };
+        if ($this->catalogPath !== null || !is_file($path)) return $compute();
+        $fingerprint = [$ownerId, $mode, \Framework\Config\ApplicationConfig::baseUri(), hash_file('sha256', $path), $rows, $hidden];
+        foreach (['storage/manga-releases.json', 'Config/settings/manga-releases.php'] as $relative)
+        {
+            $file = base_path($relative);
+            $fingerprint[] = is_file($file) ? hash_file('sha256', $file) : null;
+        }
+        /** @var list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> $result */
+        $result = \Framework\Cache\Cache::remember('manga.recommendations.v2.' . hash('sha256', json_encode($fingerprint, JSON_THROW_ON_ERROR)), 3600, $compute);
+        return $result;
     }
 
     /**
@@ -166,7 +196,30 @@ final class MangaRecommendationService
         $contents = is_file($path) ? @file_get_contents($path) : false;
         /** @var array<string, array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}>|null $entries */
         $entries = $contents === false ? null : json_decode($contents, true);
-        return is_array($entries) ? array_values($entries) : [];
+        if (!is_array($entries) || $entries === []) return [];
+        $catalog = $this->catalog();
+        if (is_array($catalog))
+        {
+            $details = is_array($catalog['details'] ?? null) ? $catalog['details'] : [];
+            $covers = is_array($catalog['covers'] ?? null) ? $catalog['covers'] : [];
+            foreach ($entries as &$entry)
+            {
+                $detail = $details[$entry['id']] ?? null;
+                if (is_array($detail))
+                {
+                    if (is_int($detail['volumeCount'] ?? null)) $entry['volumeCount'] = $detail['volumeCount'];
+                    if (is_string($detail['edition'] ?? null)) $entry['edition'] = $detail['edition'];
+                    $date = $detail['firstRelease'] ?? null;
+                    $parsed = is_string($date) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+                    if ($parsed !== false && $parsed->format('Y-m-d') === $date) $entry['firstRelease'] = $parsed->format('d/m/Y');
+                }
+                $cover = $covers[$entry['id']] ?? null;
+                if (is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 && is_file(base_path('public/images/manga/upcoming/' . $cover . '.jpg')))
+                    $entry['imageUrl'] = \Framework\Config\ApplicationConfig::baseUri() . 'images/manga/upcoming/' . $cover . '.jpg';
+            }
+            unset($entry);
+        }
+        return array_values($entries);
     }
 
     public function setFavorite(string $id, bool $save): \App\DTO\Common\ServiceResult
@@ -177,9 +230,14 @@ final class MangaRecommendationService
         $entry = null;
         if ($save)
         {
-            foreach ([...$this->favorites(), ...$this->all(), ...$this->all('authors')] as $candidate)
-                if ($candidate['id'] === $id)
-                { $entry = $candidate; break; }
+            foreach (['favorites', 'categories', 'authors'] as $mode)
+            {
+                $candidates = $mode === 'favorites' ? $this->favorites() : $this->all($mode);
+                foreach ($candidates as $candidate)
+                    if ($candidate['id'] === $id)
+                    { $entry = $candidate; break; }
+                if ($entry !== null) break;
+            }
             if ($entry === null) return \App\DTO\Common\ServiceResult::error('Suggestion introuvable', status: 404);
         }
         $path = $this->favoritesPath ?? base_path('storage/manga-recommendations-favorites-' . $owner->id . '.json');

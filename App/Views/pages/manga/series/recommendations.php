@@ -9,7 +9,7 @@ declare(strict_types=1);
 /** @var string $recommendationMode */
 /** @var list<string> $favoriteIds */
 ?>
-<section class="layout-container dashboard-page">
+<section class="layout-container dashboard-page" data-recommendation-url="<?= e($view->baseUri . $paginationPath . ($currentPage > 1 ? '/page/' . $currentPage : '')) ?>">
     <?php if ($recommendations === []): ?>
         <?php if (!in_array($recommendationMode, ['favorites', 'hidden'], true)): ?>
             <p class="collection-empty">Pas encore de suggestions disponibles pour ta collection.</p>

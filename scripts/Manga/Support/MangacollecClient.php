@@ -79,7 +79,11 @@ final class MangacollecClient
         $directory = ROOT . '/public/images/manga/upcoming';
         if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) throw new RuntimeException('Cannot create cover directory.');
         $path = $directory . '/' . $id . '.jpg';
-        if (is_file($path)) return;
+        $checkedPath = $path . '.checked';
+        $source = hash('sha256', $url);
+        $checkedSource = is_file($checkedPath) ? @file_get_contents($checkedPath) : false;
+        $checkedAt = is_file($checkedPath) ? filemtime($checkedPath) : (is_file($path) ? filemtime($path) : false);
+        if (is_file($path) && $checkedSource === $source && $checkedAt !== false && time() - $checkedAt < 7 * 86400) return;
         for ($hop = 0; $hop < 4; $hop++)
         {
             if (!self::allowedCoverUrl($url)) return;
@@ -111,7 +115,12 @@ final class MangacollecClient
         imagejpeg($resized, null, 82);
         $jpeg = ob_get_clean();
         imagedestroy($resized);
-        if (is_string($jpeg)) AtomicFile::writeIfChanged($path, $jpeg);
+        if (is_string($jpeg))
+        {
+            AtomicFile::writeIfChanged($path, $jpeg);
+            AtomicFile::writeIfChanged($checkedPath, $source);
+            touch($checkedPath);
+        }
     }
 
     public static function allowedCoverUrl(string $url): bool

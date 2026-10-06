@@ -5,6 +5,7 @@ $base = $argv[1] ?? 'http://localhost/lolissr';
 $commands = [[PHP_BINARY, __DIR__ . '/run-bundle-browser.php', $base]];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/acquire-release-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/hide-recommendation-browser.js'];
+$commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/recommendation-pagination-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/search-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/prefetch-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/profile-performance-browser.js'];
