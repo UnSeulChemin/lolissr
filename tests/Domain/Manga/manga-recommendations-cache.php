@@ -44,12 +44,23 @@ $catalog = ['series' => [['id' => $id(0), 'title' => 'Owned'], ['id' => $id(1), 
     'authors' => [['title' => 'Auteur', 'series_ids' => [$id(0), $id(1), $id(2)]]],
     'details' => [$id(1) => ['firstRelease' => '2026-10-07', 'volumeCount' => 2, 'edition' => 'Standard']]];
 $write = static function () use (&$catalog): void
-{ file_put_contents(ROOT . '/storage/manga-recommendations.json', json_encode($catalog, JSON_THROW_ON_ERROR)); };
+{ file_put_contents(ROOT . '/storage/manga-recommendations.json', \App\Support\Manga\MangaCatalogRevision::encode($catalog)); };
 $service = static fn (): MangaRecommendationService => new MangaRecommendationService(new MangaRepository($db));
 $check = static function (bool $condition, string $message): void
 { if (!$condition) throw new RuntimeException($message); };
 try
 {
+    $catalogFile = ROOT . '/storage/manga-recommendations.json';
+    $legacy = json_encode($catalog, JSON_THROW_ON_ERROR);
+    file_put_contents($catalogFile, $legacy);
+    $check(\App\Support\Manga\MangaCatalogRevision::fingerprint($catalogFile) === hash('sha256', $legacy), 'Legacy catalog must retain full content fingerprinting');
+    $encoded = \App\Support\Manga\MangaCatalogRevision::encode($catalog);
+    $decoded = json_decode($encoded, true, 512, JSON_THROW_ON_ERROR);
+    unset($decoded['_revision']);
+    $check($decoded === $catalog, 'Revision publication changed catalog contents');
+    file_put_contents($catalogFile, $encoded);
+    $check(str_starts_with(\App\Support\Manga\MangaCatalogRevision::fingerprint($catalogFile), json_decode($encoded, true)['_revision'] . ':'), 'Published catalog did not use its embedded revision');
+    $check(\App\Support\Manga\MangaCatalogRevision::encode(json_decode($encoded, true)) === $encoded, 'Revision publication must be idempotent');
     Config::prime(['cache' => ['enabled' => true, 'ttl' => 3600], 'app' => ['base_uri' => '/test/', 'profiler' => true]]);
     \Framework\Debug\Profiler::startRequest();
     $repository = new MangaRepository($db);

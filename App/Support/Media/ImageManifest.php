@@ -11,9 +11,10 @@ final class ImageManifest
         if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory))
             throw new \RuntimeException('Cannot create image manifest directory.');
         $temporary = $path . '.' . bin2hex(random_bytes(16));
+        $json = json_encode($data, JSON_THROW_ON_ERROR);
         try
         {
-            if (file_put_contents($temporary, json_encode($data, JSON_THROW_ON_ERROR), LOCK_EX) === false
+            if (file_put_contents($temporary, $json, LOCK_EX) !== strlen($json)
                 || !rename($temporary, $path)) throw new \RuntimeException('Cannot publish image manifest.');
         }
         finally

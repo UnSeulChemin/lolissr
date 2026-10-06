@@ -15,10 +15,37 @@ foreach (['Assets/page-styles-browser.js', 'Navigation/spa-browser.js', 'Navigat
 }
 foreach ($commands as $command)
 {
-    $process = proc_open($command, [0 => ['pipe', 'r'], 1 => STDOUT, 2 => STDERR], $pipes, dirname(__DIR__, 2), null, ['bypass_shell' => true]);
-    if (!is_resource($process)) throw new RuntimeException('Cannot start browser tests.');
-    fclose($pipes[0]);
-    $status = proc_close($process);
-    if ($status !== 0) exit($status);
+    echo 'Browser scenario: ' . basename($command[3] ?? $command[1]) . PHP_EOL;
+    $output = tmpfile();
+    $errors = tmpfile();
+    if ($output === false || $errors === false)
+    {
+        if (is_resource($output)) fclose($output);
+        if (is_resource($errors)) fclose($errors);
+        throw new RuntimeException('Cannot capture browser scenario output.');
+    }
+    try
+    {
+        // Forward from the parent: inherited redirected handles can overwrite output on Windows.
+        $process = proc_open($command, [0 => ['pipe', 'r'], 1 => $output, 2 => $errors], $pipes, dirname(__DIR__, 2), null, ['bypass_shell' => true]);
+        if (!is_resource($process)) throw new RuntimeException('Cannot start browser tests.');
+        fclose($pipes[0]);
+        $status = proc_close($process);
+        rewind($output);
+        rewind($errors);
+        fpassthru($output);
+        fwrite(STDERR, (string) stream_get_contents($errors));
+    }
+    finally
+    {
+        fclose($output);
+        fclose($errors);
+    }
+    if ($status !== 0)
+    {
+        fwrite(STDERR, 'Browser scenario process failed with exit code ' . $status . PHP_EOL);
+        // Windows crash codes may become zero when passed directly to exit().
+        exit(1);
+    }
 }
 echo "PASS: all browser suites.\n";

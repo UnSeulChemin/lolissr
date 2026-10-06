@@ -21,6 +21,8 @@ final class MangaRecommendationService
     private function fingerprint(string $path): string|false
     {
         if ($this->catalogPath !== null) return is_file($path) ? @hash_file('sha256', $path) : false;
+        if ($path === base_path('storage/manga-recommendations.json'))
+            return $this->fileFingerprints[$path] ??= \App\Support\Manga\MangaCatalogRevision::fingerprint($path);
         return $this->fileFingerprints[$path] ??= is_file($path) ? @hash_file('sha256', $path) : false;
     }
 

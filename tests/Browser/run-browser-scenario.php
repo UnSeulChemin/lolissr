@@ -18,6 +18,19 @@ $profile = sys_get_temp_dir() . '/lolissr-css-' . $id;
 $output = tmpfile();
 $errors = tmpfile();
 $process = null;
+$exitCode = null;
+$diagnostics = static function () use ($output, $errors, &$exitCode): string
+{
+    $read = static function ($stream): string
+    {
+        if (!is_resource($stream)) return '(unavailable)';
+        rewind($stream);
+        $contents = stream_get_contents($stream);
+        return $contents === false || $contents === '' ? '(empty)' : substr($contents, -16000);
+    };
+    return 'Edge exit code: ' . ($exitCode ?? '(still running)') . PHP_EOL
+        . 'stderr:' . PHP_EOL . $read($errors) . PHP_EOL . 'DOM:' . PHP_EOL . $read($output);
+};
 
 try
 {
@@ -68,11 +81,18 @@ HTML;
     fclose($pipes[0]);
     $deadline = microtime(true) + 45;
 
-    while (proc_get_status($process)['running'])
+    while (true)
     {
+        $status = proc_get_status($process);
+        if (!$status['running'])
+        {
+            $exitCode = $status['exitcode'];
+            break;
+        }
         if (microtime(true) > $deadline)
         {
-            throw new RuntimeException('Browser test timed out.');
+            proc_terminate($process);
+            throw new RuntimeException('Browser test timed out.' . PHP_EOL . $diagnostics());
         }
         usleep(100000);
     }
@@ -80,9 +100,9 @@ HTML;
     rewind($output);
     $html = stream_get_contents($output);
 
-    if (!is_string($html) || preg_match('/<pre id="result">((?:PASS: [^\r\n]*\r?\n)*\r?\n?PASS \d+ checks)<\/pre>/', $html, $matches) !== 1)
+    if ($exitCode !== 0 || !is_string($html) || preg_match('/<pre id="result">((?:PASS: [^\r\n]*\r?\n)*\r?\n?PASS \d+ checks)<\/pre>/', $html, $matches) !== 1)
     {
-        throw new RuntimeException('Browser checks failed: ' . (string) $html);
+        throw new RuntimeException('Browser checks failed.' . PHP_EOL . $diagnostics());
     }
 
     echo $matches[1] . PHP_EOL;

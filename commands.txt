@@ -18,6 +18,9 @@ composer doctor
 
 = Actualiser les recommandations (categories et auteurs), couvertures et editions du compte local 1
 composer manga:recommendations -- 1
+
+= Catalogue existant ou JSON modifie manuellement : republier sa revision sans appel reseau
+composer manga:catalog-revision
 = Remplacer 1 par l'identifiant du compte local concerne.
 
 = Installer/reinstaller la tache recommandations (09:15 et ouverture de session)

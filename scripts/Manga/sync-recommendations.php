@@ -127,5 +127,5 @@ foreach (array_keys($candidates) as $id)
     { echo 'Cover ' . $id . ": unavailable; suggestion retained.\n"; }
 }
 $catalog['updated_at'] = date(DATE_ATOM);
-AtomicFile::writeIfChanged($path, json_encode($catalog, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR) . "\n", 0600);
+AtomicFile::writeIfChanged($path, \App\Support\Manga\MangaCatalogRevision::encode($catalog), 0600);
 echo 'Public recommendation catalog refreshed: ' . count($series['series']) . " series.\n";

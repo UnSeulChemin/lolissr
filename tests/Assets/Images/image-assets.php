@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require dirname(__DIR__, 3) . '/tests/Support/bootstrap.php';
+require __DIR__ . '/Support/short-manifest-write.php';
 use App\Support\Media\ImageAssets;
 use App\Support\Media\JpegOrientation;
 use App\Support\Media\ThumbnailOptimizer;
@@ -10,6 +11,16 @@ $publicFixture = dirname(__DIR__, 3) . '/public/images/.image-assets-test-' . bi
 $versionFixture = $publicFixture . '.png';
 try
 {
+    $shortPath = $directory . '/.short-manifest-test.json';
+    file_put_contents($shortPath, '{"version":"original"}');
+    $failed = false;
+    try
+    { \App\Support\Media\ImageManifest::write($shortPath, ['version' => 'complete']); }
+    catch (RuntimeException)
+    { $failed = true; }
+    if (!$failed || file_get_contents($shortPath) !== '{"version":"original"}' || count(glob($directory . '/.short-manifest-*') ?: []) !== 1)
+        throw new RuntimeException('Partial manifest publication damaged the previous file or left staging files.');
+    unlink($shortPath);
     $image = imagecreatetruecolor(160, 80);
     $colors = [[240, 20, 20], [20, 240, 20], [20, 20, 240], [240, 240, 20]];
     foreach ($colors as $index => $color)

@@ -14,6 +14,8 @@ Les suites sont regroupées par type de contrôle, puis par fonctionnalité. Les
 
 Les lanceurs restent dans `Http` et `Browser`. Les rapports HTTP sont générés dans `Http/reports`.
 
+Les erreurs du lanceur Edge incluent son code de sortie, stderr et le DOM, avec une limite de 16 000 octets par flux. Le lanceur principal capture séparément chaque scénario pour préserver les journaux redirigés sous Windows et convertit tout code d'échec en échec explicite de la suite. Si Edge termine avec un DOM vide et des erreurs GPU ou d'accès sous un agent restreint, exécuter les tests dans un environnement qui autorise le lancement du navigateur. Les protections d'Edge doivent rester actives.
+
 ```text
 composer check           # PHPStan, HTTP et régressions
 composer browser-tests   # Scénarios Edge
