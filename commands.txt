@@ -27,7 +27,9 @@ composer assets:build
 GIT
 =========================================
 
-= Compiler les assets, creer un commit APP_NAME / APP_VERSION et pousser sur origin/master
+!! Créer un commit APP_NAME / APP_VERSION
+
+= Compiler les assets, et pousser sur origin/master
 composer git:publish
 
 = Annuler les modifications locales et supprimer les fichiers non suivis
