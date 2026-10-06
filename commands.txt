@@ -44,45 +44,14 @@ composer doctor
 
 
 =========================================
-AVANT LIVRAISON
-=========================================
-
-= Compiler les assets, verifier le formatage et lancer tous les controles
-= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
-composer preflight
-
-
-
-
-
-
-= Generer une archive avec images, assets actifs et dependances de production
-composer release:zip
-
-= Mise a jour en conservant les images du serveur
-composer release:zip -- --without-images
-
-= Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
-= Envoyer avec FileZilla ; la base est livree separement
-= Premiere installation : copier .env.example vers .env sur le serveur et renseigner MySQL / APP_BASE_URI
-= En production : APP_ENV=production et APP_DEBUG=false
-
-= Apres installation ou modification de configuration sur le serveur cible : compiler le bootstrap
-composer bootstrap:cache
-
-= Desactiver le cache de configuration et de routes
-composer bootstrap:clear
-
-
-=========================================
 TESTS CIBLES
 =========================================
 
+= Tous les controles
+composer check:all
+
 = Analyse PHP + tests HTTP / SPA + regressions
 composer check
-
-= Tous les controles, sans recompiler les assets
-composer check:all
 
 = Creation manga, recommandations, sorties, XP et pagination
 composer tests:manga
@@ -276,3 +245,38 @@ composer js:build
 
 = Installer esbuild
 composer js:install
+
+
+
+
+
+
+=========================================
+AVANT LIVRAISON
+=========================================
+
+= Compiler les assets, verifier le formatage et lancer tous les controles
+= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
+composer preflight
+
+
+
+
+
+
+= Generer une archive avec images, assets actifs et dependances de production
+composer release:zip
+
+= Mise a jour en conservant les images du serveur
+composer release:zip -- --without-images
+
+= Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
+= Envoyer avec FileZilla ; la base est livree separement
+= Premiere installation : copier .env.example vers .env sur le serveur et renseigner MySQL / APP_BASE_URI
+= En production : APP_ENV=production et APP_DEBUG=false
+
+= Apres installation ou modification de configuration sur le serveur cible : compiler le bootstrap
+composer bootstrap:cache
+
+= Desactiver le cache de configuration et de routes
+composer bootstrap:clear
