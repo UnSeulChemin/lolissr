@@ -146,7 +146,7 @@
 
         "release:zip": "@php scripts/Release/build-release.php",
         "git:reset": "@php scripts/Maintenance/git-reset.php",
-        "publish:git": "@php scripts/Release/publish-git.php"
+        "git:publish": "@php scripts/Release/publish-git.php"
     },
 
     "scripts-descriptions": {
@@ -200,6 +200,6 @@
 
         "release:zip": "[Publication] Crée une archive ZIP de livraison.",
         "git:reset": "[Git] Annule les modifications locales et supprime les fichiers non suivis (hors fichiers ignorés).",
-        "publish:git": "[Publication] Compile les assets et publie les changements avec Git."
+        "git:publish": "[Publication] Compile les assets et publie les changements avec Git."
     }
 }
