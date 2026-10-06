@@ -5,19 +5,18 @@ declare(strict_types=1);
 use App\Http\Controllers\Sql\SqlConsoleController;
 use App\Http\Controllers\Sql\SqlQueryController;
 
-use Framework\Config\ApplicationConfig;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;
 use Framework\Routing\Router;
 
 /** @var Router $router */
 
-if (ApplicationConfig::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
+if (! env_bool('SQL_TOOL_ENABLED', true))
 {
     return;
 }
 
-$router->prefix('sql')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function (Router $router): void
+$router->prefix('sql')->group(function (Router $router): void
 {
     // =================================================
     // PAGE

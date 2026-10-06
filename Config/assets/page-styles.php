@@ -5,6 +5,7 @@ declare(strict_types=1);
 // Dépendances ordonnées. Une barre finale sélectionne toutes les vues du dossier.
 // Les chemins sont relatifs à App/Views, sans extension .php.
 return [
+    'pages/admin/index.css' => ['pages/admin/'],
     'pages/profile/achievements.css' => ['pages/profile/achievements'],
     'components/modals/profile-title-modal.css' => ['pages/profile/'],
     'components/media-picker.css' => ['pages/profile/'],

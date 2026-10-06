@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli')
+{ http_response_code(404); exit; }
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 $root = dirname(__DIR__, 3);
-$read = static function (string $path): ?array {
+$read = static function (string $path): ?array
+{
     if (!is_file($path)) return null;
     $data = json_decode((string) file_get_contents($path), true);
     return is_array($data) ? $data : null;
 };
 $issues = 0;
-$report = static function (string $message) use (&$issues): void {
+$report = static function (string $message) use (&$issues): void
+{
     $issues++;
     echo $message . PHP_EOL;
 };

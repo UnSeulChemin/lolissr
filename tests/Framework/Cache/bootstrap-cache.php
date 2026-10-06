@@ -57,7 +57,7 @@ try
     $register = require ROOT . '/Config/routes/web.php';
     $register(new Router($expected, new Container()));
     $check(serialize($expected) === serialize($cached['routes']), 'Compiled routes changed order, patterns or middleware.');
-    $check($cached['routes']->allowedMethodsFor('/sql') === [], 'SQL tool exposed in production.');
+    $check($cached['routes']->allowedMethodsFor('/admin/sql') === ['GET', 'POST'], 'Admin SQL unavailable in production.');
     $check($cached['routes']->allowedMethodsFor('/inscription') === [], 'Registration exposed in production.');
     Config::prime($cached['config']);
     $check(Config::get('database.name') === 'fixture', 'Configuration not primed.');
@@ -97,7 +97,8 @@ try
     $check(BootstrapCache::load($path) === null, 'Route flag change reused stale routes.');
     AtomicFile::writeIfChanged($path, BootstrapCache::compile(), 0600);
     $cached = BootstrapCache::load($path);
-    $check($cached['routes']->allowedMethodsFor('/sql') === ['GET', 'POST'], 'Local SQL routes lost.');
+    $check($cached['routes']->allowedMethodsFor('/admin/sql') === ['GET', 'POST'], 'Local SQL routes lost.');
+    $check($cached['routes']->allowedMethodsFor('/sql') === [], 'Old SQL route still exposed.');
     $check($cached['routes']->allowedMethodsFor('/inscription') === ['GET', 'POST'], 'Local registration routes lost.');
     $payload = require $path;
     $originalPayload = $payload;

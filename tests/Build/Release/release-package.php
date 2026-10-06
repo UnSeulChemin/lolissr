@@ -29,7 +29,7 @@ try
     sort($files); sort($expected);
     if ($files !== $expected) throw new RuntimeException('Inactive or missing JavaScript chunks.');
     $environment = (string) $zip->getFromName('.env.example');
-    foreach (['APP_ENV=production', 'APP_DEBUG=false', 'PROFILER_ENABLED=false', 'SQL_TOOL_ENABLED=false', 'REGISTRATION_ENABLED=false'] as $setting)
+    foreach (['APP_ENV=production', 'APP_DEBUG=false', 'PROFILER_ENABLED=false', 'SQL_TOOL_ENABLED=true', 'REGISTRATION_ENABLED=false'] as $setting)
         if (!str_contains($environment, $setting)) throw new RuntimeException('Missing production setting: ' . $setting);
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/public/images', FilesystemIterator::SKIP_DOTS)) as $image)
     {

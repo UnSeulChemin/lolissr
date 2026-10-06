@@ -92,7 +92,7 @@ AtomicFile::writeIfChanged($buildDirectory . '/Config/assets/versions.php', "<?p
 
 $environmentTemplate = (string) file_get_contents(ROOT . '/.env.example');
 $environmentTemplate = preg_replace('/^(APP_ENV)=.*$/m', '$1=production', $environmentTemplate);
-$environmentTemplate = preg_replace('/^(APP_DEBUG|PROFILER_ENABLED|SQL_TOOL_ENABLED|REGISTRATION_ENABLED)=.*$/m', '$1=false', (string) $environmentTemplate);
+$environmentTemplate = preg_replace('/^(APP_DEBUG|PROFILER_ENABLED|REGISTRATION_ENABLED)=.*$/m', '$1=false', (string) $environmentTemplate);
 
 $rootFiles = ['composer.json', 'composer.lock', '.env.example'];
 

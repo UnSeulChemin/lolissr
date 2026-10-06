@@ -35,7 +35,7 @@ if ($resultCount > 0)
                 class="form-layout"
                 method="post"
                 data-sql-form
-                data-url="<?= e($view->baseUri) ?>sql/ajax/execute"
+                data-url="<?= e($view->baseUri) ?>admin/sql/ajax/execute"
             >
 
                 <?= csrf_field() ?>

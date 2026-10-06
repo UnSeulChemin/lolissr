@@ -33,12 +33,7 @@ final class EnvironmentValidator
         'LOG_RETENTION_DAYS'
     ];
 
-    private const PRODUCTION_DISABLED_VARIABLES = [
-        'APP_DEBUG',
-        'PROFILER_ENABLED',
-        'SQL_TOOL_ENABLED',
-        'REGISTRATION_ENABLED'
-    ];
+    private const PRODUCTION_DISABLED_VARIABLES = ['APP_DEBUG', 'PROFILER_ENABLED', 'REGISTRATION_ENABLED'];
 
     private function __construct()
     {

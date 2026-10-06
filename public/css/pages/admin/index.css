@@ -1,0 +1,12 @@
+.admin-command-card { height: auto; min-height: 325px; gap: 16px; }
+.admin-command-badge { position: absolute; top: 24px; right: 24px; max-width: calc(100% - 125px); padding: 8px 12px; border: 1px solid var(--color-violet-border-soft); border-radius: 999px; background: var(--gradient-dashboard-header); color: var(--color-text); font-size: 12px; overflow-wrap: anywhere; text-align: center; }
+.admin-maintenance-status { text-align: center; margin-top: 24px; }
+.admin-command-card .dashboard-card-description { flex: 1; }
+.admin-command-card [role="status"] { width: 100%; text-align: center; }
+.admin-command-card form { margin: 0; width: min(100%, 280px); align-self: center; }
+.admin-command-card .form-submit { width: 100%; min-width: 0; min-height: 48px; box-sizing: border-box; }
+.admin-command-journal { position: relative; margin-top: 28px; padding: 48px 24px 24px; }
+.admin-command-journal[hidden] { display: none; }
+.admin-command-output { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 440px; overflow: auto; }
+.admin-journal-close { position: absolute; top: 10px; right: 14px; width: 32px; height: 32px; padding: 0; border: 0; background: transparent; color: #df2445; font-size: 30px; cursor: pointer; line-height: 1; }
+.admin-journal-close:hover { color: #b81432; }

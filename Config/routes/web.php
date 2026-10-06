@@ -32,7 +32,7 @@ return static function (Router $router): void
             $router->post('deconnexion', [AuthController::class, 'logout'], [CsrfMiddleware::class]);
 
             require __DIR__ . '/profile.php';
-            require __DIR__ . '/sql.php';
+            require __DIR__ . '/admin.php';
             require __DIR__ . '/manga.php';
             require __DIR__ . '/figurine.php';
             require __DIR__ . '/nendoroid.php';

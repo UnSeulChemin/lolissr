@@ -11,12 +11,22 @@ require ROOT . '/scripts/Support/AtomicFile.php';
 require ROOT . '/scripts/Manga/Support/MangacollecClient.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
 date_default_timezone_set(\Framework\Config\ApplicationConfig::timezone());
+$ownerId = isset($argv[1]) ? filter_var($argv[1], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
+if ($ownerId === false || count($argv) > 2) throw new InvalidArgumentException('Usage: composer manga:sync [-- USER_ID]');
 $lock = fopen(ROOT . '/storage/manga-releases.lock', 'c');
 if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) throw new RuntimeException('Release synchronization already running.');
 try
 {
     $db = new \Framework\Database\Database();
-    $rows = $db->query('SELECT user_id,slug,livre,editeur,numero FROM manga ORDER BY user_id,slug,numero')->fetchAll(PDO::FETCH_ASSOC);
+    if ($ownerId !== null)
+    {
+        $account = $db->prepare('SELECT id FROM users WHERE id = ?');
+        $account->execute([$ownerId]);
+        if ($account->fetchColumn() === false) throw new RuntimeException('Unknown collection owner.');
+    }
+    $statement = $db->prepare('SELECT user_id,slug,livre,editeur,numero FROM manga' . ($ownerId !== null ? ' WHERE user_id = :owner' : '') . ' ORDER BY user_id,slug,numero');
+    $statement->execute($ownerId !== null ? ['owner' => $ownerId] : []);
+    $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
     $collections = [];
     foreach ($rows as $row)
     {
@@ -28,6 +38,11 @@ try
     $path = ROOT . '/storage/manga-releases.json';
     $previous = is_file($path) ? json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR) : [];
     $catalog = ['updated_at' => date(DATE_ATOM), 'users' => []];
+    if ($ownerId !== null)
+    {
+        $catalog['users'] = is_array($previous['users'] ?? null) ? $previous['users'] : [];
+        unset($catalog['users'][(string) $ownerId]);
+    }
     $client = new MangacollecClient();
     // The website downloads this public index once and searches it locally.
     $index = $client->get('/series');

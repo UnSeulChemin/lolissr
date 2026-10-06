@@ -75,7 +75,6 @@ composer images:build
 composer images:check
 
 
-
 =========================================
 MANGA
 =========================================
@@ -89,10 +88,6 @@ composer manga:sync
 = Actualiser le catalogue et les couvertures des recommandations pour tous les comptes
 = Local et production ; ajouter -- USER_ID pour cibler un seul compte
 composer manga:recommendations
-
-= Actualiser uniquement les recommandations du compte 1
-composer manga:recommendations -- 1
-
 
 
 

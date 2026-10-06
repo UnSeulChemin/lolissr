@@ -17,7 +17,8 @@ $statement = $db->prepare('SELECT id FROM users' . ($owner !== null ? ' WHERE id
 $statement->execute($owner !== null ? ['owner' => $owner] : []);
 $owners = array_map('intval', $statement->fetchAll(PDO::FETCH_COLUMN));
 if ($owner !== null && $owners === []) throw new RuntimeException('Unknown collection owner.');
-if ($owners === []) { echo "No accounts to process.\n"; exit; }
+if ($owners === [])
+{ echo "No accounts to process.\n"; exit; }
 echo 'Recommendation sync: ' . count($owners) . " account(s).\n";
 $lock = fopen(ROOT . '/storage/manga-recommendations.lock', 'c');
 if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) throw new RuntimeException('Recommendation sync already running');

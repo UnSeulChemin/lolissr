@@ -71,7 +71,20 @@ try
         $home = http_get(http_base() . '/');
         $check($home['status'] === 200 && preg_match('/Total vocabulaires\s*<\/h2>\s*<p[^>]*>\s*(\d+)/u', $home['body'], $total) === 1
             && (int) $total[1] === ($label === 'a' ? 2 : 1), 'Dashboard cache is shared across accounts');
-        $check(http_get(http_base() . '/sql')['status'] === 404, 'Ordinary account can access arbitrary SQL');
+        $check(http_get(http_base() . '/admin/sql')['status'] === 404, 'Ordinary account can access arbitrary SQL');
+        $check(http_get(http_base() . '/admin')['status'] === 404, 'Ordinary account can access administration');
+        $check(http_get(http_base() . '/admin/commandes/etat', ['Accept: application/json'])['status'] === 404, 'Ordinary account can read job status and logs');
+        $check(http_get(http_base() . '/admin/dev')['status'] === 404, 'Ordinary account can access development tools');
+        $check(http_get(http_base() . '/admin/dev/commandes')['status'] === 404, 'Ordinary account can access maintenance');
+        foreach (['images', 'cache'] as $maintenanceTask)
+            $check($post('/admin/dev/commandes/' . $maintenanceTask, ['csrf_token' => $tokens[$label]])['status'] === 404, 'Ordinary account can trigger maintenance');
+        $check(http_get(http_base() . '/admin/commandes')['status'] === 404, 'Ordinary account can access commands');
+        foreach (['/admin/commandes/sorties', '/admin/commandes/sorties/mon-compte'] as $releasePath)
+            $check($post($releasePath, ['csrf_token' => $tokens[$label]])['status'] === 404, 'Ordinary account can trigger release sync');
+        $check($post('/admin/commandes/recommandations', ['csrf_token' => $tokens[$label]])['status'] === 404,
+            'Ordinary account can trigger recommendation sync with a valid CSRF token');
+        $check($post('/admin/commandes/recommandations/mon-compte', ['csrf_token' => $tokens[$label]])['status'] === 404,
+            'Ordinary account can trigger personal recommendation sync');
     }
     http_set_cookie($cookies['b']);
     $check(http_get(http_base() . '/chinois/vocabulaire/mandarin/recherche/' . $wordIds['a'])['status'] === 404, 'Foreign content readable by ID');
