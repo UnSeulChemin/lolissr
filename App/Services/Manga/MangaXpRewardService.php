@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\Constants\UserXp;
-use App\Models\Manga;
+use App\Constants\Profile\UserXp;
+use App\Models\Manga\Manga;
 use App\Repositories\Manga\MangaRepository;
 
 final readonly class MangaXpRewardService

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
-use App\Cache\DashboardCache;
+use App\Cache\Home\DashboardCache;
 use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateData;
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateData;
 use App\DTO\Chinois\Responses\ChinoisMaitriseData;

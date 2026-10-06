@@ -9,7 +9,7 @@ use App\DTO\Peluche\Responses\PelucheListData;
 use App\DTO\Peluche\Responses\PelucheListItemData;
 use App\DTO\Peluche\Responses\PelucheSearchData;
 use App\DTO\Peluche\Responses\PelucheSearchItemData;
-use App\Models\Peluche;
+use App\Models\Peluche\Peluche;
 use App\Repositories\Peluche\PelucheCollectionRepository;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Repositories\Peluche\PelucheSearchRepository;

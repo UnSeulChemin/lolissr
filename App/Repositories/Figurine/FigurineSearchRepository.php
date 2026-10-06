@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Figurine;
 
-use App\Models\Figurine;
+use App\Models\Figurine\Figurine;
 use App\Repositories\AbstractRepository;
 use App\Repositories\Collections\Concerns\SearchesCollectibles;
 

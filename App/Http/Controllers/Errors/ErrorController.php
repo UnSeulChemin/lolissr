@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Errors;
+
+use App\Http\Controllers\Controller;
 
 use Framework\Http\Request;
 

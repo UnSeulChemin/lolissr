@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Constants\UserXp;
+use App\Constants\Profile\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateData;
 use App\DTO\Figurine\Inputs\FigurineUpdateData;

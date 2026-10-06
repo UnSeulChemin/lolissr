@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\Models\Peluche;
+use App\Models\Peluche\Peluche;
 use App\Repositories\AbstractRepository;
 
 final class PelucheCollectionRepository extends AbstractRepository

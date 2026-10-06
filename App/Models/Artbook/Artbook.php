@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Artbook;
 
-final class Nendoroid
+final class Artbook
 {
     public int $user_id = 0;
 
@@ -18,15 +18,17 @@ final class Nendoroid
 
     public int $numero = 1;
 
-    public string $waifu = '';
+    public bool $lu = false;
 
-    public string $origin = '';
+    public bool $xp_read_rewarded = false;
+
+    public string $artbook = '';
+
+    public ?string $auteur = null;
+
+    public ?string $serie = null;
 
     public string $company = '';
-
-    public bool $collect = false;
-
-    public bool $collect_rewarded = false;
 
     public ?string $release_date = null;
 

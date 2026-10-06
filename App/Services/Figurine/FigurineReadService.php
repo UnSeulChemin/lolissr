@@ -9,7 +9,7 @@ use App\DTO\Figurine\Responses\FigurineListData;
 use App\DTO\Figurine\Responses\FigurineListItemData;
 use App\DTO\Figurine\Responses\FigurineSearchData;
 use App\DTO\Figurine\Responses\FigurineSearchItemData;
-use App\Models\Figurine;
+use App\Models\Figurine\Figurine;
 use App\Repositories\Figurine\FigurineCollectionRepository;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;

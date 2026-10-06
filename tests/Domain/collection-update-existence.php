@@ -70,9 +70,9 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
             catch (LogicException)
             {}
             $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
-            $check($before instanceof \App\Models\Artbook && !$before->lu, 'Original unread state lost');
+            $check($before instanceof \App\Models\Artbook\Artbook && !$before->lu, 'Original unread state lost');
             $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
-            $check($before instanceof \App\Models\Artbook && $before->lu, 'Unchanged read state lost');
+            $check($before instanceof \App\Models\Artbook\Artbook && $before->lu, 'Unchanged read state lost');
             $check($repository->findOneBySlugAndNumero('fixture', 1)->lu, 'Read status not saved');
         }
 

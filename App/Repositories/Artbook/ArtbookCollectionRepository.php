@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Artbook;
 
-use App\Models\Artbook;
+use App\Models\Artbook\Artbook;
 use App\Repositories\AbstractRepository;
 
 final class ArtbookCollectionRepository extends AbstractRepository

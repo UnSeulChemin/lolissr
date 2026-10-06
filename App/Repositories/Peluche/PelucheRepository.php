@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Peluche;
 
 use App\DTO\Peluche\Inputs\PelucheUpdateData;
-use App\Models\Peluche;
+use App\Models\Peluche\Peluche;
 use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;

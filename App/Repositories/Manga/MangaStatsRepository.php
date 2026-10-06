@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Manga;
 
 use App\DTO\Manga\Responses\MangaStatsData;
-use App\Models\Manga;
+use App\Models\Manga\Manga;
 use App\Repositories\AbstractRepository;
 
 final class MangaStatsRepository extends AbstractRepository

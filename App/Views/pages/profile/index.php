@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
-use App\Models\User;
+use App\Models\User\User;
 
 /** @var ViewData $view */
 /** @var User $user */
@@ -67,7 +67,7 @@ $framePath =
 
             <div class="profile-content u-text-center">
 
-                <p class="profile-subtitle" data-title-style="<?= \App\Constants\UserTitle::styleForTitle($user->title) ?>">
+                <p class="profile-subtitle" data-title-style="<?= \App\Constants\Profile\UserTitle::styleForTitle($user->title) ?>">
                     <?= e($user->title) ?>
                 </p>
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 // Render the anonymous layout without accessing authentication or the database.
-function user(): ?\App\Models\User
+function user(): ?\App\Models\User\User
 { return null; }
 function csrf_token(): string
 { return 'bundle-layout-test'; }

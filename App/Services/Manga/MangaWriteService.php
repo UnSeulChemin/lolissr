@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\Cache\DashboardCache;
-use App\Constants\UserXp;
+use App\Cache\Home\DashboardCache;
+use App\Constants\Profile\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateData;
 use App\DTO\Manga\Inputs\MangaUpdateData;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Constants;
+namespace App\Constants\Profile;
 
 // Seuils et montants d’XP communs à l’affichage et à l’attribution des succès.
 final class AchievementRewards

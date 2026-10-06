@@ -15,8 +15,8 @@ $php = <<<'PHP'
 <?php
 namespace Example;
 use Framework\Http\Request;
-use App\Models\User;
-use App\Cache\DashboardCache;
+use App\Models\User\User;
+use App\Cache\Home\DashboardCache;
 final class Example
 {
     public function value(
@@ -29,7 +29,7 @@ final class Example
 }
 PHP;
 $formatted = $formatter->format($php, 'php');
-$check(str_contains($formatted, "use App\\Cache\\DashboardCache;\nuse App\\Models\\User;\n\nuse Framework\\Http\\Request;"), 'PHP imports are not grouped and sorted.');
+$check(str_contains($formatted, "use App\\Cache\\Home\\DashboardCache;\nuse App\\Models\\User\\User;\n\nuse Framework\\Http\\Request;"), 'PHP imports are not grouped and sorted.');
 $check(str_contains($formatted, "public function value(int \$id): array\n    {"), 'Compact PHP signature or Allman brace missing.');
 $check(str_contains($formatted, "return ['id' => \$id];"), 'Short PHP array is not compact.');
 $check($formatter->format($formatted, 'php') === $formatted, 'PHP formatter is not idempotent.');
@@ -40,7 +40,7 @@ $literals = <<<'PHP'
 <?php
 $text = <<<'TEXT'
 use Framework\Http\Request;
-use App\Models\User;
+use App\Models\User\User;
 
 
 literal(

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Auth;
 
-use App\Constants\UserTitle;
-use App\Models\User;
+use App\Constants\Profile\UserTitle;
+use App\Models\User\User;
 use App\Repositories\AbstractRepository;
 
 final class UserRepository extends AbstractRepository

@@ -9,7 +9,7 @@ use App\DTO\Nendoroid\Responses\NendoroidListData;
 use App\DTO\Nendoroid\Responses\NendoroidListItemData;
 use App\DTO\Nendoroid\Responses\NendoroidSearchData;
 use App\DTO\Nendoroid\Responses\NendoroidSearchItemData;
-use App\Models\Nendoroid;
+use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidCollectionRepository;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Repositories\Nendoroid\NendoroidSearchRepository;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Nendoroid;
 
-final class Peluche
+final class Nendoroid
 {
     public int $user_id = 0;
 

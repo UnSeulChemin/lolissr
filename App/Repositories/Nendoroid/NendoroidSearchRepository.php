@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Nendoroid;
 
-use App\Models\Nendoroid;
+use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\AbstractRepository;
 use App\Repositories\Collections\Concerns\SearchesCollectibles;
 

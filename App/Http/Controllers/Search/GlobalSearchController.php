@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Search;
 
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Services\Artbook\ArtbookReadService;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Figurine\FigurineReadService;

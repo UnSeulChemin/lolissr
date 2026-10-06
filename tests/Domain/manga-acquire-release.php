@@ -43,7 +43,7 @@ try
     $check(hash_file('sha256', $source) === $originalHash, 'Shared source damaged');
     $check(array_column($releases->forSeries('fixture'), 'number') === [3], 'Purchased release still appears');
     $check($service->acquireRelease('fixture', 2, $releases)->status === 409, 'Duplicate acquisition accepted');
-    $owner = new \App\Models\User(); $owner->id = 2;
+    $owner = new \App\Models\User\User(); $owner->id = 2;
     $GLOBALS['testCurrentUser'] = $owner;
     $check($service->acquireRelease('fixture', 3, $releases)->status === 404, 'Foreign catalog accessible');
     $check((int) $db->query('SELECT COUNT(*) FROM manga WHERE user_id = 2')->fetchColumn() === 1, 'Foreign collection changed');

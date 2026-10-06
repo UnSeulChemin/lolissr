@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Home;
 
-use App\Cache\DashboardCache;
+use App\Cache\Home\DashboardCache;
+use App\Http\Controllers\Controller;
 
 use Framework\Http\Request;
 

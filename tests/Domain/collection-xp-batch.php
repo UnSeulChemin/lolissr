@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Constants\AchievementRewards;
-use App\Constants\UserXp;
-use App\Models\User;
+use App\Constants\Profile\AchievementRewards;
+use App\Constants\Profile\UserXp;
+use App\Models\User\User;
 
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
@@ -57,7 +57,7 @@ foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $
     $call = static function (int $id) use ($service, $method, $modelName): bool
     {
         if ($modelName === null) return $service->$method($id);
-        $class = 'App\\Models\\' . $modelName;
+        $class = 'App\\Models\\' . $modelName . '\\' . $modelName;
         $model = new $class();
         $model->id = $id;
         return $service->$method($model);

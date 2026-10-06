@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Peluche;
 
-use App\Constants\UserXp;
-use App\Models\Peluche;
+use App\Constants\Profile\UserXp;
+use App\Models\Peluche\Peluche;
 use App\Repositories\Peluche\PelucheRepository;
 
 final readonly class PelucheXpRewardService

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Artbook;
 
-use App\Constants\UserXp;
-use App\Models\Artbook;
-use App\Models\User;
+use App\Constants\Profile\UserXp;
+use App\Models\Artbook\Artbook;
+use App\Models\User\User;
 use App\Repositories\Artbook\ArtbookRepository;
 
 final readonly class ArtbookXpRewardService

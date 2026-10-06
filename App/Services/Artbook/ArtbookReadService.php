@@ -9,7 +9,7 @@ use App\DTO\Artbook\Responses\ArtbookListData;
 use App\DTO\Artbook\Responses\ArtbookListItemData;
 use App\DTO\Artbook\Responses\ArtbookSearchData;
 use App\DTO\Artbook\Responses\ArtbookSearchItemData;
-use App\Models\Artbook;
+use App\Models\Artbook\Artbook;
 use App\Repositories\Artbook\ArtbookCollectionRepository;
 use App\Repositories\Artbook\ArtbookRepository;
 use App\Repositories\Artbook\ArtbookSearchRepository;

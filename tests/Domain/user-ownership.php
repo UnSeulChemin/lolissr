@@ -5,7 +5,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Cache\CacheKey;
-use App\Models\User;
+use App\Models\User\User;
 use App\Repositories\Auth\UserRepository;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
-use App\Constants\UserXp;
+use App\Constants\Profile\UserXp;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 

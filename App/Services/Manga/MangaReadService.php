@@ -10,7 +10,7 @@ use App\DTO\Manga\Responses\MangaListData;
 use App\DTO\Manga\Responses\MangaListItemData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
-use App\Models\Manga;
+use App\Models\Manga\Manga;
 use App\Repositories\Manga\MangaCollectionRepository;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;

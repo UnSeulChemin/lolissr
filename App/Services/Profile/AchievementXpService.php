@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
-use App\Constants\AchievementRewards;
+use App\Constants\Profile\AchievementRewards;
 use App\DTO\Profile\Responses\ProfileStatsData;
-use App\Models\User;
+use App\Models\User\User;
 use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;

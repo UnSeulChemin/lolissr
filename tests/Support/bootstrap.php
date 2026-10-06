@@ -14,10 +14,10 @@ require ROOT . '/Framework/Support/Helpers.php';
 // Les tests XP qui definissent deja user() conservent leur propre fournisseur.
 if (! function_exists('user'))
 {
-    function user(): ?\App\Models\User
+    function user(): ?\App\Models\User\User
     {
         if (array_key_exists('testCurrentUser', $GLOBALS)) return $GLOBALS['testCurrentUser'];
-        $user = new \App\Models\User();
+        $user = new \App\Models\User\User();
         $user->id = 1;
         return $user;
     }

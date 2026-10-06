@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Profile;
 
-use App\Constants\UserTitle;
+use App\Constants\Profile\UserTitle;
 use App\DTO\Common\ServiceResult;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\User\User;
 use App\Repositories\Auth\UserRepository;
 use App\Repositories\Profile\ProfileUnlockStatsRepository;
 use App\Services\Profile\ProfileImageCatalog;

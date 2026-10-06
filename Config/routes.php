@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Home\HomeController;
 
 use Framework\Http\Middleware\AuthMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
@@ -26,7 +26,7 @@ return static function (Router $router): void
         ->group(function (Router $router): void
         {
             $router->get('', [HomeController::class, 'index']);
-            $router->get('recherche', [\App\Http\Controllers\GlobalSearchController::class, 'search'],
+            $router->get('recherche', [\App\Http\Controllers\Search\GlobalSearchController::class, 'search'],
                 [\Framework\Http\Middleware\ExpectJsonMiddleware::class]);
 
             $router->post('deconnexion', [AuthController::class, 'logout'], [CsrfMiddleware::class]);

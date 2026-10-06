@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Constants\UserXp;
-use App\Models\Figurine;
+use App\Constants\Profile\UserXp;
+use App\Models\Figurine\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 
 final readonly class FigurineXpRewardService

@@ -21,7 +21,7 @@ foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
     $insert = $db->prepare(owned_fixture_sql($db, "INSERT INTO $table VALUES (?, ?, ?, ?, ?, 'cover', 'webp')"));
     for ($i = 25; $i >= 1; $i--) $insert->execute([$i, 'etoile-bleue', $i, 'Origin', 'Étoile Bleue']);
     $class = "App\\Repositories\\$kind\\{$kind}SearchRepository";
-    $model = "App\\Models\\$kind";
+    $model = "App\\Models\\$kind\\$kind";
     $repository = new $class($db);
     foreach (["  Étoile   Bleue  ", 'etoile-bleue', 'Origin'] as $query)
     {

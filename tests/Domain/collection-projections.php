@@ -39,7 +39,7 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
         'Figurine', 'Artbook' => 'mapSeriesItem',
         default => 'mapListItem',
     });
-    $model = "App\\Models\\$kind";
+    $model = "App\\Models\\$kind\\$kind";
     $expectedOrder = [4, 2, 1, 3];
     $rows = [...$repository->findPaginated(2, 1), ...$repository->findPaginated(2, 2)];
     $assert(count($rows) === 4, "$kind: pagination lost items");

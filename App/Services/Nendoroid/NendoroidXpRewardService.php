@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Nendoroid;
 
-use App\Constants\UserXp;
-use App\Models\Nendoroid;
+use App\Constants\Profile\UserXp;
+use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidRepository;
 
 final readonly class NendoroidXpRewardService

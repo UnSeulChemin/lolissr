@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Constants\AchievementRewards;
-use App\Constants\UserXp;
-use App\Models\Manga;
-use App\Models\User;
+use App\Constants\Profile\AchievementRewards;
+use App\Constants\Profile\UserXp;
+use App\Models\Manga\Manga;
+use App\Models\User\User;
 use App\Services\Manga\MangaXpRewardService;
 
 use Framework\Application\Bootstrap;

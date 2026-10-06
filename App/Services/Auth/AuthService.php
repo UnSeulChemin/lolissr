@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Auth;
 
 use App\Enums\Auth\LoginResult;
-use App\Models\User;
+use App\Models\User\User;
 use App\Repositories\Auth\UserRepository;
 
 use Framework\Auth\AuthenticationInterface;

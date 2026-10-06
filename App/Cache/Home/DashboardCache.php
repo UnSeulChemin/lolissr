@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Cache;
+namespace App\Cache\Home;
 
+use App\Cache\CacheKey;
 use App\DTO\Home\Responses\DashboardStatsData;
 use App\Services\Home\DashboardStatsService;
 

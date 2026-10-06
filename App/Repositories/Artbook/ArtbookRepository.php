@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Artbook;
 
 use App\DTO\Artbook\Inputs\ArtbookUpdateData;
-use App\Models\Artbook;
+use App\Models\Artbook\Artbook;
 use App\Repositories\AbstractRepository;
 
 use Framework\Http\Exceptions\NotFoundException;

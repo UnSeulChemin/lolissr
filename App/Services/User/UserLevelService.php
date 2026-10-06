@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\Models\User;
+use App\Models\User\User;
 use App\Repositories\Auth\UserRepository;
 
 final readonly class UserLevelService

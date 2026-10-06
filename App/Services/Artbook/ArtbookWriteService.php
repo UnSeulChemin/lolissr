@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Artbook;
 
-use App\Cache\DashboardCache;
-use App\Constants\UserXp;
+use App\Cache\Home\DashboardCache;
+use App\Constants\Profile\UserXp;
 use App\DTO\Artbook\Inputs\ArtbookCreateData;
 use App\DTO\Artbook\Inputs\ArtbookUpdateData;
 use App\DTO\Common\ServiceResult;
@@ -159,7 +159,7 @@ final readonly class ArtbookWriteService
 
                 $xpEarned = false;
 
-                assert($artbook instanceof \App\Models\Artbook);
+                assert($artbook instanceof \App\Models\Artbook\Artbook);
 
                 if (! $artbook->lu && $readStatus === 1)
                 {

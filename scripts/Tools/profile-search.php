@@ -12,7 +12,7 @@ require ROOT . '/Framework/Support/Helpers.php';
 \Framework\Config\Config::clear();
 
 // This CLI supplies an explicit owner without opening an authenticated session.
-function user(): ?\App\Models\User
+function user(): ?\App\Models\User\User
 {
     return $GLOBALS['searchProfileUser'] ?? null;
 }
@@ -33,7 +33,7 @@ final class SearchProfileStatement extends PDOStatement
 
 $ownerId = filter_var($argv[1] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if ($ownerId === false) throw new InvalidArgumentException('Usage: php scripts/Tools/profile-search.php USER_ID [QUERY ...]');
-$owner = new \App\Models\User();
+$owner = new \App\Models\User\User();
 $owner->id = $ownerId;
 $GLOBALS['searchProfileUser'] = $owner;
 $database = new \Framework\Database\Database();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Constants;
+namespace App\Constants\Profile;
 
 final class UserXp
 {

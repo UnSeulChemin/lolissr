@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\Models\Manga;
+use App\Models\Manga\Manga;
 use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;

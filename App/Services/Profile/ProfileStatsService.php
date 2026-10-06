@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
-use App\Constants\UserXp;
+use App\Constants\Profile\UserXp;
 use App\DTO\Profile\Responses\ProfileStatsData;
-use App\Models\User;
+use App\Models\User\User;
 use App\Repositories\Profile\ProfileStatsRepository;
 
 final readonly class ProfileStatsService
