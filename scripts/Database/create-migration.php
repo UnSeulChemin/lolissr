@@ -7,7 +7,7 @@ if (PHP_SAPI !== 'cli')
 require_once __DIR__ . '/Support/MigrationCreator.php';
 try
 {
-    if (count($argv) !== 2) throw new InvalidArgumentException('Usage: composer db:migration -- ajout-table');
+    if (count($argv) !== 2) throw new InvalidArgumentException('Usage: composer db:migrate:create -- create');
     $path = MigrationCreator::create(__DIR__ . '/migrations', $argv[1]);
     echo 'Migration creee : scripts/Database/migrations/' . basename($path) . PHP_EOL;
     echo "Ecris ton SQL dans ce fichier, puis sauvegarde-le. Aucun SQL execute pour le moment.\n";

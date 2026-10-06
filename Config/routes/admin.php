@@ -26,6 +26,9 @@ $router->prefix('admin')->middleware(AdminOwnerMiddleware::class)->group(functio
         $router->post('commandes/images-check', [AdminController::class, 'checkImages'], [CsrfMiddleware::class]);
         $router->post('commandes/images', [AdminController::class, 'images'], [CsrfMiddleware::class]);
         $router->post('commandes/cache', [AdminController::class, 'clearCache'], [CsrfMiddleware::class]);
+        $router->post('commandes/migrations-check', [AdminController::class, 'checkMigrations'], [CsrfMiddleware::class]);
+        $router->post('commandes/migrations-create', [AdminController::class, 'createMigration'], [CsrfMiddleware::class]);
+        $router->post('commandes/migrations', [AdminController::class, 'applyMigrations'], [CsrfMiddleware::class]);
         $router->post('commandes/reset', [AdminController::class, 'resetDev'], [CsrfMiddleware::class]);
     });
     require __DIR__ . '/sql.php';

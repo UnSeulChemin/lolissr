@@ -13,7 +13,10 @@ $busy = in_array($job['state'], ['queued', 'running'], true);
 <section class="layout-container dashboard-page" data-admin-live data-status-url="<?= e($view->baseUri) ?>admin/commandes/etat">
     <section class="dashboard-grid u-grid u-justify-center">
         <article class="card dashboard-card u-stack u-relative u-clip u-border-box admin-command-card" data-job="releases">
-            <span class="dashboard-card-icon u-row-center" aria-hidden="true">📅</span>
+            <div class="u-row" style="gap: 12px">
+                <span class="dashboard-card-icon u-row-center" aria-hidden="true">📚</span>
+                <span class="dashboard-card-icon u-row-center" aria-hidden="true">📅</span>
+            </div>
             <span class="dashboard-card-title u-relative u-w-full u-bold">Sorties manga</span>
             <p class="dashboard-card-description">Actualiser les prochaines sorties et les couvertures des mangas de vos collections.</p>
             <p role="status"><?= e($labels[$releaseJob['state']] ?? 'État inconnu') ?></p>
@@ -27,7 +30,11 @@ $busy = in_array($job['state'], ['queued', 'running'], true);
             </form>
         </article>
         <article class="card dashboard-card u-stack u-relative u-clip u-border-box admin-command-card" data-job="recommendations">
-            <span class="dashboard-card-icon u-row-center" aria-hidden="true">📚</span>
+            <div class="u-row" style="gap: 12px">
+                <span class="dashboard-card-icon u-row-center" aria-hidden="true">📚</span>
+                <span class="dashboard-card-icon u-row-center" aria-hidden="true">✨</span>
+                <span class="dashboard-card-icon u-row-center" aria-hidden="true">✍️</span>
+            </div>
             <span class="dashboard-card-title u-relative u-w-full u-bold">Recommandations manga</span>
             <p class="dashboard-card-description">Actualiser le catalogue et les couvertures pour tous les comptes.</p>
             <p role="status"><?= e($labels[$job['state']] ?? 'État inconnu') ?></p>

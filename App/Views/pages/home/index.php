@@ -304,11 +304,11 @@ $hasMostRepresented =
             <?php endif; ?>
         </a>
         <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/recommandations') ?>">
-            <h3 class="home-card-title">✨ Séries par catégories</h3>
+            <h3 class="home-card-title">✨ Recommandations par catégories</h3>
             <p class="home-card-title">Des séries partageant les catégories de mes mangas</p>
         </a>
         <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/recommandations-auteurs') ?>">
-            <h3 class="home-card-title">✍️ Séries des mêmes auteurs</h3>
+            <h3 class="home-card-title">✍️ Recommandations par auteurs</h3>
             <p class="home-card-title">Des séries écrites ou dessinées par les auteurs de mes mangas</p>
         </a>
         <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/favoris') ?>">

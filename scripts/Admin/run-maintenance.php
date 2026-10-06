@@ -14,6 +14,9 @@ $commands = match ($task)
     'images' => [[PHP_BINARY, $root . '/scripts/Assets/Images/build-profile-images.php'], [PHP_BINARY, $root . '/scripts/Assets/Images/optimize-thumbnails.php', '--apply']],
     'cache' => [[PHP_BINARY, $root . '/scripts/Maintenance/clear-runtime.php', 'cache']],
     'reset' => [[PHP_BINARY, $root . '/scripts/Admin/reset-runtime.php']],
+    'migrations-check' => [[PHP_BINARY, $root . '/scripts/Database/migrate.php', 'status']],
+    'migrations-create' => [[PHP_BINARY, $root . '/scripts/Database/create-migration.php', 'create']],
+    'migrations' => [[PHP_BINARY, $root . '/scripts/Database/migrate.php', 'apply']],
     default => throw new InvalidArgumentException('Unknown maintenance command.')
 };
 $lock = fopen(MaintenanceJob::directory() . '/maintenance.lock', 'c');

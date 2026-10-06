@@ -21,6 +21,7 @@ $wait = static function (string $expected) use ($fixture): void
 };
 try
 {
+    mkdir($fixture . '/scripts/Database', 0700, true);
     copy($root . '/App/Services/Admin/MaintenanceJob.php', $fixture . '/App/Services/Admin/MaintenanceJob.php');
     copy($root . '/scripts/Admin/run-maintenance.php', $fixture . '/scripts/Admin/run-maintenance.php');
     file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/MaintenanceJob.php";');
@@ -31,6 +32,18 @@ try
     $run('images'); $wait('done');
     $output = (string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log');
     if (!str_contains($output, "Profiles completed\nThumbnails completed")) throw new RuntimeException('Image build stages missing or out of order.');
+    file_put_contents($fixture . '/scripts/Database/migrate.php', '<?php if (!in_array($argv[1] ?? null, ["status", "apply"], true)) exit(1); echo "Migration " . $argv[1];');
+    copy($root . '/scripts/Database/create-migration.php', $fixture . '/scripts/Database/create-migration.php');
+    mkdir($fixture . '/scripts/Database/Support', 0700, true);
+    copy($root . '/scripts/Database/Support/MigrationCreator.php', $fixture . '/scripts/Database/Support/MigrationCreator.php');
+    $run('migrations-create'); $wait('done');
+    $createdMigrations = glob($fixture . '/scripts/Database/migrations/*-create.sql');
+    if ($createdMigrations === false || count($createdMigrations) !== 1) throw new RuntimeException('Migration file not created by admin job.');
+    foreach (['migrations-check' => 'status', 'migrations' => 'apply'] as $task => $action)
+    {
+        $run($task); $wait('done');
+        if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Migration ' . $action)) throw new RuntimeException('Incorrect migration action.');
+    }
     $run('cache'); $wait('done');
     if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Cache cleared')) throw new RuntimeException('Cache command not executed.');
     file_put_contents($fixture . '/scripts/Tools/doctor.php', '<?php echo "Diagnostic completed\n";');

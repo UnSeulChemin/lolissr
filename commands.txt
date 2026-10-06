@@ -129,13 +129,13 @@ BASE DE DONNEES
 composer backup
 
 = Creer un fichier SQL de migration, puis l'editer
-composer db:migration -- ajout-table
+composer db:migrate:create -- create
 
 = Appliquer les migrations apres sauvegarde
 composer db:migrate
 
 = Voir l'etat des migrations sans modification
-composer db:migrate:status
+composer db:migrate:check
 
 = Ne pas executer le meme SQL dans /sql ni modifier une migration deja appliquee
 

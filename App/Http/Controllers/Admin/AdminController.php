@@ -58,6 +58,12 @@ final class AdminController extends Controller
     { $this->maintenance('images-check'); }
     public function clearCache(): never
     { $this->maintenance('cache'); }
+    public function checkMigrations(): never
+    { $this->maintenance('migrations-check'); }
+    public function createMigration(): never
+    { $this->maintenance('migrations-create'); }
+    public function applyMigrations(): never
+    { $this->maintenance('migrations'); }
     public function resetDev(): never
     {
         set_time_limit(60);
