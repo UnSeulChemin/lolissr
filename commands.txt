@@ -108,34 +108,14 @@ MANGA
 
 !! Windows : sorties a 09:00, recommandations a 09:15 et ouverture de session
 !! PC allume, Apache/MySQL disponibles ; aucune commande quotidienne necessaire
+==> Sur un autre serveur : planifier les deux commandes d'actualisation
 
 = Actualiser manuellement les prochain sorties a venir
 composer manga:sync
 
 = Actualiser le catalogue et les couvertures des recommandations pour tous les comptes
-= Local et production ; ajouter -- USER_ID pour cibler un seul compte
+= ajouter -- USER_ID pour cibler un seul compte
 composer manga:recommendations
-
-
-= Apres modification manuelle du catalogue JSON : republier sa revision sans reseau
-composer manga:catalog-revision
-
-= Installer/reinstaller la tache Windows des sorties
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-schedule.ps1
-
-= Installer/reinstaller la tache Windows des recommandations pour tous les comptes
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1
-
-= Sur un autre serveur : planifier les deux commandes d'actualisation
-
-= Journaux des actualisations
-storage/logs/manga-releases-sync.log
-storage/logs/manga-recommendations-sync.log
-
-= Correspondances des editions
-Config/settings/manga-releases.php
-
-
 
 
 =========================================
