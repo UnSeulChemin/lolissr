@@ -3,6 +3,7 @@
 // =================================================
 
 import { request } from '../../core/http.js';
+import { formErrorMessage } from '../../core/form-errors.js';
 
 import { $ } from '../../core/dom.js';
 
@@ -139,7 +140,7 @@ export function initCreatePage()
             if (!form.isConnected) return;
             debugError('FIGURINE_AJOUTER', error);
 
-            showToast(error?.data?.message ?? error.message ?? 'Erreur serveur', 'error');
+            showToast(formErrorMessage(error), 'error');
         }
         finally
         {

@@ -9,7 +9,7 @@ export async function runBrowserScenario()
     document.body.append(toast);
     let requests = [];
     window.fetch = (url, options) => new Promise((resolve, reject) => requests.push({url, options, resolve, reject}));
-    const respond = (success, status = 200) => requests.shift().resolve(new Response(JSON.stringify({success, message: 'Fixture message'}),
+    const respond = (success, status = 200) => requests.shift().resolve(new Response(JSON.stringify({success, message: 'Fixture message', data: status === 422 ? {errors: {fixture: 'Precise field error'}} : {}}),
         {status, headers: {'Content-Type': 'application/json'}}));
     const results = [];
     try
@@ -33,6 +33,7 @@ export async function runBrowserScenario()
             respond(false, 422);
             await tick(); await tick();
             check(!button.disabled && input.value === 'KEEP_VALUE', module + ': validation error lost values or blocked retry');
+            check(toast.textContent.includes('Precise field error'), module + ': field validation detail hidden');
             submit();
             requests.shift().reject(new TypeError('Offline'));
             await tick(); await tick();
