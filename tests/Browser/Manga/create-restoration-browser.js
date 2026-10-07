@@ -23,9 +23,35 @@ export async function runBrowserScenario()
             check(form.elements.statut.value === (restored ? 'en_cours' : 'termine'), 'Status restoration/autofill failed');
             check(form.elements.editeur.value === (restored ? '' : 'Publisher'), 'Publisher restoration/autofill failed');
             check(form.elements.numero.value === (restored ? '' : '8'), 'Number restoration/autofill failed');
+            if (!restored)
+            {
+                const originalFetch = window.fetch;
+                const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+                let complete;
+                window.fetch = () => new Promise(resolve =>
+                { complete = resolve; });
+                const submit = () => form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
+                const respond = success => complete(new Response(JSON.stringify({success, message: 'Fixture'}),
+                    {headers: {'Content-Type': 'application/json'}}));
+                try
+                {
+                    submit();
+                    form.elements.numero.value = '90';
+                    respond(true);
+                    await tick(); await tick();
+                    form.querySelector('[data-slug-source]').dispatchEvent(new Event('input'));
+                    check(form.elements.numero.value === '9', 'Next volume did not follow submitted volume after success');
+                    submit();
+                    respond(false);
+                    await tick(); await tick();
+                    check(form.querySelector('option[data-numero]').dataset.numero === '9', 'Failed creation advanced next volume');
+                }
+                finally
+                { window.fetch = originalFetch; }
+            }
         }
         finally
         { form.remove(); }
     }
-    return ['restored custom slug and status preserved', 'restored empty fields preserved', 'fresh series autofill retained'];
+    return ['restored custom slug and status preserved', 'restored empty fields preserved', 'fresh series autofill retained', 'next volume refreshed only after successful creation'];
 }

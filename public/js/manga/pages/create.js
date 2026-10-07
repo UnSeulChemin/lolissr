@@ -218,12 +218,13 @@ export function initCreatePage()
                 // REQUÊTE
                 // --------------------------------------------------------------------------
 
+                const submitted = new FormData(form);
                 const data = await request(
                         form.action,
                         {
                             method: 'POST',
 
-                            body: new FormData(form)
+                            body: submitted
                         }
                     );
 
@@ -252,6 +253,11 @@ export function initCreatePage()
                 // --------------------------------------------------------------------------
                 // SUCCÈS
                 // --------------------------------------------------------------------------
+
+                const addedNumber = Number(submitted.get('numero'));
+                const existing = seriesOptions.find(option => option.dataset.slug === submitted.get('slug'));
+                if (existing && Number.isInteger(addedNumber) && addedNumber > 0)
+                    existing.dataset.numero = String(Math.max(Number(existing.dataset.numero) || 0, addedNumber + 1));
 
                 showToast(data.message || 'Manga ajouté avec succès', 'success');
 
