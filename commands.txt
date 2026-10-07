@@ -148,39 +148,3 @@ composer xp:backfill -- USER_ID
 
 = Synchroniser les recompenses XP et recalculer le niveau selon les donnees actuelles
 composer xp:backfill -- USER_ID --apply
-
-
-=========================================
-AVANT PRODUCTION
-=========================================
-
-!! Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
-
-= Diagnostiquer le projet, compiler les assets, verifier le formatage et lancer tous les controles
-composer preflight
-
-!! Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
-
-= Generer une archive avec images, assets actifs et dependances de production
-composer release:zip
-
-= Mise a jour en conservant les images du serveur
-composer release:zip -- --without-images
-
-
-=========================================
-PRODUCTION
-=========================================
-
-= Envoyer avec FileZilla ; la base est livree separement
-= Premiere installation : copier .env.example vers .env sur le serveur et renseigner MySQL / APP_BASE_URI
-= En production : APP_ENV=production et APP_DEBUG=false
-
-= Sur le serveur cible, si les dependances ne sont pas deja fournies dans l'archive
-composer install --no-dev --optimize-autoloader
-
-= Apres installation ou modification de configuration sur le serveur cible : compiler le bootstrap
-composer bootstrap:cache
-
-= Desactiver le cache de configuration et de routes
-composer bootstrap:clear
