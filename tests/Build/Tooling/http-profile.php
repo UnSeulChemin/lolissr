@@ -23,6 +23,13 @@ for ($i = 0; $i < 15; $i++) $many[] = sample('case ' . $i, $i / 1000);
 $rows = HttpTestStatistics::slowestReads($many);
 if (count($rows) !== 10 || $rows[0]['label'] !== 'case 14') throw new RuntimeException('Incorrect top 10.');
 if (HttpTestStatistics::slowestReads([]) !== []) throw new RuntimeException('Empty ranking.');
+$allRows = HttpTestStatistics::readTimings($many);
+if (count($allRows) !== 15 || $allRows[0]['warmMedian'] !== null) throw new RuntimeException('All-case coverage or single-pass timing incorrect.');
+$samples = [sample('repeat', 0.020), sample('repeat', 0.004), sample('repeat', 0.002)];
+$samples[0]['response_bytes'] = 2048;
+$samples[1]['response_bytes'] = 1024;
+$timing = HttpTestStatistics::readTimings($samples)[0];
+if ($timing['first'] !== 0.020 || $timing['warmMedian'] !== 0.003 || $timing['min'] !== 0.002 || $timing['bytesMax'] !== 2048) throw new RuntimeException('First/subsequent timing or response bytes incorrect.');
 $file = tempnam(sys_get_temp_dir(), 'http-profile-');
 if ($file === false) throw new RuntimeException('Cannot create report fixture.');
 try
@@ -30,6 +37,7 @@ try
     HttpHtmlReport::generate([sample('<script>unsafe</script>', 0.004)], new HttpTestStatistics(), $file);
     $html = (string) file_get_contents($file);
     if (!str_contains($html, 'Top 10 lectures HTTP') || !str_contains($html, '4.00 ms')
+        || !str_contains($html, 'Mesures de toutes les lectures') || !str_contains($html, 'Non mesuré')
         || str_contains($html, '<script>unsafe</script>')) throw new RuntimeException('Unsafe/incomplete timing report.');
 }
 finally

@@ -81,7 +81,7 @@ TESTS
 composer check
 
 = Tous les controles
-= check + (Tests navigateur Edge, schéma MySQL, index redondants, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
+= check + (Validation Composer, tests navigateur Edge, schéma MySQL, index redondants, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
 
 
@@ -89,7 +89,7 @@ composer check:all
 MESURES
 =========================================
 
-= Mesurer cinq passages HTTP
+= Mesurer cinq passages HTTP : premier passage, mediane des suivants, minimum/maximum et taille des reponses
 = Rapport : tests/Http/reports/lolissr-http-report.html
 composer http:profile
 
@@ -154,28 +154,9 @@ composer xp:backfill -- USER_ID --apply
 
 
 
-
-
-
-
-
-
-
 =========================================
 OUTILS OCCASIONNELS
 =========================================
-
-= Installer les dependances de production
-composer install --no-dev --optimize-autoloader
-
-= Regenerer l'autoload
-composer dump-autoload
-
-= Verifier la configuration Composer
-composer validate
-
-= Synchroniser le lock sans changer les versions
-composer update --lock
 
 = Compiler uniquement le CSS
 composer css:build
@@ -189,8 +170,6 @@ composer js:install
 
 
 
-
-
 =========================================
 AVANT LIVRAISON
 =========================================
@@ -199,11 +178,6 @@ AVANT LIVRAISON
 = Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
 composer preflight
 
-
-
-
-
-
 = Generer une archive avec images, assets actifs et dependances de production
 composer release:zip
 
@@ -211,9 +185,18 @@ composer release:zip
 composer release:zip -- --without-images
 
 = Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
+
+
+=========================================
+PRODUCTION
+=========================================
+
 = Envoyer avec FileZilla ; la base est livree separement
 = Premiere installation : copier .env.example vers .env sur le serveur et renseigner MySQL / APP_BASE_URI
 = En production : APP_ENV=production et APP_DEBUG=false
+
+= Sur le serveur cible, si les dependances ne sont pas deja fournies dans l'archive
+composer install --no-dev --optimize-autoloader
 
 = Apres installation ou modification de configuration sur le serveur cible : compiler le bootstrap
 composer bootstrap:cache

@@ -35,6 +35,7 @@
         "preflight": ["@php scripts/Tools/doctor.php --before-build", "@assets:build", "@doctor", "@dx:check", "@check:all"],
         "check": ["@phpstan", "@http-tests", "@regression-tests"],
         "check:all": [
+            "@composer validate",
             "@check",
             "@browser-tests",
             "@db:check",
@@ -173,12 +174,12 @@
         "tests:search": "[Tests] Recherche des collections et comparaison des resultats HTTP/SPA.",
         "tests:assets": "[Tests] Bundles CSS/JS, versions, miniatures et images de profil.",
         "search:profile": "[Performance] USER_ID [QUERY ...] : mesure la recherche par categorie et affiche les plans SQL, sans modifier la base.",
-        "http:profile": "[Performance] Mesure les lectures HTTP sur cinq passages et classe les dix cas les plus lents.",
+        "http:profile": "[Performance] Mesure cinq passages HTTP : premier, medianes, minimum/maximum et taille des reponses ; rapport de tous les cas et top 10.",
         "manga:sync": "[Manga] Actualise les prochaines sorties via une session invite Mangacollec.",
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",
-        "check:all": "[Tests] Tous les controles : PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, index redondants, isolation des comptes, images et dependances de production.",
+        "check:all": "[Tests] Tous les controles : validation Composer, PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, index redondants, isolation des comptes, images et dependances de production.",
 
         "phpstan": "[Tests] Analyse statique du code PHP.",
         "http-tests": "[Tests] Vérifie les réponses HTTP et la navigation SPA.",

@@ -35,6 +35,28 @@ final class HttpHtmlReport
                 . number_format($row['median'] * 1000, 2) . ' ms</td><td>'
                 . number_format($row['max'] * 1000, 2) . ' ms</td><td>' . $row['samples'] . '</td></tr>';
         }
+        $allReads = HttpTestStatistics::readTimings($results);
+        $timings .= '</table><h2>Mesures de toutes les lectures HTTP réussies (' . count($allReads) . ' cas)</h2>';
+        $timings .= '<p>Temps de réponse HTTP complet, sans rendu navigateur ni charge concurrente. Le premier passage peut déjà utiliser des caches chauds. Les passages suivants ne constituent pas une mesure à froid. Les échecs, écritures et réponses autres que 200 sont exclus de ce tableau et restent visibles dans les résultats de tests. Taille : corps reçu, hors en-têtes.</p>';
+        $timings .= '<table><tr><th>Route / cas</th><th>Premier</th><th>Médiane suivants</th><th>Minimum</th><th>Médiane globale</th><th>Maximum</th><th>Taille max</th><th>Passages</th></tr>';
+        foreach ($allReads as $row)
+        {
+            $timings .= '<tr><td>' . self::escape($row['path'] . ' — ' . $row['label']) . '</td>';
+            foreach ([$row['first'], $row['warmMedian'], $row['min'], $row['median'], $row['max']] as $value)
+                $timings .= '<td>' . ($value === null ? 'Non mesuré' : number_format($value * 1000, 2) . ' ms') . '</td>';
+            $timings .= '<td>' . ($row['bytesMax'] === null ? 'Non mesurée' : number_format($row['bytesMax'] / 1024, 2) . ' Kio') . '</td><td>' . $row['samples'] . '</td></tr>';
+        }
+        $allReads = HttpTestStatistics::readTimings($results);
+        $timings .= '</table><h2>Mesures de toutes les lectures HTTP réussies (' . count($allReads) . ' cas)</h2>';
+        $timings .= '<p>Temps de réponse HTTP complet, sans rendu navigateur ni charge concurrente. Le premier passage peut déjà utiliser des caches chauds. Les passages suivants ne constituent pas une mesure à froid. Les échecs, écritures et réponses autres que 200 sont exclus de ce tableau et restent visibles dans les résultats de tests. Taille : corps reçu, hors en-têtes.</p>';
+        $timings .= '<table><tr><th>Route / cas</th><th>Premier</th><th>Médiane suivants</th><th>Minimum</th><th>Médiane globale</th><th>Maximum</th><th>Taille max</th><th>Passages</th></tr>';
+        foreach ($allReads as $row)
+        {
+            $timings .= '<tr><td>' . self::escape($row['path'] . ' — ' . $row['label']) . '</td>';
+            foreach ([$row['first'], $row['warmMedian'], $row['min'], $row['median'], $row['max']] as $value)
+                $timings .= '<td>' . ($value === null ? 'Non mesuré' : number_format($value * 1000, 2) . ' ms') . '</td>';
+            $timings .= '<td>' . ($row['bytesMax'] === null ? 'Non mesurée' : number_format($row['bytesMax'] / 1024, 2) . ' Kio') . '</td><td>' . $row['samples'] . '</td></tr>';
+        }
         $html = str_replace('</body>', $timings . '</table></body>', $html);
         if (file_put_contents($file, $html, LOCK_EX) === false)
         {

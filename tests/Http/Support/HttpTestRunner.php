@@ -77,11 +77,11 @@ final class HttpTestRunner
         $this->printCategory($category);
 
         $url = rtrim($this->base, '/') . '/' . ltrim($path, '/');
-        $start = microtime(true);
+        $start = hrtime(true);
 
         $response = http_request($method, $url, $headers, $requestBody);
 
-        $duration = microtime(true) - $start;
+        $duration = (hrtime(true) - $start) / 1_000_000_000;
 
         $status = $response['status'];
         $body = $response['body'];
@@ -354,6 +354,7 @@ final class HttpTestRunner
             'http_status' => $httpStatus,
             'expected_status' => $expectedStatus,
             'duration' => $duration,
+            'response_bytes' => strlen($body),
             'reason' => $reason,
             'headers' => ReportSanitizer::headers($headers),
             'body' => $status === 'FAIL'

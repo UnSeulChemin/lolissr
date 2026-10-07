@@ -13,9 +13,17 @@ final class HttpTestStatistics
     private float $duration = 0.0;
 
     /** @param array<int, array<string, mixed>> $results
-     * @return list<array{method: string, path: string, label: string, median: float, max: float, samples: int}>
+     * @return list<array{method: string, path: string, label: string, median: float, min: float, max: float, first: float, warmMedian: ?float, bytesMax: ?int, samples: int}>
      */
     public static function slowestReads(array $results): array
+    {
+        return array_slice(self::readTimings($results), 0, 10);
+    }
+
+    /** @param array<int, array<string, mixed>> $results
+     * @return list<array{method: string, path: string, label: string, median: float, min: float, max: float, first: float, warmMedian: ?float, bytesMax: ?int, samples: int}>
+     */
+    public static function readTimings(array $results): array
     {
         $groups = [];
         foreach ($results as $result)
@@ -25,11 +33,17 @@ final class HttpTestStatistics
             $key = serialize([$result['method'], $result['path'], $result['label']]);
             $groups[$key]['result'] = $result;
             $groups[$key]['times'][] = (float) $result['duration'];
+            if (isset($result['response_bytes'])) $groups[$key]['bytes'][] = (int) $result['response_bytes'];
         }
         $rows = [];
         foreach ($groups as $group)
         {
             $times = $group['times'];
+            $first = $times[0];
+            $warm = array_slice($times, 1);
+            sort($warm, SORT_NUMERIC);
+            $warmCount = count($warm);
+            $warmMiddle = intdiv($warmCount, 2);
             sort($times, SORT_NUMERIC);
             $count = count($times);
             $middle = intdiv($count, 2);
@@ -37,11 +51,13 @@ final class HttpTestStatistics
                 'method' => $group['result']['method'], 'path' => $group['result']['path'],
                 'label' => $group['result']['label'],
                 'median' => $count % 2 === 0 ? ($times[$middle - 1] + $times[$middle]) / 2 : $times[$middle],
-                'max' => max($times), 'samples' => $count
+                'min' => min($times), 'max' => max($times), 'first' => $first,
+                'warmMedian' => $warmCount === 0 ? null : ($warmCount % 2 === 0 ? ($warm[$warmMiddle - 1] + $warm[$warmMiddle]) / 2 : $warm[$warmMiddle]),
+                'bytesMax' => isset($group['bytes']) ? max($group['bytes']) : null, 'samples' => $count
             ];
         }
         usort($rows, static fn (array $a, array $b): int => $b['median'] <=> $a['median']);
-        return array_slice($rows, 0, 10);
+        return $rows;
     }
 
     // =========================================
