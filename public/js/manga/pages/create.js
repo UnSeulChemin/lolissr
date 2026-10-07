@@ -65,6 +65,7 @@ export function initCreatePage()
     }
 
     form.dataset.initialized = 'true';
+    let submitting = false;
 
     const slugSourceInput = form.querySelector('[data-slug-source]');
 
@@ -195,7 +196,9 @@ export function initCreatePage()
         'submit',
         async (event) =>
         {
-            event.preventDefault();
+        event.preventDefault();
+        if (submitting) return;
+        submitting = true;
 
             const submitButton = form.querySelector('[type="submit"]');
 
@@ -231,6 +234,7 @@ export function initCreatePage()
 
                 if (!data?.success)
                 {
+                if (!form.isConnected) return;
 
                     showToast(data?.message || 'Une erreur est survenue', 'error');
 
@@ -242,6 +246,7 @@ export function initCreatePage()
                 // --------------------------------------------------------------------------
 
                 invalidateMangaPages();
+                if (!form.isConnected) return;
 
                 // --------------------------------------------------------------------------
                 // SUCCÈS
@@ -281,6 +286,7 @@ export function initCreatePage()
 
             } catch (error)
             {
+                if (!form.isConnected) return;
 
                 debugError('AJOUTER', error);
 
@@ -288,6 +294,7 @@ export function initCreatePage()
 
             } finally
             {
+                submitting = false;
 
                 if (submitButton instanceof HTMLButtonElement)
                 {

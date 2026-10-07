@@ -199,6 +199,7 @@ async function updateNote(button)
         refreshButtons();
 
         const data = await saveNotes(fieldName, value);
+        if (data?.success !== true) throw new Error(data?.message || 'Impossible de sauvegarder la note');
         invalidateMangaPages();
         if (!card.isConnected) return;
 

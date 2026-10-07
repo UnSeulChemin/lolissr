@@ -154,7 +154,9 @@ async function parseResponse(response)
 
             return await response.json();
 
-        } catch {
+        } catch (error)
+        {
+            if (error?.name === 'AbortError') throw error;
 
             throw new FrontendError(
                 'Réponse JSON invalide',
@@ -282,7 +284,7 @@ export async function request(url, options = {})
         // ANNULATION DE LA RECHERCHE
         // ------------------------------------------------------------------
 
-        if (error?.name === 'AbortError' || options.signal?.aborted)
+        if (options.signal?.aborted)
         {
 
             throw error;
@@ -304,6 +306,8 @@ export async function request(url, options = {})
                 }
             );
         }
+
+        if (error?.name === 'AbortError') throw error;
 
         debugError('HTTP', error);
 

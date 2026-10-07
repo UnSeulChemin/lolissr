@@ -51,6 +51,7 @@ export function initCreatePage()
     }
 
     form.dataset.initialized = 'true';
+    let submitting = false;
 
     const originInput = $('#origin');
     const slugInput = $('#slug');
@@ -91,6 +92,8 @@ export function initCreatePage()
     form.addEventListener('submit', async (event) =>
     {
         event.preventDefault();
+        if (submitting) return;
+        submitting = true;
 
         const submitButton = form.querySelector('[type="submit"]');
 
@@ -111,12 +114,14 @@ export function initCreatePage()
 
             if (!data?.success)
             {
+                if (!form.isConnected) return;
                 showToast(data?.message ?? 'Une erreur est survenue', 'error');
 
                 return;
             }
 
             invalidateFigurinePages();
+            if (!form.isConnected) return;
 
             showToast(data.message ?? 'Figurine ajoutée avec succès', 'success');
 
@@ -131,12 +136,14 @@ export function initCreatePage()
         }
         catch (error)
         {
+            if (!form.isConnected) return;
             debugError('FIGURINE_AJOUTER', error);
 
             showToast(error?.data?.message ?? error.message ?? 'Erreur serveur', 'error');
         }
         finally
         {
+            submitting = false;
             if (submitButton instanceof HTMLButtonElement)
             {
                 submitButton.disabled = false;

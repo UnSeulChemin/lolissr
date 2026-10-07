@@ -120,6 +120,13 @@ export async function runBrowserScenario()
         respond(newRequest, true);
         await tick(); await tick();
         check(!second.querySelector('button').disabled, 'New save remained locked');
+        second.dataset.jacquette = '1';
+        second.querySelector('button').click();
+        requests.shift().resolve(new Response(JSON.stringify({success: false, message: 'Note rejected'}),
+            {headers: {'Content-Type': 'application/json'}}));
+        await tick(); await tick();
+        check(second.dataset.jacquette === '1' && !second.querySelector('button').disabled, 'Logical note failure did not roll back and unlock');
+        check(toast.textContent.includes('Note rejected'), 'Logical note failure displayed success');
         second.remove();
         results.push('independent note saves across navigation');
         return results;
