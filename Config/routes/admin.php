@@ -32,6 +32,10 @@ $router->prefix('admin')->middleware(AdminOwnerMiddleware::class)->group(functio
         $router->post('commandes/migrations-create', [AdminController::class, 'createMigration'], [CsrfMiddleware::class]);
         $router->post('commandes/migrations', [AdminController::class, 'applyMigrations'], [CsrfMiddleware::class]);
         $router->post('commandes/backup', [AdminController::class, 'backupDatabase'], [CsrfMiddleware::class]);
+        $router->post('commandes/xp-check', [AdminController::class, 'checkXp'], [CsrfMiddleware::class]);
+        $router->post('commandes/xp-check/mon-compte', [AdminController::class, 'checkMyXp'], [CsrfMiddleware::class]);
+        $router->post('commandes/xp-apply', [AdminController::class, 'applyXp'], [CsrfMiddleware::class]);
+        $router->post('commandes/xp-apply/mon-compte', [AdminController::class, 'applyMyXp'], [CsrfMiddleware::class]);
         $router->post('commandes/reset', [AdminController::class, 'resetDev'], [CsrfMiddleware::class]);
     });
 });

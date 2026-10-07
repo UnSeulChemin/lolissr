@@ -34,9 +34,10 @@ final class MaintenanceJob
     {
         if (file_put_contents(self::directory() . '/maintenance.json', json_encode(['state' => $state, 'updated' => time()], JSON_THROW_ON_ERROR), LOCK_EX) === false) throw new RuntimeException('Impossible de sauvegarder l’état de la commande.');
     }
-    public static function start(string $task): void
+    public static function start(string $task, ?int $ownerId = null): void
     {
-        if (!in_array($task, ['doctor', 'assets', 'js-prune', 'js-prune-force', 'images-check', 'images', 'cache', 'reset', 'backup', 'migrations-create', 'migrations-check', 'migrations'], true)) throw new RuntimeException('Commande invalide.');
+        if (!in_array($task, ['doctor', 'assets', 'js-prune', 'js-prune-force', 'images-check', 'images', 'cache', 'reset', 'backup', 'xp-check', 'xp-apply', 'migrations-create', 'migrations-check', 'migrations'], true)) throw new RuntimeException('Commande invalide.');
+        if ($ownerId !== null && ($ownerId < 1 || !in_array($task, ['xp-check', 'xp-apply'], true))) throw new RuntimeException('Compte invalide.');
         $directory = self::directory();
         if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) throw new RuntimeException('Stockage des commandes indisponible.');
         $lock = fopen($directory . '/maintenance.lock', 'c');
@@ -56,11 +57,11 @@ final class MaintenanceJob
             if (PHP_OS_FAMILY === 'Windows')
             {
                 $quote = static fn (string $value): string => "'" . str_replace("'", "''", $value) . "'";
-                $argument = '"' . $worker . '"' . (' ' . $task);
+                $argument = '"' . $worker . '"' . (' ' . $task) . ($ownerId !== null ? ' ' . $ownerId : '');
                 $command = ['powershell.exe', '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', 'Start-Process -WindowStyle Hidden -FilePath ' . $quote($php) . ' -ArgumentList ' . $quote($argument) . ' -WorkingDirectory ' . $quote(dirname(__DIR__, 3)) . ' -ErrorAction Stop'];
             } else
             {
-                $command = ['/bin/sh', '-c', 'nohup ' . escapeshellarg($php) . ' ' . escapeshellarg($worker) . (' ' . $task) . ' >/dev/null 2>&1 </dev/null &'];
+                $command = ['/bin/sh', '-c', 'nohup ' . escapeshellarg($php) . ' ' . escapeshellarg($worker) . (' ' . $task) . ($ownerId !== null ? ' ' . $ownerId : '') . ' >/dev/null 2>&1 </dev/null &'];
             }
             $process = proc_open($command, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
             if (!is_resource($process)) throw new RuntimeException('Impossible de lancer le traitement en arrière-plan.');

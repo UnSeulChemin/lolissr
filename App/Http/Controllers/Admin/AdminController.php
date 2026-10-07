@@ -89,10 +89,18 @@ final class AdminController extends Controller
         if ($this->expectsJson()) \Framework\Http\Responses\Response::json(['success' => true, 'message' => $state === 'done' ? 'Nettoyage terminé. Tu peux te reconnecter.' : 'Nettoyage en échec. Reconnecte-toi pour consulter le journal.', 'redirect' => \Framework\Config\ApplicationConfig::baseUri() . 'connexion']);
         $this->redirect('connexion');
     }
-    private function maintenance(string $task): never
+    public function checkXp(): never
+    { $this->maintenance('xp-check'); }
+    public function checkMyXp(): never
+    { $this->maintenance('xp-check', user()?->id); }
+    public function applyXp(): never
+    { $this->maintenance('xp-apply'); }
+    public function applyMyXp(): never
+    { $this->maintenance('xp-apply', user()?->id); }
+    private function maintenance(string $task, ?int $ownerId = null): never
     {
         try
-        { MaintenanceJob::start($task); }
+        { MaintenanceJob::start($task, $ownerId); }
         catch (RuntimeException $exception)
         { $this->commandError('admin/dev', $exception->getMessage(), false); }
         $this->commandSuccess('admin/dev', 'Maintenance lancée en arrière-plan.');

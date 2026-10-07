@@ -18,7 +18,9 @@ $actions = [
     ['key' => 'backup', 'icon' => '💾', 'title' => 'Sauvegarde de la base', 'description' => 'Exporter la base MySQL du projet dans storage/backups/database/. Conserve les vingt sauvegardes les plus récentes.', 'button' => 'Sauvegarder la base'],
     ['key' => 'migrations-create', 'icon' => '📝', 'title' => 'Créer une migration', 'description' => 'Créer un fichier SQL vide nommé create dans scripts/Database/migrations/. Écrire le SQL dans ce fichier avant de l’appliquer.', 'button' => 'Créer le fichier SQL'],
     ['key' => 'migrations-check', 'icon' => '🔍', 'title' => 'Vérification migrations', 'description' => 'Afficher les migrations appliquées et celles en attente, sans modifier la base.', 'button' => 'Vérifier les migrations'],
-    ['key' => 'migrations', 'icon' => '🗄️', 'title' => 'Migrations', 'description' => 'Appliquer les migrations SQL manquantes à la base de données du site.', 'button' => 'Appliquer les migrations']
+    ['key' => 'migrations', 'icon' => '🗄️', 'title' => 'Migrations', 'description' => 'Appliquer les migrations SQL manquantes à la base de données du site.', 'button' => 'Appliquer les migrations'],
+    ['key' => 'xp-check', 'icon' => '🔍', 'title' => 'Diagnostic XP', 'description' => 'Vérifier les récompenses manquantes ou injustifiées, les montants et les niveaux sans modifier les comptes.', 'button' => 'Vérifier tous les comptes', 'myButton' => 'Vérifier mon compte'],
+    ['key' => 'xp-apply', 'icon' => '⭐', 'title' => 'Récompenses XP', 'description' => 'Synchroniser les récompenses avec les données actuelles et recalculer les niveaux. Retire les récompenses injustifiées et corrige les montants.', 'button' => 'Corriger tous les comptes', 'myButton' => 'Corriger mon compte']
 ];
 ?>
 <section class="layout-container dashboard-page" data-admin-live data-status-url="<?= e($view->baseUri) ?>admin/commandes/etat">
@@ -28,13 +30,19 @@ $actions = [
                 <span class="dashboard-card-icon u-row-center" aria-hidden="true"><?= e($action['icon']) ?></span>
                 <span class="dashboard-card-title u-relative u-w-full u-bold"><?= e($action['title']) ?></span>
                 <code class="admin-command-badge"><?= e(match ($action['key'])
-                { 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'js-prune' => 'composer js:prune', 'js-prune-force' => 'composer js:prune:force', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'backup' => 'composer backup', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
+                { 'xp-check' => 'composer xp:backfill -- --all', 'xp-apply' => 'composer xp:backfill -- --all --apply', 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'js-prune' => 'composer js:prune', 'js-prune-force' => 'composer js:prune:force', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'backup' => 'composer backup', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
                 <p class="dashboard-card-description"><?= e($action['description']) ?></p>
                 <p role="status"><?= e($labels[$job['state']] ?? 'État inconnu') ?></p>
                 <form method="post" action="<?= e($view->baseUri . 'admin/dev/commandes/' . $action['key']) ?>">
                     <?= csrf_field() ?>
                     <button type="submit" class="form-submit u-inline-center u-pointer u-semibold" <?= $busy ? 'disabled' : '' ?>><?= e($action['button']) ?></button>
                 </form>
+                <?php if (isset($action['myButton'])): ?>
+                    <form method="post" action="<?= e($view->baseUri . 'admin/dev/commandes/' . $action['key'] . '/mon-compte') ?>">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="form-submit u-inline-center u-pointer u-semibold" <?= $busy ? 'disabled' : '' ?>><?= e($action['myButton']) ?></button>
+                    </form>
+                <?php endif; ?>
             </article>
         <?php endforeach; ?>
     </section>

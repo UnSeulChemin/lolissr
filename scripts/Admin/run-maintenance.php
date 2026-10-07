@@ -6,6 +6,10 @@ $root = dirname(__DIR__, 2);
 require $root . '/vendor/autoload.php';
 use App\Services\Admin\MaintenanceJob;
 $task = $argv[1] ?? '';
+$ownerId = isset($argv[2]) ? filter_var($argv[2], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
+if ($ownerId === false || count($argv) > 3 || ($ownerId !== null && !in_array($task, ['xp-check', 'xp-apply'], true))) throw new InvalidArgumentException('Invalid maintenance account.');
+$ownerId = isset($argv[2]) ? filter_var($argv[2], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
+if ($ownerId === false || count($argv) > 3 || ($ownerId !== null && !in_array($task, ['xp-check', 'xp-apply'], true))) throw new InvalidArgumentException('Invalid maintenance account.');
 $commands = match ($task)
 {
     'doctor' => [[PHP_BINARY, $root . '/scripts/Tools/doctor.php']],
@@ -20,6 +24,10 @@ $commands = match ($task)
     'migrations-create' => [[PHP_BINARY, $root . '/scripts/Database/create-migration.php', 'create']],
     'migrations' => [[PHP_BINARY, $root . '/scripts/Database/migrate.php', 'apply']],
     'backup' => [[PHP_BINARY, $root . '/scripts/Database/backup-database.php']],
+    'xp-check' => [[PHP_BINARY, $root . '/scripts/Profile/backfill-achievement-xp.php', $ownerId !== null ? (string) $ownerId : '--all']],
+    'xp-apply' => [[PHP_BINARY, $root . '/scripts/Profile/backfill-achievement-xp.php', $ownerId !== null ? (string) $ownerId : '--all', '--apply']],
+    'xp-check' => [[PHP_BINARY, $root . '/scripts/Profile/backfill-achievement-xp.php', $ownerId !== null ? (string) $ownerId : '--all']],
+    'xp-apply' => [[PHP_BINARY, $root . '/scripts/Profile/backfill-achievement-xp.php', $ownerId !== null ? (string) $ownerId : '--all', '--apply']],
     default => throw new InvalidArgumentException('Unknown maintenance command.')
 };
 $lock = fopen(MaintenanceJob::directory() . '/maintenance.lock', 'c');

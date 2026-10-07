@@ -20,10 +20,11 @@ define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
 
+$all = ($argv[1] ?? '') === '--all';
 $userId = filter_var($argv[1] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-if ($userId === false || count($argv) > 3 || (isset($argv[2]) && $argv[2] !== '--apply'))
+if ((!$all && $userId === false) || count($argv) > 3 || (isset($argv[2]) && $argv[2] !== '--apply'))
 {
-    fwrite(STDERR, "Usage: php scripts/Profile/backfill-achievement-xp.php USER_ID [--apply]\n");
+    fwrite(STDERR, "Usage: php scripts/Profile/backfill-achievement-xp.php USER_ID|--all [--apply]\n");
     exit(1);
 }
 
@@ -34,7 +35,11 @@ $database = $container->get(Database::class);
 $users = $container->get(UserRepository::class);
 $dashboardStatsService = $container->get(ProfileStatsService::class);
 $rewards = $container->get(AchievementXpService::class);
-$user = $users->findById($userId);
+$userIds = $all ? $database->query('SELECT id FROM users ORDER BY id')->fetchAll(PDO::FETCH_COLUMN) : [$userId];
+foreach ($userIds as $id)
+{
+$user = $users->findById((int) $id);
+echo 'Compte : ' . (int) $id . PHP_EOL;
 if ($user === null)
 {
     fwrite(STDERR, "Utilisateur introuvable.\n");
@@ -64,14 +69,16 @@ if ($audit['issues'] === [] && $audit['missing'] === [])
 {
     echo 'Aucun écart détecté.' . PHP_EOL;
 }
-echo '--apply ajoute uniquement les récompenses manquantes ; aucun retrait d’XP ni correction des récompenses existantes.' . PHP_EOL;
+echo '--apply synchronise les recompenses avec les statistiques actuelles et recalcule le niveau et les XP.' . PHP_EOL;
 if ($apply)
 {
-    $rewards->rewardAll($user, $stats);
-    echo 'XP de succès ajoutée : ' . ($rewards->totalForUser($user) - $before) . PHP_EOL;
+    $rewards->reconcile($user, fn () => $dashboardStatsService->getStats($user));
+    echo 'Variation des XP de succes : ' . ($rewards->totalForUser($user) - $before) . PHP_EOL;
+    echo "Compte recalcule : niveau {$user->level}, {$user->xp} XP." . PHP_EOL;
 }
 else
 {
     echo 'Lecture seule. XP de succès déjà attribuée : ' . $before . PHP_EOL;
-    echo 'Utiliser --apply pour attribuer les récompenses manquantes selon les statistiques actuelles.' . PHP_EOL;
+    echo 'Utiliser --apply pour synchroniser les recompenses et recalculer le compte selon les statistiques actuelles.' . PHP_EOL;
+}
 }

@@ -89,6 +89,43 @@ final readonly class AchievementXpService
         $this->award($user, $this->expectedRewards($stats));
     }
 
+    /** @param callable(): ProfileStatsData $loadStats */
+    public function reconcile(User $user, callable $loadStats): void
+    {
+        $this->database->transaction(function () use ($user, $loadStats): void
+        {
+            $lock = $this->database->prepare('SELECT id FROM users WHERE id = ? FOR UPDATE');
+            $lock->execute([$user->id]);
+            if ($lock->fetchColumn() === false) throw new \RuntimeException('Utilisateur introuvable.');
+            $stats = $loadStats();
+            $expected = $this->expectedRewards($stats);
+            $audit = $this->audit($user, $stats);
+            $query = $this->database->prepare('SELECT achievement_key, xp FROM achievement_xp_rewards WHERE user_id = ? FOR UPDATE');
+            $query->execute([$user->id]);
+            $delete = $this->database->prepare('DELETE FROM achievement_xp_rewards WHERE user_id = ? AND achievement_key = ?');
+            $updateReward = $this->database->prepare('UPDATE achievement_xp_rewards SET xp = ? WHERE user_id = ? AND achievement_key = ?');
+            $missing = $expected;
+            /** @var list<array{achievement_key: string, xp: int|string}> $rows */
+            $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+            foreach ($rows as $row)
+            {
+                $key = $row['achievement_key'];
+                unset($missing[$key]);
+                if (!isset($expected[$key])) $delete->execute([$user->id, $key]);
+                elseif ((int) $row['xp'] !== $expected[$key]) $updateReward->execute([$expected[$key], $user->id, $key]);
+            }
+            $insert = $this->database->prepare('INSERT INTO achievement_xp_rewards (user_id, achievement_key, xp) VALUES (?, ?, ?)');
+            foreach ($missing as $key => $xp) $insert->execute([$user->id, $key, $xp]);
+            $update = $this->database->prepare('UPDATE users SET level = ?, xp = ? WHERE id = ?');
+            $update->execute([$audit['expectedLevel'], $audit['expectedXp'], $user->id]);
+            $previous = [$user->level, $user->xp];
+            $this->database->onRollback(static function () use ($user, $previous): void
+            { [$user->level, $user->xp] = $previous; });
+            $user->level = $audit['expectedLevel'];
+            $user->xp = $audit['expectedXp'];
+        });
+    }
+
     // =================================================
     // AUDIT ET TOTAL DES XP
     // =================================================

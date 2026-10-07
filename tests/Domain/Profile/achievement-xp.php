@@ -81,4 +81,39 @@ $assert((int) $database->query("SELECT xp FROM achievement_xp_rewards WHERE user
 $afterApply = [$other->level, $other->xp, $service->totalForUser($other)];
 $service->rewardAll($other, $stats);
 $assert([$other->level, $other->xp, $service->totalForUser($other)] === $afterApply, 'Repeated apply changed account data');
-echo "PASS: achievement rewards, audit, additive backfill, duplicate prevention, rollback and user isolation (temporary tables only).\n";
+$service->reconcile($other, static fn () => $stats);
+$assert($service->totalForUser($other) === 550 && [$other->level, $other->xp] === [16, 0], 'Reconciliation did not preserve base XP or correct rewards');
+$assert((int) $database->query("SELECT xp FROM achievement_xp_rewards WHERE user_id = 2 AND achievement_key = 'tomes_1'")->fetchColumn() === 50, 'Wrong reward amount persisted');
+$assert((int) $database->query("SELECT COUNT(*) FROM achievement_xp_rewards WHERE user_id = 2 AND achievement_key IN ('obsolete', 'tomes_25')")->fetchColumn() === 0, 'Unjustified rewards persisted');
+$service->reconcile($other, static fn () => $stats);
+$assert($service->totalForUser($other) === 550 && [$other->level, $other->xp] === [16, 0], 'Reconciliation is not idempotent');
+$emptyStats = new \App\DTO\Profile\Responses\ProfileStatsData(
+    readTomes: 0, tomeXp: 0, completedSeries: 0, seriesXp: 0,
+    readArtbooks: 0, artbookXp: 0, figurinesCollected: 0, figurinesXp: 0,
+    nendoroidsCollected: 0, nendoroidsXp: 0, peluchesCollected: 0, peluchesXp: 0,
+    vocabularyLearned: 0, vocabularyXp: 0, grammarLearned: 0, grammarXp: 0,
+    totalXp: 550, achievementXp: 550
+);
+try
+{
+    $service->reconcile($other, static function (): \App\DTO\Profile\Responses\ProfileStatsData
+    { throw new RuntimeException('fixture failure'); });
+    throw new RuntimeException('Expected reconciliation failure');
+}
+catch (RuntimeException $error)
+{ if ($error->getMessage() !== 'fixture failure') throw $error; }
+$assert($service->totalForUser($other) === 550 && [$other->level, $other->xp] === [16, 0], 'Failed reconciliation changed account');
+$database->exec('ALTER TABLE users ADD CONSTRAINT fixture_reconcile_level CHECK (id <> 2 OR level > 1)');
+try
+{
+    $service->reconcile($other, static fn () => $emptyStats);
+    throw new RuntimeException('Expected update failure');
+}
+catch (PDOException)
+{}
+$assert($service->totalForUser($other) === 550 && [$other->level, $other->xp] === [16, 0], 'Failed level update did not restore rewards');
+$database->exec('ALTER TABLE users DROP CHECK fixture_reconcile_level');
+$service->reconcile($other, static fn () => $emptyStats);
+$assert($service->totalForUser($other) === 0 && [$other->level, $other->xp] === [1, 0], 'Empty account did not return to level one');
+$assert($service->totalForUser($user) === 19300, 'Reconciliation changed another account');
+echo "PASS: achievement rewards, audit, reconciliation, duplicate prevention, rollback and user isolation (temporary tables only).\n";

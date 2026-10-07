@@ -38,6 +38,7 @@
             "@check",
             "@browser-tests",
             "@db:check",
+            "@php scripts/Database/deduplicate-indexes.php --check",
             "@php tests/Http/Auth/user-ownership.php",
             "@php tests/Build/Release/production-dependencies.php",
             "@php tests/Http/Assets/asset-cache-http.php"
@@ -177,7 +178,7 @@
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",
-        "check:all": "[Tests] Tous les controles : PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, isolation des comptes, images et dependances de production.",
+        "check:all": "[Tests] Tous les controles : PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, index redondants, isolation des comptes, images et dependances de production.",
 
         "phpstan": "[Tests] Analyse statique du code PHP.",
         "http-tests": "[Tests] Vérifie les réponses HTTP et la navigation SPA.",

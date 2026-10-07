@@ -1,4 +1,4 @@
-﻿=========================================
+=========================================
 COMMANDES DU PROJET
 =========================================
 
@@ -81,8 +81,17 @@ TESTS
 composer check
 
 = Tous les controles
-= check + (Tests navigateur Edge, schéma MySQL, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
+= check + (Tests navigateur Edge, schéma MySQL, index redondants, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
+
+
+=========================================
+MESURES
+=========================================
+
+= Mesurer cinq passages HTTP
+= Rapport : tests/Http/reports/lolissr-http-report.html
+composer http:profile
 
 
 =========================================
@@ -116,13 +125,6 @@ composer manga:sync
 composer manga:recommendations
 
 
-
-
-
-
-
-
-
 =========================================
 BASE DE DONNEES
 =========================================
@@ -141,48 +143,22 @@ composer db:migrate:check
 = Appliquer les migrations apres sauvegarde
 composer db:migrate
 
-
-
-
-
-
-
-= Enregistrer une migration deja appliquee, apres verification manuelle
-composer db:migrate:baseline -- YYYY-MM-DD-NN-description.sql
-
-
-= Une migration failed/running demande verification et reparation avant baseline
-
-= Verifier le schema avec des fixtures temporaires
-composer db:check
-
-= Verifier l'isolation des comptes et sessions
-composer users:check
-
-= Auditer les index redondants sans modification
-composer db:deduplicate-indexes
-
-= Supprimer les index identifies comme redondants
-composer db:deduplicate-indexes -- --apply
-
 = Auditer les recompenses XP sans modification
 composer xp:backfill -- USER_ID
 
-= Attribuer uniquement les recompenses XP manquantes
+= Synchroniser les recompenses XP et recalculer le niveau selon les donnees actuelles
 composer xp:backfill -- USER_ID --apply
 
 
-=========================================
-MESURES
-=========================================
 
-= Mesurer la recherche, les listes et les pages sans modification de la base
-= Remplacer 1 par le compte ; le cache applicatif peut etre actualise
-composer search:profile -- 1 Berserk --limit=5 --lists --pages=1,20
 
-= Mesurer cinq passages HTTP
-= Rapport : tests/Http/reports/lolissr-http-report.html
-composer http:profile
+
+
+
+
+
+
+
 
 
 =========================================

@@ -3,9 +3,9 @@ declare(strict_types=1);
 $root = dirname(__DIR__, 3);
 $fixture = sys_get_temp_dir() . '/maintenance-job-' . bin2hex(random_bytes(8));
 foreach (['App/Services/Admin', 'scripts/Admin', 'scripts/Assets/Images', 'scripts/Maintenance', 'scripts/Tools', 'vendor', 'storage/admin-jobs'] as $directory) mkdir($fixture . '/' . $directory, 0700, true);
-$run = static function (string $task) use ($fixture): void
+$run = static function (string $task, ?int $ownerId = null) use ($fixture): void
 {
-    $process = proc_open([PHP_BINARY, $fixture . '/launch.php', $task], [0 => ['pipe', 'r'], 1 => ['file', $fixture . '/launcher.log', 'a'], 2 => ['file', $fixture . '/launcher.log', 'a']], $pipes, $fixture);
+    $process = proc_open([PHP_BINARY, $fixture . '/launch.php', $task, ...($ownerId !== null ? [(string) $ownerId] : [])], [0 => ['pipe', 'r'], 1 => ['file', $fixture . '/launcher.log', 'a'], 2 => ['file', $fixture . '/launcher.log', 'a']], $pipes, $fixture);
     if (!is_resource($process)) throw new RuntimeException('Cannot launch maintenance fixture.');
     fclose($pipes[0]);
     if (proc_close($process) !== 0) throw new RuntimeException('Maintenance launcher failed.');
@@ -22,11 +22,13 @@ $wait = static function (string $expected) use ($fixture): void
 try
 {
     mkdir($fixture . '/scripts/Database', 0700, true);
+    mkdir($fixture . '/scripts/Profile', 0700, true);
+    file_put_contents($fixture . '/scripts/Profile/backfill-achievement-xp.php', '<?php echo json_encode(array_slice($argv, 1));');
     file_put_contents($fixture . '/scripts/Database/backup-database.php', '<?php if (count($argv) !== 1) exit(1); echo "Database backup completed\n";');
     copy($root . '/App/Services/Admin/MaintenanceJob.php', $fixture . '/App/Services/Admin/MaintenanceJob.php');
     copy($root . '/scripts/Admin/run-maintenance.php', $fixture . '/scripts/Admin/run-maintenance.php');
     file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/MaintenanceJob.php";');
-    file_put_contents($fixture . '/launch.php', '<?php require __DIR__ . "/vendor/autoload.php"; function env($key, $default = null) { return $key === "ADMIN_COMMAND_PHP" ? PHP_BINARY : $default; } App\Services\Admin\MaintenanceJob::start($argv[1]);');
+    file_put_contents($fixture . '/launch.php', '<?php require __DIR__ . "/vendor/autoload.php"; function env($key, $default = null) { return $key === "ADMIN_COMMAND_PHP" ? PHP_BINARY : $default; } App\Services\Admin\MaintenanceJob::start($argv[1], isset($argv[2]) ? (int) $argv[2] : null);');
     file_put_contents($fixture . '/scripts/Assets/Images/build-profile-images.php', '<?php echo "Profiles completed\n";');
     file_put_contents($fixture . '/scripts/Assets/Images/optimize-thumbnails.php', '<?php if (($argv[1] ?? null) !== "--apply") exit(1); echo "Thumbnails completed\n";');
     file_put_contents($fixture . '/scripts/Maintenance/clear-runtime.php', '<?php if (($argv[1] ?? null) !== "cache") exit(1); echo "Cache cleared\n";');
@@ -35,6 +37,17 @@ try
     if (!str_contains($output, "Profiles completed\nThumbnails completed")) throw new RuntimeException('Image build stages missing or out of order.');
     $run('backup'); $wait('done');
     if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Database backup completed')) throw new RuntimeException('Database backup command not executed.');
+    foreach (['xp-check', 'xp-apply'] as $xpTask)
+    {
+        foreach ([null, 1] as $ownerId)
+        {
+            $run($xpTask, $ownerId); $wait('done');
+            $arguments = json_decode((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), true);
+            $expected = [$ownerId !== null ? (string) $ownerId : '--all'];
+            if ($xpTask === 'xp-apply') $expected[] = '--apply';
+            if ($arguments !== $expected) throw new RuntimeException('Incorrect XP scope or mode.');
+        }
+    }
     file_put_contents($fixture . '/scripts/Database/migrate.php', '<?php if (!in_array($argv[1] ?? null, ["status", "apply"], true)) exit(1); echo "Migration " . $argv[1];');
     copy($root . '/scripts/Database/create-migration.php', $fixture . '/scripts/Database/create-migration.php');
     mkdir($fixture . '/scripts/Database/Support', 0700, true);

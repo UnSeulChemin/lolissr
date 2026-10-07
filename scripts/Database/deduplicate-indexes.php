@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 if (PHP_SAPI !== 'cli')
 { http_response_code(404); exit; }
-if (count($argv) > 2 || (isset($argv[1]) && $argv[1] !== '--apply'))
-    throw new InvalidArgumentException('Usage: php scripts/Database/deduplicate-indexes.php [--apply]');
+if (count($argv) > 2 || (isset($argv[1]) && !in_array($argv[1], ['--apply', '--check'], true)))
+    throw new InvalidArgumentException('Usage: php scripts/Database/deduplicate-indexes.php [--apply|--check]');
 define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
@@ -48,3 +48,4 @@ foreach ($plan as $sql)
     if ($apply) $database->exec($sql);
 }
 echo count($plan) . ($apply ? ' redundant indexes removed.' : ' redundant indexes eligible; use --apply to execute.') . "\n";
+if (($argv[1] ?? '') === '--check') exit($plan === [] ? 0 : 1);
