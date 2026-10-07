@@ -41,11 +41,12 @@
 .collection-grid
 {
     align-items: start;
-    grid-template-columns: repeat( 4, minmax( 0, var(--width-collection-card) ) );
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--width-collection-card)), var(--width-collection-card)));
+    justify-content: center;
     gap: var(--gap-grid-collection);
     max-width: 1320px;
     margin: 40px auto;
-    padding: 0 40px;
+    padding: 0 clamp(16px, 4vw, 40px);
 }
 
 

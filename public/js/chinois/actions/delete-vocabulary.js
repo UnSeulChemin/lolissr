@@ -14,7 +14,7 @@ import { handleError } from '../../core/errors/error-handler.js';
 
 import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 import { invalidateVocabularyPages } from '../cache-invalidation.js';
 
@@ -64,7 +64,7 @@ async function deleteVocabulaire(button)
     // CONFIRMATION
     // --------------------------------------------------------------------------
 
-    const confirmed = await deleteModal('Supprimer ce vocabulaire ?');
+    const confirmed = await confirmDelete(button, 'Supprimer ce vocabulaire ?');
 
     if (!confirmed)
     {
@@ -112,6 +112,7 @@ async function deleteVocabulaire(button)
         // --------------------------------------------------------------------------
 
         invalidateVocabularyPages();
+        if (!button.isConnected) return;
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE
@@ -141,6 +142,7 @@ async function deleteVocabulaire(button)
 
         button.disabled = false;
 
+        if (!button.isConnected) return;
         handleError(error);
     }
 }

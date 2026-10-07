@@ -14,7 +14,7 @@ import { handleError } from '../../core/errors/error-handler.js';
 
 import { FrontendError } from '../../core/errors/frontend-error.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 import { invalidateGrammarPages } from '../cache-invalidation.js';
 
@@ -65,7 +65,7 @@ async function deleteGrammaire(button)
     // CONFIRMATION
     // --------------------------------------------------------------------------
 
-    const confirmed = await deleteModal('Supprimer cette règle de grammaire ?');
+    const confirmed = await confirmDelete(button, 'Supprimer cette règle de grammaire ?');
 
     if (!confirmed)
     {
@@ -113,6 +113,7 @@ async function deleteGrammaire(button)
         // --------------------------------------------------------------------------
 
         invalidateGrammarPages();
+        if (!button.isConnected) return;
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE
@@ -142,6 +143,7 @@ async function deleteGrammaire(button)
 
         button.disabled = false;
 
+        if (!button.isConnected) return;
         handleError(error);
     }
 }

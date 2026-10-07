@@ -97,6 +97,11 @@ async function toggleMastery(button)
                 }
             );
 
+        if (!button.isConnected)
+        {
+            invalidateVocabularyPages();
+            return;
+        }
         if (!data?.success)
         {
 
@@ -123,6 +128,7 @@ async function toggleMastery(button)
 
     } catch (error)
     {
+        if (!button.isConnected) return;
 
         if (error instanceof Error && error.name === 'AbortError')
         {

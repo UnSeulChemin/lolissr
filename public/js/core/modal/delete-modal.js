@@ -22,3 +22,23 @@ export function deleteModal(message, title = 'Suppression')
         }
     );
 }
+
+export async function confirmDelete(button, message)
+{
+    if (button.disabled) return false;
+    button.disabled = true;
+    let confirmed = false;
+    try
+    {
+        confirmed = await deleteModal(message) && button.isConnected;
+        return confirmed;
+    }
+    finally
+    {
+        if (!confirmed)
+        {
+            button.disabled = false;
+            if (button.isConnected && !document.querySelector('.confirm-modal-overlay')) button.focus();
+        }
+    }
+}

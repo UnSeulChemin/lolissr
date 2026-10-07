@@ -138,6 +138,11 @@ async function updateCollectStatus(button)
         // APPLICATION SERVEUR ÉTAT
         // --------------------------------------------------------------------------
 
+        if (!button.isConnected)
+        {
+            invalidateFigurinePages();
+            return;
+        }
         const collectStatus = Number(data?.data?.collectStatus ?? nextCollectStatus);
 
         updateCollectButtonState(button, collectStatus);
@@ -169,7 +174,7 @@ async function updateCollectStatus(button)
 
         updateCollectButtonState(button, currentCollectStatus);
 
-        handleError(error);
+        if (button.isConnected) handleError(error);
 
     } finally
     {

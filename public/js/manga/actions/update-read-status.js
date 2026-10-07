@@ -138,6 +138,11 @@ async function updateReadStatus(button)
         // APPLICATION SERVEUR ÉTAT
         // --------------------------------------------------------------------------
 
+        if (!button.isConnected)
+        {
+            invalidateMangaPages();
+            return;
+        }
         const readStatus = Number(data?.data?.readStatus ?? nextReadStatus);
 
         updateButtonState(button, readStatus);
@@ -176,7 +181,7 @@ async function updateReadStatus(button)
 
         updateButtonState(button, currentReadStatus);
 
-        handleError(error);
+        if (button.isConnected) handleError(error);
 
     } finally
     {

@@ -1,6 +1,7 @@
 export async function runBrowserScenario()
 {
     const {confirmModal} = await import('./js/core/modal/confirm-modal.js');
+    const {runCleanup} = await import('./js/router/lifecycle/cleanup.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
     const text = '<img src="x" onerror="window.modalInjected=true"> & <b>texte</b> "test"';
@@ -40,5 +41,20 @@ export async function runBrowserScenario()
         check(await pending === false, 'Cancel did not resolve false');
         closed();
     }
-    return ['HTML-like labels stay literal in confirmation modals', 'normal and danger confirmation', 'cancel, Escape and outside click', 'defaults, focus and scroll restoration'];
+    const focus = document.createElement('button');
+    document.body.append(focus);
+    focus.focus();
+    document.body.style.overflow = 'auto';
+    const pending = confirmModal({title: 'Navigation', message: 'Pending'});
+    runCleanup();
+    check(await pending === false && !document.querySelector('.confirm-modal-overlay'), 'Cleanup failed to cancel confirmation');
+    check(document.body.style.overflow === 'auto' && document.activeElement === focus, 'Previous scroll/focus was not restored');
+    document.body.style.overflow = '';
+    focus.remove();
+    const first = confirmModal({title: 'First'});
+    const second = confirmModal({title: 'Second'});
+    check(await first === false && document.querySelectorAll('.confirm-modal-overlay').length === 1, 'Overlapping modals were not reconciled');
+    document.querySelector('.confirm-modal-secondary').click();
+    check(await second === false, 'Second modal did not close');
+    return ['HTML-like labels stay literal in confirmation modals', 'normal and danger confirmation', 'cancel, Escape and outside click', 'defaults, focus and scroll restoration', 'navigation cancels pending confirmation', 'single active confirmation'];
 }

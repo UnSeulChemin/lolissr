@@ -1,0 +1,1 @@
+import{a as n}from"./chunk-ZI66S6XZ.js";function a(e,r="Suppression"){return n({title:r,message:e,confirmText:"Supprimer",danger:!0})}async function l(e,r){if(e.disabled)return!1;e.disabled=!0;let i=!1;try{return i=await a(r)&&e.isConnected,i}finally{i||(e.disabled=!1)}}export{l as a};

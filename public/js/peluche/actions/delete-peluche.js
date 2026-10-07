@@ -18,7 +18,7 @@ import { navigateTo } from '../../router/navigation/navigation.js';
 
 import { invalidatePeluchePages } from '../cache-invalidation.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
@@ -71,7 +71,7 @@ async function deletePeluche(button)
         return;
     }
 
-    const confirmed = await deleteModal('Supprimer cette peluche ?');
+    const confirmed = await confirmDelete(button, 'Supprimer cette peluche ?');
 
     if (!confirmed)
     {
@@ -118,6 +118,7 @@ async function deletePeluche(button)
             || redirectUrl;
 
         invalidatePeluchePages();
+        if (!button.isConnected) return;
 
         showToast(data.message || 'Peluche supprimée', 'success');
 
@@ -126,6 +127,7 @@ async function deletePeluche(button)
     } catch (error)
     {
 
+        if (!button.isConnected) return;
         handleError(error);
 
         setLoadingState(button, false);

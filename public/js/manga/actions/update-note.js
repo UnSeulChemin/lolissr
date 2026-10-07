@@ -30,7 +30,7 @@ const TOTAL_NOTE_SELECTOR = '#js-note-total';
 
 let initialized = false;
 
-let isSaving = false;
+const savingCards = new WeakSet();
 
 // =================================================
 // UTILITAIRES
@@ -79,7 +79,7 @@ function refreshButtons()
 
                     button.classList.toggle('active', currentValue === Number( button.dataset.value ));
 
-                    button.disabled = isSaving;
+                    button.disabled = savingCards.has(card);
                 }
             );
         }
@@ -158,17 +158,14 @@ async function saveNotes(fieldName, value)
 
 async function updateNote(button)
 {
-    if (isSaving)
-    {
-        return;
-    }
-
     const card = getDetailCard();
 
     if (!card)
     {
         return;
     }
+
+    if (savingCards.has(card)) return;
 
     const group = button.closest(NOTE_GROUP_SELECTOR);
 
@@ -197,11 +194,13 @@ async function updateNote(button)
     try
     {
 
-        isSaving = true;
+        savingCards.add(card);
 
         refreshButtons();
 
         const data = await saveNotes(fieldName, value);
+        invalidateMangaPages();
+        if (!card.isConnected) return;
 
         const notes = data?.data?.notes
             ?? {};
@@ -218,12 +217,11 @@ async function updateNote(button)
 
         refreshNoteUi();
 
-        invalidateMangaPages();
-
         showToast(data?.message ?? 'Sauvegardé', 'success');
 
     } catch (error)
     {
+        if (!card.isConnected) return;
 
         debugError('NOTE', error);
 
@@ -236,7 +234,7 @@ async function updateNote(button)
     } finally
     {
 
-        isSaving = false;
+        savingCards.delete(card);
 
         refreshButtons();
     }

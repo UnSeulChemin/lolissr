@@ -18,7 +18,7 @@ import { navigateTo } from '../../router/navigation/navigation.js';
 
 import { invalidateMangaPages } from '../cache-invalidation.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
@@ -79,7 +79,7 @@ async function deleteManga(button)
     // CONFIRMATION
     // --------------------------------------------------------------------------
 
-    const confirmed = await deleteModal('Supprimer ce manga ?');
+    const confirmed = await confirmDelete(button, 'Supprimer ce manga ?');
 
     if (!confirmed)
     {
@@ -146,6 +146,7 @@ async function deleteManga(button)
         // --------------------------------------------------------------------------
 
         invalidateMangaPages();
+        if (!button.isConnected) return;
 
         // --------------------------------------------------------------------------
         // SUCCÈS
@@ -161,6 +162,7 @@ async function deleteManga(button)
 
     } catch (error)
     {
+        if (!button.isConnected) return;
 
         handleError(error);
 

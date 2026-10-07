@@ -18,7 +18,7 @@ import { navigateTo } from '../../router/navigation/navigation.js';
 
 import { invalidateNendoroidPages } from '../cache-invalidation.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
@@ -71,7 +71,7 @@ async function deleteNendoroid(button)
         return;
     }
 
-    const confirmed = await deleteModal('Supprimer cette Nendoroid ?');
+    const confirmed = await confirmDelete(button, 'Supprimer cette Nendoroid ?');
 
     if (!confirmed)
     {
@@ -118,6 +118,7 @@ async function deleteNendoroid(button)
             || redirectUrl;
 
         invalidateNendoroidPages();
+        if (!button.isConnected) return;
 
         showToast(data.message || 'Nendoroid supprimée', 'success');
 
@@ -126,6 +127,7 @@ async function deleteNendoroid(button)
     } catch (error)
     {
 
+        if (!button.isConnected) return;
         handleError(error);
 
         setLoadingState(button, false);

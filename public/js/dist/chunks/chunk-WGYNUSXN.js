@@ -1,0 +1,1 @@
+import{a as f}from"./chunk-ZI66S6XZ.js";function l(e,r="Suppression"){return f({title:r,message:e,confirmText:"Supprimer",danger:!0})}async function o(e,r){if(e.disabled)return!1;e.disabled=!0;let i=!1;try{return i=await l(r)&&e.isConnected,i}finally{i||(e.disabled=!1,e.isConnected&&!document.querySelector(".confirm-modal-overlay")&&e.focus())}}export{o as a};

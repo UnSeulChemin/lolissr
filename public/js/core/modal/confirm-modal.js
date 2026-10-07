@@ -1,3 +1,7 @@
+import { registerCleanup } from '../../router/lifecycle/cleanup.js';
+
+let activeClose = null;
+
 // =================================================
 // CONFIRMATION FENÊTRE MODALE
 // =================================================
@@ -15,6 +19,11 @@ export function confirmModal(
     return new Promise(
         (resolve) =>
         {
+            activeClose?.(false);
+            const previousOverflow = document.body.style.overflow;
+            const previousFocus = document.activeElement;
+            let closed = false;
+            let unregister = () => {};
             const overlay = document.createElement('div');
 
             overlay.className = 'confirm-modal-overlay';
@@ -60,17 +69,21 @@ export function confirmModal(
 
             const close = (result) =>
                 {
-                    if (! document.body.contains( overlay ))
+                    if (closed)
                     {
 
                         return;
                     }
 
-                    document.body.style.overflow = '';
+                    closed = true;
+                    unregister();
+                    if (activeClose === close) activeClose = null;
+                    document.body.style.overflow = previousOverflow;
 
                     document.removeEventListener('keydown', handleEscape);
 
                     overlay.remove();
+                    if (previousFocus?.isConnected) previousFocus.focus();
 
                     resolve(result);
                 };
@@ -84,6 +97,8 @@ export function confirmModal(
                     }
                 };
 
+            activeClose = close;
+            unregister = registerCleanup(() => close(false));
             document.body.append(overlay);
 
             document.body.style.overflow = 'hidden';

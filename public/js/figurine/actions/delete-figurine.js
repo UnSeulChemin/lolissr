@@ -18,7 +18,7 @@ import { navigateTo } from '../../router/navigation/navigation.js';
 
 import { invalidateFigurinePages } from '../cache-invalidation.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
@@ -71,7 +71,7 @@ async function deleteFigurine(button)
         return;
     }
 
-    const confirmed = await deleteModal('Supprimer cette figurine ?');
+    const confirmed = await confirmDelete(button, 'Supprimer cette figurine ?');
 
     if (!confirmed)
     {
@@ -118,6 +118,7 @@ async function deleteFigurine(button)
             || redirectUrl;
 
         invalidateFigurinePages();
+        if (!button.isConnected) return;
 
         showToast(data.message || 'Figurine supprimée', 'success');
 
@@ -126,6 +127,7 @@ async function deleteFigurine(button)
     } catch (error)
     {
 
+        if (!button.isConnected) return;
         handleError(error);
 
         setLoadingState(button, false);

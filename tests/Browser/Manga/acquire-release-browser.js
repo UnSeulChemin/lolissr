@@ -45,7 +45,7 @@ export async function runBrowserScenario()
         submit();
         check(document.querySelectorAll('.confirm-modal-overlay').length === 1, 'SPA reinitialization duplicated handlers');
         runCleanup();
-        document.querySelector('.confirm-modal-primary').click();
+        check(!document.querySelector('.confirm-modal-overlay'), 'Navigation kept confirmation open');
         await tick();
         check(requests === 1, 'Leaving page during confirmation submitted stale form');
         return ['cancel without POST', 'single confirmation and AJAX request', 'error restores control', 'SPA cleanup prevents stale submission'];

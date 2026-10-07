@@ -18,7 +18,7 @@ import { navigateTo } from '../../router/navigation/navigation.js';
 
 import { invalidateMangaPages } from '../cache-invalidation.js';
 
-import { deleteModal } from '../../core/modal/modal.js';
+import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
@@ -69,7 +69,7 @@ async function deleteArtbook(button)
         return;
     }
 
-    const confirmed = await deleteModal('Supprimer ce artbook ?');
+    const confirmed = await confirmDelete(button, 'Supprimer ce artbook ?');
 
     if (! confirmed)
     {
@@ -113,6 +113,7 @@ async function deleteArtbook(button)
             || redirectUrl;
 
         invalidateMangaPages();
+        if (!button.isConnected) return;
 
         showToast(data.message || 'Artbook supprimé', 'success');
 
@@ -120,6 +121,7 @@ async function deleteArtbook(button)
     }
     catch (error)
     {
+        if (!button.isConnected) return;
         handleError(error);
 
         setLoadingState(button, false);
