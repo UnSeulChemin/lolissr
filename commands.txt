@@ -150,36 +150,19 @@ composer xp:backfill -- USER_ID
 composer xp:backfill -- USER_ID --apply
 
 
-
-
-
-
 =========================================
-OUTILS OCCASIONNELS
+AVANT PRODUCTION
 =========================================
 
-= Compiler uniquement le CSS
-composer css:build
+!! Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
 
-= Compiler uniquement le JavaScript
-composer js:build
-
-= Installer esbuild
-composer js:install
-
-
-
-
-=========================================
-AVANT LIVRAISON
-=========================================
-
-= Compiler les assets, verifier le formatage et lancer tous les controles
-= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
+= Diagnostiquer le projet, compiler les assets, verifier le formatage et lancer tous les controles
 composer preflight
 
 = Generer une archive avec images, assets actifs et dependances de production
 composer release:zip
+
+
 
 = Mise a jour en conservant les images du serveur
 composer release:zip -- --without-images
