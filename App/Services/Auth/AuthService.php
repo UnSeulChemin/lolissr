@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
+use App\DTO\Auth\LoginIdentityData;
 use App\Enums\Auth\LoginResult;
 use App\Models\User\User;
 use App\Repositories\Auth\UserRepository;
@@ -24,6 +25,9 @@ final class AuthService implements AuthenticationInterface
     private bool $userResolved = false;
 
     private ?User $currentUser = null;
+
+    private ?LoginIdentityData $loginIdentity = null;
+    private string $loginIpAddress = '';
 
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -71,19 +75,23 @@ final class AuthService implements AuthenticationInterface
     {
         $username = trim($username);
 
-        if ($this->loginThrottleService->isLocked($username, $ipAddress))
+        $identity = $this->loginThrottleService->resolveIdentity($username);
+        $this->loginIdentity = $identity;
+        $this->loginIpAddress = $ipAddress;
+
+        if ($this->loginThrottleService->isLocked($identity, $ipAddress))
         {
             return LoginResult::LOCKED;
         }
 
-        $user = $this->userRepository->findByUsername($username);
+        $user = $identity->user;
 
         $passwordMatches = $this->hasValidPassword($password)
             && password_verify($password, $user === null ? self::DUMMY_PASSWORD_HASH : $user->password);
 
         if (! $passwordMatches || $user === null)
         {
-            if ($this->loginThrottleService->recordFailure($username, $ipAddress))
+            if ($this->loginThrottleService->recordFailure($identity, $ipAddress))
             {
                 return LoginResult::LOCKED;
             }
@@ -91,7 +99,7 @@ final class AuthService implements AuthenticationInterface
             return LoginResult::INVALID_CREDENTIALS;
         }
 
-        $this->loginThrottleService->clear($username, $ipAddress);
+        $this->loginThrottleService->clear($identity, $ipAddress);
         $this->rehashPasswordIfNeeded($user, $password);
 
         Session::regenerate();
@@ -102,6 +110,12 @@ final class AuthService implements AuthenticationInterface
         $this->currentUser = $user;
 
         return LoginResult::SUCCESS;
+    }
+
+    public function remainingLoginLockMinutes(): int
+    {
+        return $this->loginIdentity === null ? 0
+            : $this->loginThrottleService->remainingLockMinutes($this->loginIdentity, $this->loginIpAddress);
     }
 
     public function logout(): void

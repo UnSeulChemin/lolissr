@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
+use App\DTO\Auth\LoginIdentityData;
 use App\Repositories\Auth\LoginAttemptRepository;
 use App\Repositories\Auth\UserRepository;
 
@@ -29,12 +30,12 @@ final readonly class LoginThrottleService
     // LIMITATION
     // =================================================
 
-    public function isLocked(string $username, string $ipAddress): bool
+    public function isLocked(string|LoginIdentityData $username, string $ipAddress): bool
     {
         return $this->remainingLockMinutes($username, $ipAddress) > 0;
     }
 
-    public function remainingLockMinutes(string $username, string $ipAddress): int
+    public function remainingLockMinutes(string|LoginIdentityData $username, string $ipAddress): int
     {
         $remaining = 0;
         $now = $this->now()->getTimestamp();
@@ -47,7 +48,7 @@ final readonly class LoginThrottleService
         return (int) ceil($remaining / 60);
     }
 
-    public function recordFailure(string $username, string $ipAddress): bool
+    public function recordFailure(string|LoginIdentityData $username, string $ipAddress): bool
     {
         $now = $this->now();
 
@@ -84,11 +85,11 @@ final readonly class LoginThrottleService
         return $locked;
     }
 
-    public function clear(string $username, string $ipAddress): void
+    public function clear(string|LoginIdentityData $username, string $ipAddress): void
     {
-        $this->loginAttemptRepository->clear($this->identifierHash($username, $ipAddress));
-        // A successful login clears this account, but cannot reset an IP's shared budget.
         $budgets = $this->budgets($username, $ipAddress);
+        $this->loginAttemptRepository->clear($budgets[0]['hash']);
+        // A successful login clears this account, but cannot reset an IP's shared budget.
         $this->loginAttemptRepository->clear($budgets[1]['hash']);
     }
 
@@ -97,9 +98,10 @@ final readonly class LoginThrottleService
     // =================================================
 
     /** @return list<array{hash: string, attempts: int, minutes: int}> */
-    private function budgets(string $username, string $ipAddress): array
+    private function budgets(string|LoginIdentityData $username, string $ipAddress): array
     {
-        $username = $this->normalizedUsername($username);
+        $identity = $username instanceof LoginIdentityData ? $username : $this->resolveIdentity($username);
+        $username = $identity->username;
         $ip = $this->normalizeIpAddress($ipAddress);
         return [
             ['hash' => hash('sha256', $ip . "\0" . $username), 'attempts' => self::MAX_ATTEMPTS, 'minutes' => self::LOCK_DURATION_MINUTES],
@@ -109,17 +111,12 @@ final readonly class LoginThrottleService
         ];
     }
 
-    private function normalizedUsername(string $username): string
+    public function resolveIdentity(string $username): LoginIdentityData
     {
         // Résoudre avec la même collation que l’authentification. Conserver
         // l’orthographe enregistrée pour préserver les compteurs existants du compte.
-        $username = $this->userRepository->findByUsername($username)->username ?? $username;
-        return mb_strtolower(trim($username));
-    }
-
-    private function identifierHash(string $username, string $ipAddress): string
-    {
-        return hash('sha256', $this->normalizeIpAddress($ipAddress) . "\0" . $this->normalizedUsername($username));
+        $user = $this->userRepository->findByUsername($username);
+        return new LoginIdentityData(mb_strtolower(trim($user === null ? $username : $user->username)), $user);
     }
 
     private function normalizeIpAddress(string $ipAddress): string

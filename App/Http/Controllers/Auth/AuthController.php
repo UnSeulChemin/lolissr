@@ -7,17 +7,12 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\Auth\LoginResult;
 use App\Http\Controllers\Controller;
 use App\Services\Auth\AuthService;
-use App\Services\Auth\LoginThrottleService;
 
 use Framework\Http\Requests\Request;
 
 final class AuthController extends Controller
 {
-    public function __construct(
-        private readonly AuthService $authService,
-        private readonly LoginThrottleService $loginThrottleService,
-        Request $request
-    )
+    public function __construct(private readonly AuthService $authService, Request $request)
     {
         parent::__construct($request);
     }
@@ -47,7 +42,7 @@ final class AuthController extends Controller
 
         if ($result === LoginResult::LOCKED)
         {
-            $remainingMinutes = $this->loginThrottleService->remainingLockMinutes($username, $ipAddress);
+            $remainingMinutes = $this->authService->remainingLoginLockMinutes();
 
             $this->redirectWithError(
                 'connexion',

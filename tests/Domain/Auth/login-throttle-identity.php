@@ -66,8 +66,34 @@ try
     $check(!$credentials->invoke($auth, 'new-user', str_repeat('é', 37)), 'Bcrypt byte limit bypassed');
     $db->exec('DELETE FROM login_attempts');
     $db->prepare('UPDATE users SET password = ? WHERE id = 1')->execute([password_hash('old123', PASSWORD_DEFAULT)]);
+    $active = new ReflectionProperty(\Framework\Debug\Profiler::class, 'active');
+    $counters = new ReflectionProperty(\Framework\Debug\Profiler::class, 'counters');
+    $active->setValue(null, true);
+    $counters->setValue(null, []);
     $check($auth->login('test', 'old123', '192.0.2.1') === LoginResult::SUCCESS, 'Existing short password no longer works');
+    $check(($counters->getValue()['database.query.count'] ?? 0) === 6, 'Successful login repeated the identity lookup');
     $auth->logout();
+    \Framework\Config\Config::prime(['cache' => ['enabled' => false]]);
+    $db->exec('DELETE FROM login_attempts');
+    $counters->setValue(null, []);
+    $check($auth->login('tést', 'wrong-password', $ip) === LoginResult::INVALID_CREDENTIALS, 'Resolved alias rejected unexpectedly');
+    $check(($counters->getValue()['database.query.count'] ?? 0) === 14, 'Failed login repeated identity lookup');
+    for ($i = 0; $i < 3; $i++) $auth->login('TEST', 'wrong-password', $ip);
+    $counters->setValue(null, []);
+    $check($auth->login('tèst', 'wrong-password', $ip) === LoginResult::LOCKED, 'Resolved aliases bypassed the fifth-attempt lock');
+    $check($auth->remainingLoginLockMinutes() > 0, 'Login lock display lost the resolved identity');
+    $check(($counters->getValue()['database.query.count'] ?? 0) === 17, 'Failure/lock display repeated identity lookup');
+    $counters->setValue(null, []);
+    $check($auth->login('TEST', 'old123', $ip) === LoginResult::LOCKED, 'Locked login succeeded');
+    $check($auth->remainingLoginLockMinutes() > 0, 'Existing lock display failed');
+    $check(($counters->getValue()['database.query.count'] ?? 0) === 7, 'Locked login/display repeated identity lookup');
+    $db->exec('DELETE FROM login_attempts');
+    $db->exec("UPDATE users SET username = 'renamed' WHERE id = 1");
+    $check($auth->login('test', 'old123', $ip) === LoginResult::INVALID_CREDENTIALS, 'Resolved identity leaked into a later login');
+    $check($auth->login('renamed', 'old123', $ip) === LoginResult::SUCCESS, 'Later login did not refresh the identity');
+    $auth->logout();
+    $active->setValue(null, false);
+    \Framework\Config\Config::clear();
 }
 finally
 {

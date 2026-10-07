@@ -1,15 +1,6 @@
 
 ## Optimisations
 
-### O1 — Résoudre l'identité de connexion une seule fois
-
-Références : `App/Services/Auth/LoginThrottleService.php:87`, `:100`, `:112` et `AuthService.php:67`.
-
-budgets() appelle normalizedUsername(), qui interroge UserRepository. Pour un succès, isLocked() résout le nom une fois, AuthService le recherche à nouveau, puis clear() refait cette recherche via identifierHash() et budgets(). Soit quatre recherches du même utilisateur dans le flux normal. Un échec non verrouillé en effectue trois ; un échec devenant verrouillé peut en ajouter une pour calculer le délai affiché.
-
-Correction proposée : résoudre une identité canonique une fois et la transmettre aux calculs des trois budgets et à la vérification des identifiants. Conserver impérativement l'équivalence avec la collation MySQL, couverte par `login-throttle-identity.php`. Éviter un cache global sans durée de vie définie.
-
-
 
 ### O2 — Recherche : optimiser le tri après mesure
 
