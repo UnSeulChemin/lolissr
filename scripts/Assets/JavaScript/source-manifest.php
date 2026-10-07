@@ -115,7 +115,7 @@ return array (
     'public/js/profile/modals/frame-modal.js' => 'a0c6deb1122ce3af168aa3069329502385bf3a9ac85ca1fbefa607d24c94cded',
     'public/js/profile/pages/customization.js' => '7bd72cf3576e35c6bd10a91cf89a1017b22ba75ea49bc4e859ef7d481e4591f9',
     'public/js/admin/pages/commands.js' => '1da488bc8adcfefb6bdf54e631c65c984fbb62e273c501993a31607c13334769',
-    'public/js/router/initializers/route-initializers.js' => 'dd3ff760045abc2d42174e5c7c8a6e0d83c50f4e8509630d3bc64b8bbf36ad3a',
+    'public/js/router/initializers/route-initializers.js' => '0c5078b714fdc4dfded5558e1c1cc1efc6f9bbcdf48739e1bd3cbd8d8d2dbac3',
     'public/js/core/debug/debug-storage.js' => '6312f893665ebdccd427bf104395f9b6ee8d0a5f2a63a47b4a0fa7d7273a60f5',
     'public/js/boot/app-debug.js' => 'e0e3d0a23ac9e911eb670bed7da2af56a30f898453242cc9c17d99127ddc2446',
     'public/js/boot/app-init.js' => '347e65e8f5247955677a4b5de25cbb4cf142014ea68a1a26dfb711d00c5590d5',

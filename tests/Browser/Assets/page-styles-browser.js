@@ -14,7 +14,7 @@ export async function runBrowserScenario(preparePageStyles)
     await navigate(['components/summary.css']);
     check(active().length === 1 && active()[0].sheet !== null, 'Real CSS loaded');
     const home = active()[0];
-    await navigate(['components/summary.css', 'pages/sql/index.css']);
+    await navigate(['components/summary.css', 'pages/admin/index.css']);
     check(active().length === 2 && active()[0] === home, 'Shared CSS reused without duplicate');
     await navigate(['components/detail.css', 'components/status-toggle.css']);
     check(active().length === 2 && !home.isConnected, 'Obsolete CSS removed');
@@ -35,7 +35,7 @@ export async function runBrowserScenario(preparePageStyles)
     check(active()[0] === previous && document.querySelectorAll('link[media="not all"]').length === 0, 'Cancellation keeps current styles and removes pending links');
 
     const late = new AbortController();
-    const commit = await preparePageStyles([css('pages/sql/index.css')], late.signal);
+    const commit = await preparePageStyles([css('pages/admin/index.css')], late.signal);
     late.abort();
     try
     { commit(); throw new Error('Stale commit accepted'); }
@@ -59,9 +59,9 @@ export async function runBrowserScenario(preparePageStyles)
     (await second)();
     check(active().length === 1 && active()[0].href === css('pages/chinois/grammar.css'), 'Overlapping navigation survives earlier cancellation');
 
-    await navigate(['pages/sql/index.css', 'components/summary.css']);
-    await navigate(['components/summary.css', 'pages/sql/index.css']);
-    check(active().map(link => link.href).join() === ['components/summary.css', 'pages/sql/index.css'].map(css).join(), 'Manifest order preserved for reused styles');
+    await navigate(['pages/admin/index.css', 'components/summary.css']);
+    await navigate(['components/summary.css', 'pages/admin/index.css']);
+    check(active().map(link => link.href).join() === ['components/summary.css', 'pages/admin/index.css'].map(css).join(), 'Manifest order preserved for reused styles');
     await navigate([]);
     check(active().length === 0 && document.querySelector('link[data-test-common]') !== null, 'Page without specific CSS keeps common styles');
 
@@ -74,7 +74,7 @@ export async function runBrowserScenario(preparePageStyles)
         {};
         window.setTimeout = callback => setTimer(callback, 10);
         try
-        { await preparePageStyles([css('pages/sql/index.css')], new AbortController().signal); throw new Error('Hanging CSS accepted'); }
+        { await preparePageStyles([css('pages/admin/index.css')], new AbortController().signal); throw new Error('Hanging CSS accepted'); }
         catch (error)
         { if (!error.message.includes('timed out')) throw error; }
         check(document.querySelectorAll('link[media="not all"]').length === 0, 'Hung request times out and cleans pending styles');

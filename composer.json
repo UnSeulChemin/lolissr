@@ -77,6 +77,7 @@
         "dx:check": "@php scripts/Tools/dx-format.php --check",
         "regression-tests": [
             "@php tests/Build/Database/migration-creator.php",
+            "@php tests/Build/Database/manga-collection-revisions.php",
             "@php tests/Build/Tooling/http-profile.php",
             "@php tests/Build/Tooling/project-structure.php",
             "@php tests/Build/Tooling/admin-recommendation-job.php",

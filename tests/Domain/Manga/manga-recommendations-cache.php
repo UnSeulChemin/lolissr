@@ -37,6 +37,14 @@ final class RecommendationCacheStatement extends PDOStatement
 }
 $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [RecommendationCacheStatement::class]);
 $db->exec("CREATE TABLE manga (user_id INT, slug TEXT, livre TEXT, numero INT, id INTEGER PRIMARY KEY, editeur TEXT, statut TEXT DEFAULT 'en_cours')");
+$db->exec('CREATE TABLE manga_collection_revisions (user_id INT PRIMARY KEY, revision TEXT NOT NULL)');
+foreach (['INSERT' => ['NEW'], 'DELETE' => ['OLD'], 'UPDATE' => ['OLD', 'NEW']] as $event => $records)
+{
+    $body = '';
+    foreach ($records as $record)
+        $body .= "INSERT INTO manga_collection_revisions VALUES ($record.user_id, hex(randomblob(16))) ON CONFLICT(user_id) DO UPDATE SET revision = excluded.revision;";
+    $db->exec("CREATE TRIGGER revision_$event AFTER $event ON manga BEGIN $body END");
+}
 $db->exec("INSERT INTO manga (user_id, slug, livre, numero) VALUES (1, 'owned', 'Owned', 1), (2, 'suggestion', 'Suggestion', 1)");
 $id = static fn (int $n): string => sprintf('00000000-0000-0000-0000-%012d', $n);
 $catalog = ['series' => [['id' => $id(0), 'title' => 'Owned'], ['id' => $id(1), 'title' => 'Suggestion'], ['id' => $id(2), 'title' => 'Second owned']],
@@ -80,7 +88,7 @@ try
         {
             if ($cold)
             {
-                foreach (['manga.recommendations.v3.1.categories', 'manga.recommendations.v3.1.authors', 'manga.recommendation-filters.v1.1'] as $key)
+                foreach (['manga.recommendations.v4.1.categories', 'manga.recommendations.v4.1.authors', 'manga.recommendation-filters.v2.1'] as $key)
                     \Framework\Cache\Cache::forget($key);
             }
             $start = hrtime(true);
@@ -92,7 +100,7 @@ try
     };
     if (in_array('--profile', $argv, true))
         printf("Filters benchmark (small SQLite fixture, 20 samples): cold %.3f ms, warm %.3f ms\n", $benchmark(true), $benchmark(false));
-    foreach (['manga.recommendations.v3.1.categories', 'manga.recommendations.v3.1.authors', 'manga.recommendation-filters.v1.1'] as $key)
+    foreach (['manga.recommendations.v4.1.categories', 'manga.recommendations.v4.1.authors', 'manga.recommendation-filters.v2.1'] as $key)
         \Framework\Cache\Cache::forget($key);
     $check(count($service()->all()) === 2, 'Initial recommendations missing');
     $check($service()->setFavorite($id(1), true)->success, 'Cannot save fixture favorite');
@@ -100,11 +108,13 @@ try
     $files = glob(ROOT . '/storage/cache/*.cache');
     $check(count($files) === 2, 'Persistent recommendations and favorites cache not created');
     $snapshots = array_map('file_get_contents', $files);
+    RecommendationCacheStatement::$collectionReads = 0;
     $service()->all();
     $service()->favorites();
+    $check(RecommendationCacheStatement::$collectionReads === 0, 'Warm recommendations and favorites must skip collection reads');
     $check(array_map('file_get_contents', $files) === $snapshots, 'Warm cache was rewritten unnecessarily');
 
-    $filterCache = ROOT . '/storage/cache/' . sha1('manga.recommendation-filters.v1.1') . '.cache';
+    $filterCache = ROOT . '/storage/cache/' . sha1('manga.recommendation-filters.v2.1') . '.cache';
     RecommendationCacheStatement::$collectionReads = 0;
     $filters = $service()->searchFilters('a');
     $check(RecommendationCacheStatement::$collectionReads === 1, 'Cold filters must read the collection once');
@@ -114,7 +124,23 @@ try
     $filterSnapshot = file_get_contents($filterCache);
     RecommendationCacheStatement::$collectionReads = 0;
     $check($service()->searchFilters('ACTION')['authors'] === [], 'Query filtering must remain independent of cached titles');
-    $check(RecommendationCacheStatement::$collectionReads === 1 && file_get_contents($filterCache) === $filterSnapshot, 'Warm filters must reuse normalized titles and read the collection once');
+    $check(RecommendationCacheStatement::$collectionReads === 0 && file_get_contents($filterCache) === $filterSnapshot, 'Warm filters must reuse normalized titles without reading the collection');
+    $beforeRevision = $repository->collectionRevision();
+    $db->beginTransaction();
+    $db->exec("UPDATE manga SET livre = 'Rolled back' WHERE user_id = 1");
+    $check($repository->collectionRevision() !== $beforeRevision, 'Write must change collection revision');
+    $db->rollBack();
+    $check($repository->collectionRevision() === $beforeRevision && $service()->searchFilters('a') === $filters,
+        'Rolled back revision must retain previous filters');
+    $db->exec('UPDATE manga SET numero = 2 WHERE user_id = 1');
+    RecommendationCacheStatement::$collectionReads = 0;
+    $check($service()->searchFilters('a') === $filters && RecommendationCacheStatement::$collectionReads === 1
+        && file_get_contents($filterCache) !== $filterSnapshot, 'Number update must invalidate filters without changing row count');
+    $filterSnapshot = file_get_contents($filterCache);
+    $db->exec('UPDATE manga SET numero = 2 WHERE user_id = 2');
+    RecommendationCacheStatement::$collectionReads = 0;
+    $service()->searchFilters('a');
+    $check(RecommendationCacheStatement::$collectionReads === 0, 'Another owner write must preserve warm filters');
     RecommendationCacheStatement::$collectionReads = 0;
     $check($service()->searchFilters('!!!') === ['categories' => [], 'authors' => []]
         && RecommendationCacheStatement::$collectionReads === 0, 'Empty normalized query should skip collection reads');
@@ -152,7 +178,7 @@ try
     $owner->id = 2;
     $db->exec("UPDATE manga SET livre = 'Updated suggestion' WHERE user_id = 2");
     $check($service()->favorites() === [] && !in_array($id(1), array_column($service()->all(), 'id'), true), 'Owner cache isolation failed');
-    $check($service()->searchFilters('aventure')['categories'] !== [] && is_file(ROOT . '/storage/cache/' . sha1('manga.recommendation-filters.v1.2') . '.cache'), 'Filter owner isolation failed');
+    $check($service()->searchFilters('aventure')['categories'] !== [] && is_file(ROOT . '/storage/cache/' . sha1('manga.recommendation-filters.v2.2') . '.cache'), 'Filter owner isolation failed');
     $owner->id = 1;
     file_put_contents(ROOT . '/storage/manga-recommendations-hidden-1.json', '[]');
     $catalog['kinds'] = [];
@@ -195,6 +221,16 @@ try
     }
     finally
     { restore_error_handler(); }
+    // Deployments without the migration must continue detecting SQL changes.
+    foreach (['INSERT', 'DELETE', 'UPDATE'] as $event) $db->exec("DROP TRIGGER revision_$event");
+    $db->exec('DROP TABLE manga_collection_revisions');
+    $check($repository->collectionRevision() === null, 'Missing revision schema must retain compatibility');
+    Config::prime(['cache' => ['enabled' => true, 'ttl' => 3600], 'app' => ['base_uri' => '/test/']]);
+    $service()->searchFilters('a');
+    $fallbackSnapshot = file_get_contents($filterCache);
+    $db->exec('UPDATE manga SET numero = 3 WHERE user_id = 1');
+    $service()->searchFilters('a');
+    $check(file_get_contents($filterCache) !== $fallbackSnapshot, 'Legacy fallback missed a collection update');
     $GLOBALS['cacheTestOwner'] = null;
     RecommendationCacheStatement::$collectionReads = 0;
     $check($service()->searchFilters('a') === ['categories' => [], 'authors' => []] && RecommendationCacheStatement::$collectionReads === 0, 'Guest filters must skip collection reads');
@@ -208,4 +244,4 @@ finally
     { if ($file->isDir()) rmdir($file->getPathname()); else unlink($file->getPathname()); }
     rmdir(ROOT);
 }
-echo "PASS: recommendations and filter cache reuse, single collection read, revisions, query matching/order/limits, custom catalogs, disabled cache and owner isolation.\n";
+echo "PASS: recommendations and filter cache reuse, no warm collection reads, revisions, query matching/order/limits, custom catalogs, disabled cache and owner isolation.\n";

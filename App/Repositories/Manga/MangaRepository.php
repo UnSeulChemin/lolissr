@@ -17,6 +17,25 @@ final class MangaRepository extends AbstractRepository
 
     protected string $table = 'manga';
 
+    public function collectionRevision(): ?string
+    {
+        try
+        {
+            $statement = $this->query('SELECT revision FROM manga_collection_revisions WHERE user_id = ?', [$this->userId()]);
+            if ($statement === false) throw new \RuntimeException('Cannot read manga collection revision.');
+            $revision = $statement->fetchColumn();
+            return $revision === false ? 'empty' : (string) $revision;
+        }
+        catch (\PDOException $error)
+        {
+            // Keep existing deployments functional until the revision migration is applied.
+            if (($error->errorInfo[1] ?? null) === 1146
+                || ($this->db->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'sqlite'
+                    && str_contains($error->getMessage(), 'no such table: manga_collection_revisions'))) return null;
+            throw $error;
+        }
+    }
+
     /** @return list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> */
     public function seriesForCreate(): array
     {

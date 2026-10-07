@@ -175,7 +175,7 @@ final class EnvironmentValidator
 
     private static function validateBooleans(): void
     {
-        foreach (['APP_DEBUG', 'PROFILER_ENABLED', 'SQL_TOOL_ENABLED', 'REGISTRATION_ENABLED',
+        foreach (['APP_DEBUG', 'PROFILER_ENABLED', 'REGISTRATION_ENABLED',
             'CACHE_ENABLED', 'LOG_ENABLED', 'TRUST_PROXY'] as $key)
         {
             if (! Environment::has($key)) continue;

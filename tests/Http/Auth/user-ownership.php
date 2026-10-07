@@ -71,7 +71,7 @@ try
         $home = http_get(http_base() . '/');
         $check($home['status'] === 200 && preg_match('/Total vocabulaires\s*<\/h2>\s*<p[^>]*>\s*(\d+)/u', $home['body'], $total) === 1
             && (int) $total[1] === ($label === 'a' ? 2 : 1), 'Dashboard cache is shared across accounts');
-        $check(http_get(http_base() . '/admin/sql')['status'] === 404, 'Ordinary account can access arbitrary SQL');
+        $check(http_get(http_base() . '/admin/sql')['status'] === 404, 'Removed SQL console is accessible');
         $check(http_get(http_base() . '/admin')['status'] === 404, 'Ordinary account can access administration');
         $check(http_get(http_base() . '/admin/commandes/etat', ['Accept: application/json'])['status'] === 404, 'Ordinary account can read job status and logs');
         $check(http_get(http_base() . '/admin/dev')['status'] === 404, 'Ordinary account can access development tools');
@@ -107,7 +107,7 @@ try
     $result = $post('/chinois/ajax/toggle-vocabulaire-maitrise', ['id' => $wordIds['b'], 'csrf_token' => $tokens['b']]);
     $payload = json_decode($result['body'], true, 512, JSON_THROW_ON_ERROR);
     $check($result['status'] === 200 && $payload['data']['xpEarned'] === true, 'Second session did not grant independent XP');
-    echo "PASS: two real HTTP sessions, private search/dashboard cache, independent mastery/XP/successes, foreign read/write/delete rejection, session CSRF isolation and admin-only SQL.\n";
+    echo "PASS: two real HTTP sessions, private search/dashboard cache, independent mastery/XP/successes, foreign read/write/delete rejection, session CSRF isolation and removed SQL console.\n";
 }
 finally
 {

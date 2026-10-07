@@ -11,12 +11,10 @@ return [
     'components/media-picker.css' => ['pages/profile/'],
     'components/summary.css' => [
         'pages/home/index',
-        'pages/sql/index',
         'pages/profile/',
         'pages/manga/series/notes',
         'pages/manga/series/unread', 'pages/manga/series/releases'
     ],
-    'pages/sql/index.css' => ['pages/sql/'],
     // Le vocabulaire et la grammaire partagent les styles des boutons et de navigation des cartes.
     'pages/chinois/vocabulary.css' => ['pages/chinois/'],
     'pages/chinois/grammar.css' => ['pages/chinois/'],

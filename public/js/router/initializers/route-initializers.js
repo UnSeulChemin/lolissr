@@ -170,7 +170,7 @@ const initProfileCustomization = lazyInitializer(
 );
 
 // =================================================
-// SQL INITIALISATIONS
+// ADMIN INITIALISATIONS
 // =================================================
 
 const initAdminCommands = lazyInitializer(() => import('../../admin/pages/commands.js'), 'initAdminCommands');
@@ -308,7 +308,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     // --------------------------------------------------------------------------
-    // SQL
+    // ADMIN
     // --------------------------------------------------------------------------
 
     {
