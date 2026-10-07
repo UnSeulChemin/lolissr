@@ -1,24 +1,4 @@
 
-## Sécurité
-
-
-
-### S4 — Frontière de confiance dans la suppression des images
-
-Référence : `App/Services/Media/ThumbnailUploadService.php:61`.
-
-remove() concatène directement thumbnail et extension provenant des enregistrements avec le répertoire de collection. Le chemin normal génère des noms sûrs ; aucune injection directe de `../` depuis une requête n'a été démontrée. Un enregistrement importé ou corrompu contenant un chemin pourrait toutefois orienter la suppression hors du répertoire attendu.
-
-Correction proposée : refuser séparateurs, chemins absolus et segments parents ; contrôler l'extension avec une allowlist ; vérifier le confinement du chemin résolu avant suppression. Préserver les noms historiques légitimes et le comportement pour les fichiers déjà absents.
-
-### Points de déploiement à confirmer
-
-- `Config/routes/admin.php:26` expose les commandes dev aussi en production au seul compte 1, avec authentification et CSRF. Cela permet notamment migrations, reset des sessions, builds et modifications XP. Ce n'est pas un accès public ni un défaut d'autorisation démontré. Si ces actions doivent rester réservées au développement, ajouter une politique explicite de production côté serveur ; sinon documenter et assumer leur portée.
-- `AdminOwnerMiddleware` donne l'administration à l'identifiant 1. Les tests confirment cette règle. Une restauration de base doit préserver cette identité ; une évolution multiadministrateur justifierait une permission explicite.
-- Les miniatures sous `public/images` sont des ressources statiques accessibles avec leur URL, indépendamment de l'isolation SQL. Si les images doivent être privées entre comptes, prévoir une livraison authentifiée. Aucun besoin de confidentialité des images n'est établi par cet audit.
-- isHttps() n'impose pas une redirection HTTP vers HTTPS. Vérifier la configuration du serveur de production et, en cas de proxy, la confiance accordée aux en-têtes. Aucune configuration de production n'a été inspectée.
-- L'audit n'a pas consulté une base d'avis CVE ni vérifié les versions PHP/Apache/MySQL effectivement déployées en production.
-
 ## Optimisations
 
 ### O1 — Résoudre l'identité de connexion une seule fois
@@ -28,6 +8,8 @@ Références : `App/Services/Auth/LoginThrottleService.php:87`, `:100`, `:112` e
 budgets() appelle normalizedUsername(), qui interroge UserRepository. Pour un succès, isLocked() résout le nom une fois, AuthService le recherche à nouveau, puis clear() refait cette recherche via identifierHash() et budgets(). Soit quatre recherches du même utilisateur dans le flux normal. Un échec non verrouillé en effectue trois ; un échec devenant verrouillé peut en ajouter une pour calculer le délai affiché.
 
 Correction proposée : résoudre une identité canonique une fois et la transmettre aux calculs des trois budgets et à la vérification des identifiants. Conserver impérativement l'équivalence avec la collation MySQL, couverte par `login-throttle-identity.php`. Éviter un cache global sans durée de vie définie.
+
+
 
 ### O2 — Recherche : optimiser le tri après mesure
 

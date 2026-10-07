@@ -107,6 +107,7 @@
             "@php tests/Domain/Collections/collection-update-existence.php",
             "@tests:manga",
             "@php tests/Domain/Collections/media-integrity.php",
+            "@php tests/Domain/Collections/thumbnail-delete-path.php",
             "@php tests/Domain/Collections/collection-xp-batch.php",
             "@php tests/Domain/Profile/profile-read-only.php",
             "@php tests/Domain/Collections/collection-projections.php",
