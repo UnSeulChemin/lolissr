@@ -12,6 +12,8 @@ import { debug, debugError } from '../../core/debug/debug.js';
 
 import { invalidateGrammarPages } from '../cache-invalidation.js';
 
+import { updateHeaderUser } from '../../profile/ui/header-user.js';
+
 // =================================================
 // ÉTAT
 // =================================================
@@ -113,6 +115,8 @@ async function toggleMastery(button)
         const mastered = Boolean(data?.data?.maitrise);
 
         updateButtonState(button, mastered);
+
+        updateHeaderUser(data?.data?.level);
 
         invalidateGrammarPages();
         

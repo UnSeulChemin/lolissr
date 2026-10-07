@@ -140,10 +140,24 @@ try
     }
     catch (LogicException)
     {}
+    foreach (['jacquette', 'livre_note'] as $field)
+    {
+        foreach ([0, 6, 'abc', ['invalid']] as $invalid)
+        {
+            $request = new \App\Http\Requests\Manga\MangaUpdateNoteRequest(new \Framework\Http\Requests\Request(
+                post: ['jacquette' => null, 'livre_note' => null, $field => $invalid]
+            ));
+            $check(isset($request->errors()[$field]), 'Invalid optional note accepted');
+        }
+    }
     foreach ([[4, 5, 9], [4, 5, 9], [null, 3, null], [null, null, null]] as [$cover, $book, $stored])
     {
         NoteQueryCounter::$executions = 0;
-        $result = $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteData($cover, $book));
+        $request = new \App\Http\Requests\Manga\MangaUpdateNoteRequest(new \Framework\Http\Requests\Request(
+            post: ['jacquette' => $cover, 'livre_note' => $book]
+        ));
+        $check(!$request->fails(), 'Optional note update rejected by HTTP validation');
+        $result = $service->updateNote('fixture', 1, $request->dto());
         $check($result->success && NoteQueryCounter::$executions === 2, 'Note update must use two queries');
         $notes = $result->data['notes'];
         $check($notes->jacquette === ($cover ?? 0) && $notes->livreNote === ($book ?? 0)

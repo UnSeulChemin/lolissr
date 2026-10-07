@@ -82,6 +82,12 @@ export async function runBrowserScenario()
             button.className = selector;
             button.dataset.url = '/fixture-status';
             document.body.append(button);
+            button.click();
+            requests.shift().resolve(new Response(JSON.stringify({success: true, data: {level: 2, maitrise: true, readStatus: 1, collectStatus: 1}}),
+                {headers: {'Content-Type': 'application/json'}}));
+            await tick(); await tick();
+            check(level.textContent === '2', module + ': successful status did not refresh header level');
+            level.textContent = 'CURRENT_LEVEL';
             button.click(); button.click();
             check(requests.length === 1, module + ': duplicate status request');
             button.remove();
@@ -105,9 +111,13 @@ export async function runBrowserScenario()
             return card;
         };
         const first = makeCard('first');
+        document.dispatchEvent(new Event('router:loaded'));
+        check(first.querySelector('#js-note-total').textContent === '0/10'
+            && !first.querySelector('.active'), 'Absent notes must stay unselected with a zero total');
         first.querySelector('button').click();
         const oldRequest = requests.shift();
         check(oldRequest !== undefined, 'First note request missing');
+        check(JSON.parse(oldRequest.options.body).livre_note === null, 'Saving the cover invented a book rating');
         first.remove();
         const second = makeCard('second');
         second.querySelector('button').click();
@@ -117,9 +127,12 @@ export async function runBrowserScenario()
         respond(oldRequest, true);
         await tick(); await tick();
         check(second.querySelector('button').disabled && toast.textContent === 'CURRENT_PAGE', 'Old note completion unlocked new save or displayed feedback');
-        respond(newRequest, true);
+        newRequest.resolve(new Response(JSON.stringify({success: true, data: {notes: {jacquette: 3, livreNote: 0, note: 3}}}),
+            {headers: {'Content-Type': 'application/json'}}));
         await tick(); await tick();
         check(!second.querySelector('button').disabled, 'New save remained locked');
+        check(second.dataset.livreNote === '0' && second.querySelector('#js-note-total').textContent === '3/10',
+            'Partial note response invented a book rating or changed the total');
         second.dataset.jacquette = '1';
         second.querySelector('button').click();
         requests.shift().resolve(new Response(JSON.stringify({success: false, message: 'Note rejected'}),

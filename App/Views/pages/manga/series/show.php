@@ -38,8 +38,8 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
         data-base-path="<?= e($view->baseUri) ?>"
-        data-jacquette="<?= $manga->jacquette ?? 1 ?>"
-        data-livre-note="<?= $manga->livreNote ?? 1 ?>"
+        data-jacquette="<?= $manga->jacquette ?? 0 ?>"
+        data-livre-note="<?= $manga->livreNote ?? 0 ?>"
     >
 
         <figure class="detail-image u-flex u-justify-center">

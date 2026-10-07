@@ -138,11 +138,11 @@ async function saveNotes(fieldName, value)
         {
             jacquette: fieldName === 'jacquette'
                     ? value
-                    : Number(jacquette) || 0,
+                    : Number(jacquette) || null,
 
             livre_note: fieldName === 'livreNote'
                     ? value
-                    : Number(livreNote) || 0
+                    : Number(livreNote) || null
         },
         {
             headers: {
