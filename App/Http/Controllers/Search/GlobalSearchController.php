@@ -34,7 +34,7 @@ final class GlobalSearchController extends Controller
 
     public function search(): never
     {
-        $query = trim($this->stringInput('q'));
+        $query = \App\Support\Search\SearchQuery::validate($this->stringInput('q'));
         $filters = Profiler::measure('search.recommendations', fn (): array => $this->recommendations->searchFilters($query));
         $this->jsonResult(ServiceResult::success(data: [
             'categories' => $filters['categories'],

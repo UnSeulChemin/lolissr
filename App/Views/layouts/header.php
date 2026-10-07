@@ -161,6 +161,7 @@ $user = user();
                         id="header-search-input"
                         type="search"
                         name="q"
+                        maxlength="<?= \App\Support\Search\SearchQuery::MAX_LENGTH ?>"
                         placeholder="Rechercher... • v<?= e(ApplicationConfig::version()) ?>"
                         value="<?= e($currentSearch) ?>"
                         autocomplete="off"

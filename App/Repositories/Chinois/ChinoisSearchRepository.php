@@ -20,14 +20,14 @@ final class ChinoisSearchRepository extends AbstractRepository
      */
     public function search(string $search, ?int $limit = null): array
     {
-        $search = trim($search);
+        $search = \App\Support\Search\SearchQuery::validate($search);
 
         if ($search === '')
         {
             return [];
         }
 
-        $like = "%{$search}%";
+        $like = \App\Support\Search\SearchQuery::containsPattern($search);
 
         if ($limit === null) return [...$this->searchGrammaire($like, 20), ...$this->searchVocabulaire($like, 20)];
         $limit = max(1, min(20, $limit));
@@ -56,8 +56,8 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             FROM {$this->ownedTable('chinois_grammaire')}
 
-            WHERE titre LIKE :search_titre
-            OR structure LIKE :search_structure
+            WHERE titre LIKE :search_titre ESCAPE '!'
+            OR structure LIKE :search_structure ESCAPE '!'
 
             ORDER BY id DESC
 
@@ -89,8 +89,8 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             FROM {$this->ownedTable('chinois_vocabulaire')}
 
-            WHERE mot LIKE :search_mot
-            OR pinyin LIKE :search_pinyin
+            WHERE mot LIKE :search_mot ESCAPE '!'
+            OR pinyin LIKE :search_pinyin ESCAPE '!'
 
             ORDER BY id DESC
 

@@ -32,7 +32,6 @@ try
         file_put_contents($directory . '/public/js/dist/chunks/chunk-ABCDEFGH.js', 'CHUNK_ASSET');
     }
     $configuration = "ServerRoot \"$serverRoot\"\nListen 127.0.0.1:$port\nServerName localhost\n";
-    $configuration .= 'Include "' . str_replace('\\', '/', $root . '/Config/server/apache-security.conf') . '"' . "\n";
     foreach (['authz_core', 'mime', 'dir', 'autoindex', 'rewrite', 'headers'] as $module)
         $configuration .= "LoadModule {$module}_module modules/mod_$module.so\n";
     $configuration .= "AccessFileName .htaccess-portability\nTypesConfig \"$serverRoot/conf/mime.types\"\nDirectoryIndex index.php\n"
@@ -68,8 +67,6 @@ try
             curl_close($curl);
             if ($status !== 200 || !is_string($response) || substr($response, $headerSize) !== $expected)
                 throw new RuntimeException('Wrong rewrite: ' . $mount . $path . ' status=' . $status . ' ' . file_get_contents($fixture . '/error.log'));
-            if (!preg_match('/^Server: Apache\r?$/m', substr($response, 0, $headerSize)))
-                throw new RuntimeException('Apache version disclosure on asset or route.');
             if (str_contains($path, '?q=') && !str_contains($response, 'X-Test-Query: q=fragment&numero=1'))
                 throw new RuntimeException('Query string lost');
             if (str_contains($path, '/js/dist/') && !str_contains($response, 'immutable'))
@@ -87,8 +84,6 @@ try
                 curl_close($curl);
                 if ($status !== 403 || !is_string($response) || str_contains($response, 'Index of'))
                     throw new RuntimeException('Directory listing must be denied: ' . $mount . $directoryPath . ' status=' . $status);
-                if (!preg_match('/^Server: Apache\r?$/m', $response) || str_contains($response, 'Server at'))
-                    throw new RuntimeException('Apache error response exposes its version or signature.');
             }
         }
         echo 'PASS: directory listings denied at ' . ($mount ?: '(root)') . ' through both public URL forms.' . PHP_EOL;

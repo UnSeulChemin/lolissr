@@ -34,7 +34,7 @@ final class ArtbookSearchRepository extends AbstractRepository
 
     private function normalizeSearch(string $search): string
     {
-        return trim(preg_replace('/\s+/', ' ', trim($search)) ?? '');
+        return trim(preg_replace('/\s+/', ' ', \App\Support\Search\SearchQuery::validate($search)) ?? '');
     }
 
     private function slugSearch(string $search): string
@@ -53,10 +53,10 @@ final class ArtbookSearchRepository extends AbstractRepository
             SELECT slug, numero, artbook, auteur, serie, thumbnail, extension, company
             FROM {$this->readTable()}
             WHERE (
-                artbook LIKE :search_artbook
-                OR auteur LIKE :search_auteur
-                OR serie LIKE :search_serie
-                OR slug LIKE :search_slug
+                artbook LIKE :search_artbook ESCAPE '!'
+                OR auteur LIKE :search_auteur ESCAPE '!'
+                OR serie LIKE :search_serie ESCAPE '!'
+                OR slug LIKE :search_slug ESCAPE '!'
             )
             ORDER BY artbook ASC, numero ASC, id ASC LIMIT {$limit}
         ";
@@ -65,10 +65,10 @@ final class ArtbookSearchRepository extends AbstractRepository
         $artbooks = $this->fetchAll(
             $sql,
             [
-                'search_artbook' => "%{$search}%",
-                'search_auteur' => "%{$search}%",
-                'search_serie' => "%{$search}%",
-                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null
+                'search_artbook' => \App\Support\Search\SearchQuery::containsPattern($search),
+                'search_auteur' => \App\Support\Search\SearchQuery::containsPattern($search),
+                'search_serie' => \App\Support\Search\SearchQuery::containsPattern($search),
+                'search_slug' => $slug !== '' ? \App\Support\Search\SearchQuery::containsPattern($slug) : null
             ],
             Artbook::class
         );

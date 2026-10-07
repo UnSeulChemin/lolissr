@@ -62,6 +62,13 @@ echo "PASS: global search returns the same first five results for all six catego
 $invalid = http_get(http_base() . '/recherche?q%5B%5D=test', $jsonHeaders);
 if ($invalid['status'] !== 422) throw new RuntimeException('Search must reject array input.');
 echo "PASS: invalid search input rejected.\n";
+foreach ([str_repeat('a', 200) => 200, str_repeat('a', 201) => 422,
+    str_repeat('界', 200) => 200, str_repeat('界', 201) => 422] as $query => $expectedStatus)
+{
+    $response = http_get(http_base() . '/recherche?q=' . rawurlencode($query), $jsonHeaders);
+    if ($response['status'] !== $expectedStatus) throw new RuntimeException('Wrong search length boundary status.');
+}
+echo "PASS: global search ASCII/Unicode length boundaries.\n";
 
 foreach (['vocabulaire', 'grammaire'] as $type)
 {

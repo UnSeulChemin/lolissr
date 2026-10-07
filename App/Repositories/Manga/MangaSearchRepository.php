@@ -49,7 +49,7 @@ final class MangaSearchRepository extends AbstractRepository
 
     private function normalizeSearch(string $search): string
     {
-        return trim(preg_replace('/\s+/', ' ', trim($search)) ?? '');
+        return trim(preg_replace('/\s+/', ' ', \App\Support\Search\SearchQuery::validate($search)) ?? '');
     }
 
     private function slugSearch(string $search): string
@@ -91,12 +91,13 @@ final class MangaSearchRepository extends AbstractRepository
     private function fetchSearchResults(string $title, ?int $numero = null, bool $exactTitle = false, int $limit = 20): array
     {
         $operator = $exactTitle ? '=' : 'LIKE';
-        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu FROM {$this->readTable()} WHERE (livre {$operator} :search_livre OR slug {$operator} :search_slug)";
+        $escape = $exactTitle ? '' : " ESCAPE '!'";
+        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu FROM {$this->readTable()} WHERE (livre {$operator} :search_livre{$escape} OR slug {$operator} :search_slug{$escape})";
 
         $slug = $this->slugSearch($title);
         $params = [
-            'search_livre' => $exactTitle ? $title : "%{$title}%",
-            'search_slug' => $slug !== '' ? ($exactTitle ? $slug : '%' . $slug . '%') : null
+            'search_livre' => $exactTitle ? $title : \App\Support\Search\SearchQuery::containsPattern($title),
+            'search_slug' => $slug !== '' ? ($exactTitle ? $slug : \App\Support\Search\SearchQuery::containsPattern($slug)) : null
         ];
 
         if ($numero !== null)

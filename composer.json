@@ -55,6 +55,8 @@
             "@php tests/Domain/Manga/manga-filtered-pages.php"
         ],
         "tests:search": [
+            "@php tests/Domain/Shared/search-patterns.php",
+            "@php tests/Domain/Shared/search-patterns.php mysql",
             "@php tests/Domain/Shared/collectible-search.php",
             "@php tests/Http/Navigation/spa-http.php"
         ],
@@ -113,6 +115,8 @@
             "@php tests/Domain/Profile/profile-read-only.php",
             "@php tests/Domain/Collections/collection-projections.php",
             "@php tests/Domain/Shared/collectible-search.php",
+            "@php tests/Domain/Shared/search-patterns.php",
+            "@php tests/Domain/Shared/search-patterns.php mysql",
             "@php tests/Domain/Chinois/flashcard-pages.php",
             "@php tests/Domain/Shared/bounded-content.php",
             "@php tests/Domain/Shared/bounded-content.php mysql",
