@@ -15,9 +15,10 @@ $run = static function (array $command) use ($fixture): int
 };
 try
 {
+    copy($source . '/App/Services/Admin/AdminJob.php', $fixture . '/App/Services/Admin/AdminJob.php');
     copy($source . '/App/Services/Admin/ReleaseJob.php', $fixture . '/App/Services/Admin/ReleaseJob.php');
     copy($source . '/scripts/Admin/run-releases.php', $fixture . '/scripts/Admin/run-releases.php');
-    file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/ReleaseJob.php";');
+    file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/AdminJob.php"; require dirname(__DIR__) . "/App/Services/Admin/ReleaseJob.php";');
     file_put_contents($fixture . '/scripts/Manga/sync-releases.php', '<?php echo "Fixture sync completed\n";');
     file_put_contents($fixture . '/launch.php', '<?php require __DIR__ . "/vendor/autoload.php"; function env($key, $default = null) { return $key === "ADMIN_COMMAND_PHP" ? PHP_BINARY : $default; } App\Services\Admin\ReleaseJob::start();');
     if ($run([PHP_BINARY, $fixture . '/launch.php']) !== 0) throw new RuntimeException('Launcher failed: ' . file_get_contents($fixture . '/launcher.log'));

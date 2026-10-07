@@ -17,14 +17,10 @@ foreach (['manga', 'artbook', 'figurine', 'nendoroid', 'peluche', 'chinois_gramm
     echo $table . ' indexes: ' . json_encode($indexes, JSON_UNESCAPED_UNICODE) . PHP_EOL;
 }
 $name = 'substring_profile_' . bin2hex(random_bytes(8));
-echo "Synthetic fixture: reduced collectible projection, 20,000 rows, 11 samples (first excluded), LIMIT 5.\n";
+echo "Synthetic fixture: actual figurine schema/indexes/collation, 20,000 rows, full search projection, 11 samples (first excluded), LIMIT 5.\n";
 try
 {
-    $db->exec("CREATE TEMPORARY TABLE `$name` (
-        id INT PRIMARY KEY, user_id INT NOT NULL, slug VARCHAR(100) NOT NULL,
-        numero INT NOT NULL, origin VARCHAR(100) NOT NULL, waifu VARCHAR(100) NOT NULL,
-        UNIQUE KEY owner_identity (user_id, slug, numero)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $db->exec("CREATE TEMPORARY TABLE `$name` LIKE figurine");
     for ($batch = 0; $batch < 40; $batch++)
     {
         $values = [];
@@ -32,23 +28,27 @@ try
         {
             $id = $batch * 500 + $offset;
             $title = sprintf('Character %08d', $id);
-            $origin = $id % 1000 === 0 ? 'Rare series' : 'Ordinary series';
-            $values[] = "($id, " . (1 + $id % 20) . ", 'item-$id', 1, '$origin', '$title')";
+            $origin = $id % 997 === 0 ? 'Rare series' : 'Ordinary series';
+            $values[] = "($id, " . (1 + $id % 20) . ", 'item-$id', 1, '$origin', '$title', 'fixture-$id', 'jpg', '1/7', 'Fixture')";
         }
-        $db->exec("INSERT INTO `$name` VALUES " . implode(',', $values));
+        $db->exec("INSERT INTO `$name` (id, user_id, slug, numero, origin, waifu, thumbnail, extension, scale, company) VALUES " . implode(',', $values));
     }
     foreach (['20 owners / 1,000 rows each', '1 owner / 20,000 rows'] as $scenario)
     {
         if (str_starts_with($scenario, '1 owner')) $db->exec("UPDATE `$name` SET user_id = 1");
         $expected = [];
-        foreach (['owner_identity', 'owner_search_order'] as $index)
+        foreach (['baseline', 'owner_search_order'] as $index)
         {
             if ($index === 'owner_search_order')
                 $db->exec("ALTER TABLE `$name` ADD INDEX owner_search_order (user_id, origin, waifu, numero, id)");
-            foreach (['series', 'rare', 'absent'] as $query)
+            // Compare the optimizer's actual choice as well as the candidate's best-case forced plan.
+            foreach ($index === 'baseline' ? ['automatic'] : ['automatic', 'forced'] as $planMode)
             {
-                $sql = "SELECT slug, numero, origin, waifu FROM `$name` FORCE INDEX (`$index`)
-                    WHERE user_id = 1 AND (waifu LIKE ? OR origin LIKE ? OR slug LIKE ?)
+              foreach (['series', 'rare', 'absent'] as $query)
+              {
+                $hint = $planMode === 'forced' ? 'FORCE INDEX (`owner_search_order`)' : '';
+                $sql = "SELECT slug, numero, origin, waifu, thumbnail, extension FROM (SELECT * FROM `$name` $hint WHERE user_id = 1) owned
+                    WHERE (waifu LIKE ? OR origin LIKE ? OR slug LIKE ?)
                     ORDER BY origin, waifu, numero, id LIMIT 5";
                 $statement = $db->prepare($sql);
                 $samples = [];
@@ -59,15 +59,16 @@ try
                     $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
                     if ($iteration > 0) $samples[] = (hrtime(true) - $start) / 1_000_000;
                 }
-                if ($index === 'owner_identity') $expected[$query] = $rows;
+                if ($index === 'baseline') $expected[$query] = $rows;
                 elseif ($rows !== $expected[$query]) throw new RuntimeException('Candidate index changed ordered results');
                 sort($samples);
                 $plan = $db->prepare('EXPLAIN ' . $sql);
                 $plan->execute(array_fill(0, 3, '%' . $query . '%'));
                 $plans = array_map(static fn (array $row): array => array_intersect_key($row,
                     array_flip(['type', 'key', 'rows', 'Extra'])), $plan->fetchAll(PDO::FETCH_ASSOC));
-                printf("%s | %s | %s: median %.3f ms, %d results, %s\n", $scenario, $index, $query,
+                printf("%s | %s/%s | %s: median %.3f ms, %d results, %s\n", $scenario, $index, $planMode, $query,
                     ($samples[4] + $samples[5]) / 2, count($rows), json_encode($plans));
+              }
             }
             if ($index === 'owner_search_order') $db->exec("ALTER TABLE `$name` DROP INDEX owner_search_order");
         }

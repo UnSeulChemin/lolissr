@@ -16,7 +16,7 @@ composer install
 DEVELOPPEMENT
 =========================================
 
-= Diagnostic de configuration, services et assets
+= Diagnostic de configuration, services, assets et profil du cache en lecture seule
 composer doctor
 
 = Compiler CSS / JavaScript et actualiser leurs versions
@@ -92,6 +92,10 @@ MESURES
 = Mesurer cinq passages HTTP : premier passage, mediane des suivants, minimum/maximum et taille des reponses
 = Rapport : tests/Http/reports/lolissr-http-report.html
 composer http:profile
+
+= Mesurer les fichiers du cache, le temps de parcours du dossier et les compteurs disponibles dans les journaux
+= Sans modifier le cache ; egalement execute par composer doctor et preflight
+composer cache:profile
 
 
 =========================================

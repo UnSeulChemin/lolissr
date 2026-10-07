@@ -26,6 +26,8 @@ mkdir($fixture . '/App/Services/Admin', 0700, true);
 mkdir($fixture . '/storage/admin-jobs', 0700, true);
 try
 {
+    copy($root . '/App/Services/Admin/AdminJob.php', $fixture . '/App/Services/Admin/AdminJob.php');
+    require $fixture . '/App/Services/Admin/AdminJob.php';
     foreach (['MaintenanceJob' => 'maintenance', 'RecommendationJob' => 'recommendations', 'ReleaseJob' => 'releases'] as $name => $file)
     {
         copy($root . '/App/Services/Admin/' . $name . '.php', $fixture . '/App/Services/Admin/' . $name . '.php');
@@ -54,6 +56,22 @@ try
         if ($class::status()['state'] !== 'queued') throw new RuntimeException('Reader lock was not released');
         file_put_contents($path, '{invalid');
         if ($class::status()['state'] !== 'idle') throw new RuntimeException('Corrupt state fallback changed');
+        $old = time() - 7201;
+        file_put_contents($path, json_encode(['state' => 'running', 'updated' => $old]));
+        if ($class::status() !== ['state' => 'interrupted', 'updated' => $old]) throw new RuntimeException('Stale job detection changed');
+        if ($class::output() !== '') throw new RuntimeException('Missing log behavior changed');
+        file_put_contents($fixture . '/storage/admin-jobs/' . $file . '.log', str_repeat('a', 20000) . str_repeat('b', 16000));
+        if ($class::output() !== str_repeat('b', 16000)) throw new RuntimeException('Job output is no longer bounded to its tail');
+        try
+        {
+            if ($name === 'MaintenanceJob') $class::start('invalid-command');
+            else $class::start(0);
+            throw new RuntimeException('Invalid job parameters were accepted');
+        }
+        catch (RuntimeException $error)
+        {
+            if (!in_array($error->getMessage(), ['Commande invalide.', 'Compte invalide.'], true)) throw $error;
+        }
         echo 'PASS: ' . $name . ' waits for a locked partial write, reads complete state and releases its lock.' . PHP_EOL;
     }
 }

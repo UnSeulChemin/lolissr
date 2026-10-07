@@ -25,9 +25,10 @@ try
     mkdir($fixture . '/scripts/Profile', 0700, true);
     file_put_contents($fixture . '/scripts/Profile/backfill-achievement-xp.php', '<?php echo json_encode(array_slice($argv, 1));');
     file_put_contents($fixture . '/scripts/Database/backup-database.php', '<?php if (count($argv) !== 1) exit(1); echo "Database backup completed\n";');
+    copy($root . '/App/Services/Admin/AdminJob.php', $fixture . '/App/Services/Admin/AdminJob.php');
     copy($root . '/App/Services/Admin/MaintenanceJob.php', $fixture . '/App/Services/Admin/MaintenanceJob.php');
     copy($root . '/scripts/Admin/run-maintenance.php', $fixture . '/scripts/Admin/run-maintenance.php');
-    file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/MaintenanceJob.php";');
+    file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/AdminJob.php"; require dirname(__DIR__) . "/App/Services/Admin/MaintenanceJob.php";');
     file_put_contents($fixture . '/launch.php', '<?php require __DIR__ . "/vendor/autoload.php"; function env($key, $default = null) { return $key === "ADMIN_COMMAND_PHP" ? PHP_BINARY : $default; } App\Services\Admin\MaintenanceJob::start($argv[1], isset($argv[2]) ? (int) $argv[2] : null);');
     file_put_contents($fixture . '/scripts/Assets/Images/build-profile-images.php', '<?php echo "Profiles completed\n";');
     file_put_contents($fixture . '/scripts/Assets/Images/optimize-thumbnails.php', '<?php if (($argv[1] ?? null) !== "--apply") exit(1); echo "Thumbnails completed\n";');

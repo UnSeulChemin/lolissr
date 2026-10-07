@@ -87,6 +87,33 @@ if (!$beforeBuild)
 }
 if ($configured)
 {
+    doctorCheck('Profil du cache (lecture seule)', static function (): void
+    {
+        $output = tmpfile();
+        $errors = tmpfile();
+        try
+        {
+            doctorRequire(is_resource($output) && is_resource($errors));
+            if (!is_resource($output) || !is_resource($errors)) return;
+            // Separate capture avoids inherited redirected handles overwriting output on Windows.
+            $process = proc_open([PHP_BINARY, ROOT . '/scripts/Tools/profile-cache.php'],
+                [0 => ['pipe', 'r'], 1 => $output, 2 => $errors], $pipes, ROOT, null, ['bypass_shell' => true]);
+            doctorRequire(is_resource($process));
+            if (!is_resource($process)) return;
+            fclose($pipes[0]);
+            $status = proc_close($process);
+            rewind($output);
+            fpassthru($output);
+            rewind($errors);
+            fwrite(STDERR, (string) stream_get_contents($errors));
+            doctorRequire($status === 0);
+        }
+        finally
+        {
+            if (is_resource($output)) fclose($output);
+            if (is_resource($errors)) fclose($errors);
+        }
+    }, 'Verifier storage/cache, storage/logs et composer cache:profile.');
     doctorCheck('Connexion MySQL et migrations', static function (): void
     {
         require_once ROOT . '/scripts/Database/Support/MigrationRunner.php';
