@@ -81,7 +81,8 @@ export function initCreatePage()
 
     const uploadText = $('.form-upload-text');
 
-    let slugEditedManually = false;
+    let slugEditedManually = Boolean(slugInput?.value);
+    const restored = form.dataset.restored === 'true';
 
     const seriesOptions = [...form.querySelectorAll('#manga-existing-series option')];
     const seriesFields = ['editeur', 'statut', 'numero'].map((name) =>
@@ -89,7 +90,7 @@ export function initCreatePage()
         const input = form.elements.namedItem(name);
         let automaticValue = input?.value;
         // Submitted values after validation must also be preserved.
-        let manuallyEdited = Boolean(input?.value && (name !== 'statut' || input.value !== 'en_cours'));
+        let manuallyEdited = restored || Boolean(input?.value && (name !== 'statut' || input.value !== 'en_cours'));
         input?.addEventListener('input', () =>
         { manuallyEdited = true; });
         input?.addEventListener('change', () =>

@@ -34,6 +34,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
             <form
                 class="form-layout"
                 data-form-page="ajouter"
+                data-restored="<?= $old !== [] ? 'true' : 'false' ?>"
                 action="<?= e($form->formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"
