@@ -22,6 +22,7 @@ $wait = static function (string $expected) use ($fixture): void
 try
 {
     mkdir($fixture . '/scripts/Database', 0700, true);
+    file_put_contents($fixture . '/scripts/Database/backup-database.php', '<?php if (count($argv) !== 1) exit(1); echo "Database backup completed\n";');
     copy($root . '/App/Services/Admin/MaintenanceJob.php', $fixture . '/App/Services/Admin/MaintenanceJob.php');
     copy($root . '/scripts/Admin/run-maintenance.php', $fixture . '/scripts/Admin/run-maintenance.php');
     file_put_contents($fixture . '/vendor/autoload.php', '<?php require dirname(__DIR__) . "/App/Services/Admin/MaintenanceJob.php";');
@@ -32,6 +33,8 @@ try
     $run('images'); $wait('done');
     $output = (string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log');
     if (!str_contains($output, "Profiles completed\nThumbnails completed")) throw new RuntimeException('Image build stages missing or out of order.');
+    $run('backup'); $wait('done');
+    if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Database backup completed')) throw new RuntimeException('Database backup command not executed.');
     file_put_contents($fixture . '/scripts/Database/migrate.php', '<?php if (!in_array($argv[1] ?? null, ["status", "apply"], true)) exit(1); echo "Migration " . $argv[1];');
     copy($root . '/scripts/Database/create-migration.php', $fixture . '/scripts/Database/create-migration.php');
     mkdir($fixture . '/scripts/Database/Support', 0700, true);

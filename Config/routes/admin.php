@@ -31,7 +31,7 @@ $router->prefix('admin')->middleware(AdminOwnerMiddleware::class)->group(functio
         $router->post('commandes/migrations-check', [AdminController::class, 'checkMigrations'], [CsrfMiddleware::class]);
         $router->post('commandes/migrations-create', [AdminController::class, 'createMigration'], [CsrfMiddleware::class]);
         $router->post('commandes/migrations', [AdminController::class, 'applyMigrations'], [CsrfMiddleware::class]);
+        $router->post('commandes/backup', [AdminController::class, 'backupDatabase'], [CsrfMiddleware::class]);
         $router->post('commandes/reset', [AdminController::class, 'resetDev'], [CsrfMiddleware::class]);
     });
-    require __DIR__ . '/sql.php';
 });

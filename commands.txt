@@ -100,8 +100,6 @@ composer images:check
 composer images:build
 
 
-
-
 =========================================
 MANGA
 =========================================
@@ -118,27 +116,40 @@ composer manga:sync
 composer manga:recommendations
 
 
+
+
+
+
+
+
+
 =========================================
 BASE DE DONNEES
 =========================================
 
+!! MYSQLDUMP_PATH permet de choisir mysqldump si necessaire
+
 = Sauvegarder la base du .env dans storage/backups/database/
-= MYSQLDUMP_PATH permet de choisir mysqldump si necessaire
 composer backup
 
 = Creer un fichier SQL de migration, puis l'editer
 composer db:migrate:create -- create
 
-= Appliquer les migrations apres sauvegarde
-composer db:migrate
-
 = Voir l'etat des migrations sans modification
 composer db:migrate:check
 
-= Ne pas executer le meme SQL dans /sql ni modifier une migration deja appliquee
+= Appliquer les migrations apres sauvegarde
+composer db:migrate
+
+
+
+
+
+
 
 = Enregistrer une migration deja appliquee, apres verification manuelle
 composer db:migrate:baseline -- YYYY-MM-DD-NN-description.sql
+
 
 = Une migration failed/running demande verification et reparation avant baseline
 

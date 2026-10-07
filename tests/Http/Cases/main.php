@@ -14,7 +14,7 @@ foreach (['/admin/commandes/sorties', '/admin/commandes/sorties/mon-compte'] as 
     $tests[] = ['category' => 'Main', 'label' => 'Sorties réservées au compte 1 et protégées par CSRF', 'method' => 'POST', 'path' => $releasePath,
         'expected_status' => $sqlUser !== null && $sqlUser->id === 1 ? 419 : 404];
 $tests[] = ['category' => 'Main', 'label' => 'Outil SQL réservé au compte 1', 'path' => '/admin/sql',
-    'expected_status' => $sqlUser !== null && $sqlUser->id === 1 && env_bool('SQL_TOOL_ENABLED', true) ? 200 : 404];
+    'expected_status' => 404];
 $tests[] = ['category' => 'Main', 'label' => 'Administration réservée au compte 1', 'path' => '/admin',
     'expected_status' => $sqlUser !== null && $sqlUser->id === 1 ? 200 : 404];
 $tests[] = ['category' => 'Main', 'label' => 'Commandes réservées au compte 1', 'path' => '/admin/commandes',

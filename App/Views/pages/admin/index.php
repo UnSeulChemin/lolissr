@@ -2,7 +2,6 @@
 declare(strict_types=1);
 use App\DTO\Common\Responses\ViewData;
 /** @var ViewData $view */
-$sqlEnabled = $sqlEnabled ?? false;
 ?>
 <section class="layout-container dashboard-page">
     <section class="dashboard-grid u-grid u-justify-center">
@@ -15,11 +14,6 @@ $sqlEnabled = $sqlEnabled ?? false;
             <span class="dashboard-card-icon u-row-center" aria-hidden="true">⚙️</span>
             <span class="dashboard-card-title u-relative u-w-full u-bold">Commandes</span>
             <span class="dashboard-card-description u-relative u-w-full">Lancer les actualisations et suivre leur résultat.</span>
-        </a>
-        <a class="card transition-card dashboard-card u-stack u-relative u-clip u-border-box" href="<?= e($view->baseUri) ?>admin/sql">
-            <span class="dashboard-card-icon u-row-center" aria-hidden="true">🗃️</span>
-            <span class="dashboard-card-title u-relative u-w-full u-bold">SQL</span>
-            <span class="dashboard-card-description u-relative u-w-full">Consulter et gérer la base de données.</span>
         </a>
     </section>
 </section>

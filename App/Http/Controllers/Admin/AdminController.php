@@ -22,7 +22,7 @@ final class AdminController extends Controller
     public function index(): never
     {
         $this->title = 'Administration';
-        $this->render('pages/admin/index', ['sqlEnabled' => env_bool('SQL_TOOL_ENABLED', true)]);
+        $this->render('pages/admin/index');
     }
     public function commands(): never
     {
@@ -68,6 +68,8 @@ final class AdminController extends Controller
     { $this->maintenance('migrations-create'); }
     public function applyMigrations(): never
     { $this->maintenance('migrations'); }
+    public function backupDatabase(): never
+    { $this->maintenance('backup'); }
     public function resetDev(): never
     {
         set_time_limit(60);

@@ -19,6 +19,7 @@ $commands = match ($task)
     'migrations-check' => [[PHP_BINARY, $root . '/scripts/Database/migrate.php', 'status']],
     'migrations-create' => [[PHP_BINARY, $root . '/scripts/Database/create-migration.php', 'create']],
     'migrations' => [[PHP_BINARY, $root . '/scripts/Database/migrate.php', 'apply']],
+    'backup' => [[PHP_BINARY, $root . '/scripts/Database/backup-database.php']],
     default => throw new InvalidArgumentException('Unknown maintenance command.')
 };
 $lock = fopen(MaintenanceJob::directory() . '/maintenance.lock', 'c');
