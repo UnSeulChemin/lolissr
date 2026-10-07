@@ -16,6 +16,20 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
 
     public function handle(Request $request): void
     {
+        self::applyBaseline();
+        if (headers_sent()) return;
+
+        header('Content-Security-Policy: ' . ContentSecurityPolicy::policy(), true);
+
+        if ($request->isHttps())
+        {
+            header('Strict-Transport-Security: max-age=31536000; includeSubDomains', true);
+        }
+    }
+
+    // Available before configuration, the container and sessions are initialized.
+    public static function applyBaseline(): void
+    {
         if (headers_sent())
         {
             return;
@@ -26,11 +40,6 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
         header('X-Frame-Options: DENY', true);
         header('Referrer-Policy: no-referrer', true);
         header('Permissions-Policy: camera=(), microphone=(), geolocation=()', true);
-        header('Content-Security-Policy: ' . ContentSecurityPolicy::policy(), true);
-
-        if ($request->isHttps())
-        {
-            header('Strict-Transport-Security: max-age=31536000; includeSubDomains', true);
-        }
+        header("Content-Security-Policy: default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none';", true);
     }
 }

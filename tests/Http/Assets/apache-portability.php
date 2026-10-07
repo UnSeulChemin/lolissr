@@ -21,6 +21,7 @@ try
         $directory = $fixture . '/site' . $mount;
         mkdir($directory . '/public/js/dist/chunks', 0700, true);
         mkdir($directory . '/public/css', 0700, true);
+        mkdir($directory . '/public/images/thumbnail', 0700, true);
         copy($root . '/.htaccess', $directory . '/.htaccess-portability');
         copy($root . '/public/.htaccess', $directory . '/public/.htaccess-portability');
         copy($root . '/public/js/dist/.htaccess', $directory . '/public/js/dist/.htaccess-portability');
@@ -31,12 +32,13 @@ try
         file_put_contents($directory . '/public/js/dist/chunks/chunk-ABCDEFGH.js', 'CHUNK_ASSET');
     }
     $configuration = "ServerRoot \"$serverRoot\"\nListen 127.0.0.1:$port\nServerName localhost\n";
-    foreach (['authz_core', 'mime', 'dir', 'rewrite', 'headers'] as $module)
+    $configuration .= 'Include "' . str_replace('\\', '/', $root . '/Config/server/apache-security.conf') . '"' . "\n";
+    foreach (['authz_core', 'mime', 'dir', 'autoindex', 'rewrite', 'headers'] as $module)
         $configuration .= "LoadModule {$module}_module modules/mod_$module.so\n";
     $configuration .= "AccessFileName .htaccess-portability\nTypesConfig \"$serverRoot/conf/mime.types\"\nDirectoryIndex index.php\n"
         . "PidFile \"$fixture/httpd.pid\"\nErrorLog \"$fixture/error.log\"\n"
         . "DocumentRoot \"$fixture/site\"\n<Directory \"$fixture/site\">\n"
-        . "AllowOverride All\nOptions FollowSymLinks\nRequire all granted\n</Directory>\n"
+        . "AllowOverride All\nOptions Indexes FollowSymLinks\nRequire all granted\n</Directory>\n"
         . "Header set X-Test-Query \"expr=%{QUERY_STRING}\"\n";
     file_put_contents($fixture . '/httpd.conf', $configuration);
     $process = proc_open([$binary, '-f', $fixture . '/httpd.conf', '-X'],
@@ -66,12 +68,30 @@ try
             curl_close($curl);
             if ($status !== 200 || !is_string($response) || substr($response, $headerSize) !== $expected)
                 throw new RuntimeException('Wrong rewrite: ' . $mount . $path . ' status=' . $status . ' ' . file_get_contents($fixture . '/error.log'));
+            if (!preg_match('/^Server: Apache\r?$/m', substr($response, 0, $headerSize)))
+                throw new RuntimeException('Apache version disclosure on asset or route.');
             if (str_contains($path, '?q=') && !str_contains($response, 'X-Test-Query: q=fragment&numero=1'))
                 throw new RuntimeException('Query string lost');
             if (str_contains($path, '/js/dist/') && !str_contains($response, 'immutable'))
                 throw new RuntimeException('Bundle caching lost');
             echo 'PASS: ' . ($mount ?: '(root)') . $path . PHP_EOL;
         }
+        foreach (['/js/', '/js/dist/', '/js/dist/chunks/', '/css/', '/images/', '/images/thumbnail/'] as $path)
+        {
+            foreach ([$path, '/public' . $path] as $directoryPath)
+            {
+                $curl = curl_init("http://127.0.0.1:$port" . $mount . $directoryPath);
+                curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => true, CURLOPT_TIMEOUT => 5]);
+                $response = curl_exec($curl);
+                $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                curl_close($curl);
+                if ($status !== 403 || !is_string($response) || str_contains($response, 'Index of'))
+                    throw new RuntimeException('Directory listing must be denied: ' . $mount . $directoryPath . ' status=' . $status);
+                if (!preg_match('/^Server: Apache\r?$/m', $response) || str_contains($response, 'Server at'))
+                    throw new RuntimeException('Apache error response exposes its version or signature.');
+            }
+        }
+        echo 'PASS: directory listings denied at ' . ($mount ?: '(root)') . ' through both public URL forms.' . PHP_EOL;
     }
 }
 finally

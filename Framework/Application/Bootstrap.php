@@ -54,6 +54,8 @@ final class Bootstrap
         header_remove('X-Powered-By');
         try
         {
+            RequestContext::start();
+            SecurityHeadersMiddleware::applyBaseline();
             Environment::load(base_path('.env'));
             Config::clear();
             $compiled = BootstrapCache::load(BootstrapCache::path());
@@ -65,8 +67,8 @@ final class Bootstrap
             {
                 EnvironmentValidator::validate();
             }
-            RequestContext::start();
             self::configureTimezone();
+            (new SecurityHeadersMiddleware())->handle(Request::capture());
         }
         catch (Throwable $exception)
         {

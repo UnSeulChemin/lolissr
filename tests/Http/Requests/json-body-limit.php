@@ -11,9 +11,10 @@ Bootstrap::loadEnvOnly();
 $limit = Request::MAX_JSON_BODY_BYTES;
 foreach ([false, true] as $chunked)
 {
-    foreach ([$limit, $limit + 1] as $size)
+    foreach ([$limit, $limit + 1, 1] as $size)
     {
-        $body = '{"value":"' . str_repeat('a', $size - 12) . '"}';
+        $body = $size === 1 ? '{' : '{"value":"' . str_repeat('a', $size - 12) . '"}';
+        $received = [];
         $curl = curl_init('http://localhost' . rtrim(base_uri(), '/') . '/connexion');
         $headers = ['Content-Type: application/problem+json', 'Accept: application/json', 'Expect:'];
         if ($chunked) $headers[] = 'Transfer-Encoding: chunked';
@@ -22,6 +23,15 @@ foreach ([false, true] as $chunked)
             CURLOPT_POSTFIELDS => $body,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$received): int
+            {
+                if (str_contains($line, ':'))
+                {
+                    [$name, $value] = explode(':', $line, 2);
+                    $received[strtolower(trim($name))] = trim($value);
+                }
+                return strlen($line);
+            },
             CURLOPT_TIMEOUT => 15
         ]);
         $response = curl_exec($curl);
@@ -29,6 +39,13 @@ foreach ([false, true] as $chunked)
         $error = curl_error($curl);
         curl_close($curl);
         if ($response === false) throw new RuntimeException('HTTP fixture failed: ' . $error);
+        foreach (['x-content-type-options' => 'nosniff', 'x-frame-options' => 'DENY', 'referrer-policy' => 'no-referrer',
+            'permissions-policy' => 'camera=(), microphone=(), geolocation=()'] as $name => $value)
+            if (($received[$name] ?? null) !== $value) throw new RuntimeException('Missing security header: ' . $name);
+        if (!preg_match('/^[a-f0-9]{16}$/D', $received['x-request-id'] ?? '')
+            || !str_contains($received['content-security-policy'] ?? '', "script-src 'self' 'nonce-"))
+            throw new RuntimeException('Request context or full CSP missing on JSON response.');
+        if ($size !== $limit && isset($received['set-cookie'])) throw new RuntimeException('Early JSON errors opened a session.');
         if ($size > $limit)
         {
             $decoded = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
@@ -37,10 +54,16 @@ foreach ([false, true] as $chunked)
                 throw new RuntimeException('Oversized JSON was not rejected consistently: ' . $status);
             }
         }
+        elseif ($size === 1)
+        {
+            $decoded = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+            if ($status !== 400 || ($decoded['success'] ?? null) !== false)
+                throw new RuntimeException('Malformed JSON was not rejected: ' . $status);
+        }
         elseif ($status !== 419)
         {
             throw new RuntimeException('Exact-limit JSON did not reach CSRF validation: ' . $status);
         }
     }
 }
-echo "PASS: exact JSON limit accepted, overflow rejected with JSON 413, including chunked requests without Content-Length.\n";
+echo "PASS: JSON 400/413/419, security headers and no early session, with and without Content-Length.\n";

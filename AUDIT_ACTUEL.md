@@ -1,23 +1,6 @@
 
 ## Sécurité
 
-
-
-### SEC-03 — Apache affiche la liste des modules JavaScript
-
-**Fichier :** `public/.htaccess`.
-
-**Reproduction :** GET sans authentification sur `/lolissr/public/js/` renvoie 200 avec un listing « Index of » / « Parent Directory ».
-
-**Impact :** divulgation de l'arborescence et des noms de fichiers. Les modules JS sont déjà des ressources publiques ; le listing ne constitue pas à lui seul un accès aux données privées.
-
-**Correction :** désactiver le listing dans toute la racine publique avec `Options -Indexes`, si autorisé par l'hébergement, ou dans le VirtualHost. Vérifier également `css/`, `js/dist/` et les sous-dossiers d'images.
-
-**Contrôles complémentaires :** `.env`, `.git/HEAD`, `composer.json` et `storage/admin-jobs/maintenance.log` renvoient 404 sur le montage local ; `public/.htaccess` et `public/images/` renvoient 403. L'exposition des fichiers privés n'a donc pas été constatée avec les règles actuelles. La protection de la racine privée repose toutefois sur la réécriture vers `public/` ; un DocumentRoot directement placé sur `public/` rend cette séparation plus robuste lorsque l'hébergement le permet.
-
-
-
-
 ### SEC-04 — Erreurs précoces hors du middleware de sécurité
 
 **Fichiers :** `Framework/Application/Bootstrap.php:95`, `Framework/Application/HttpKernel.php`, `Framework/Http/Middleware/SecurityHeadersMiddleware.php`.
@@ -29,6 +12,9 @@
 **Impact :** couverture incomplète des protections HTTP sur les réponses d'erreur. La réponse testée reste un JSON générique ; aucune XSS n'a été démontrée. L'en-tête Apache `Server` révèle aussi les versions PHP/Apache sur cette réponse.
 
 **Correction :** appliquer les en-têtes dès que la configuration et le contexte de requête sont disponibles, avant l'analyse du corps, sans avancer inutilement l'ouverture de session. Prévoir une couverture minimale indépendante pour les erreurs d'amorçage. Tester 400/413 et les erreurs de configuration ; traiter la divulgation de version dans la configuration Apache.
+
+
+
 
 ### SEC-05 — La zone « dev » reste enregistrée en production
 
