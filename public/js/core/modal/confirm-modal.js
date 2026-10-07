@@ -23,11 +23,9 @@ export function confirmModal(
                 <div class="confirm-modal">
 
                     <h3>
-                        ${title}
                     </h3>
 
                     <p>
-                        ${message}
                     </p>
 
                     <div class="confirm-modal-actions">
@@ -36,24 +34,25 @@ export function confirmModal(
                             class="confirm-modal-secondary"
                             type="button"
                         >
-                            ${cancelText}
                         </button>
 
                         <button
-                            class="${
-                                danger
-                                    ? 'confirm-modal-danger'
-                                    : 'confirm-modal-primary'
-                            }"
+                            class="confirm-modal-primary"
                             type="button"
                         >
-                            ${confirmText}
                         </button>
 
                     </div>
 
                 </div>
             `;
+
+            overlay.querySelector('h3').textContent = title ?? '';
+            overlay.querySelector('p').textContent = message ?? '';
+            overlay.querySelector('.confirm-modal-secondary').textContent = cancelText;
+            const confirmButton = overlay.querySelector('.confirm-modal-primary');
+            confirmButton.textContent = confirmText;
+            if (danger) confirmButton.className = 'confirm-modal-danger';
 
             const confirmSelector = danger
                     ? '.confirm-modal-danger'

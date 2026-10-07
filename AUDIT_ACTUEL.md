@@ -2,13 +2,6 @@
 ## Sécurité
 
 
-### S3 — Modales acceptant implicitement du HTML
-
-Références : `public/js/core/modal/confirm-modal.js:22`, `public/js/core/modal/alert-modal.js:20`.
-
-title, message et les libellés de boutons sont interpolés dans innerHTML. Les appels actifs repérés utilisent des textes constants ; aucune XSS stockée ou réfléchie n'est démontrée par ces appels. Cette API devient néanmoins dangereuse si un futur appel lui transmet un titre de collection ou un message externe.
-
-Correction proposée : construire la structure puis affecter les textes avec textContent. Supprimer alertModal si l'on applique D2. La CSP actuelle réduit certaines possibilités d'exécution, sans justifier l'acceptation implicite de HTML.
 
 ### S4 — Frontière de confiance dans la suppression des images
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 $base = $argv[1] ?? 'http://localhost/lolissr';
 $commands = [[PHP_BINARY, __DIR__ . '/run-bundle-browser.php', $base]];
+$commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Feedback/modal-text-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Admin/job-status-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Manga/acquire-release-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Manga/hide-recommendation-browser.js'];

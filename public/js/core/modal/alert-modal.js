@@ -21,11 +21,9 @@ export function alertModal(
                 <div class="confirm-modal">
 
                     <h3>
-                        ${title}
                     </h3>
 
                     <p>
-                        ${message}
                     </p>
 
                     <div class="confirm-modal-actions">
@@ -34,13 +32,16 @@ export function alertModal(
                             class="confirm-modal-primary"
                             type="button"
                         >
-                            ${buttonText}
                         </button>
 
                     </div>
 
                 </div>
             `;
+
+            overlay.querySelector('h3').textContent = title ?? '';
+            overlay.querySelector('p').textContent = message ?? '';
+            overlay.querySelector('.confirm-modal-primary').textContent = buttonText;
 
             const close = () =>
                 {
