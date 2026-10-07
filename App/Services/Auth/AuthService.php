@@ -18,6 +18,9 @@ final class AuthService implements AuthenticationInterface
     public const PASSWORD_MIN_LENGTH = 12;
     private const PASSWORD_MAX_BYTES = 72;
 
+    // Precomputed bcrypt hash at PHP 8.3's PASSWORD_DEFAULT cost; never generate it during login.
+    private const DUMMY_PASSWORD_HASH = '$2y$10$2Oszd4ZDk5JcFODRhMc4Ie4spNqeAiVKTUILcPiwjuyq3jBUDhPK6';
+
     private bool $userResolved = false;
 
     private ?User $currentUser = null;
@@ -75,7 +78,10 @@ final class AuthService implements AuthenticationInterface
 
         $user = $this->userRepository->findByUsername($username);
 
-        if (! $this->hasValidPassword($password) || $user === null || ! password_verify($password, $user->password))
+        $passwordMatches = $this->hasValidPassword($password)
+            && password_verify($password, $user?->password ?? self::DUMMY_PASSWORD_HASH);
+
+        if (! $passwordMatches || $user === null)
         {
             if ($this->loginThrottleService->recordFailure($username, $ipAddress))
             {

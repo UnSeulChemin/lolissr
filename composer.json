@@ -78,6 +78,7 @@
         "dx": "@php scripts/Tools/dx-format.php",
         "dx:check": "@php scripts/Tools/dx-format.php --check",
         "regression-tests": [
+            "@php tests/Build/Tooling/mangacollec-response-limit.php",
             "@php tests/Build/Database/migration-creator.php",
             "@php tests/Build/Database/manga-collection-revisions.php",
             "@php tests/Build/Tooling/http-profile.php",
