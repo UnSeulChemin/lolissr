@@ -2,7 +2,6 @@
 ## Sécurité
 
 
-
 ### S3 — Modales acceptant implicitement du HTML
 
 Références : `public/js/core/modal/confirm-modal.js:22`, `public/js/core/modal/alert-modal.js:20`.

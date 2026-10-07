@@ -46,6 +46,8 @@ try
     $throttle->clear('tést', $ip);
     $check(!$throttle->isLocked('TEST', $ip), 'Clear through alias did not clear the canonical counter');
     $check($auth->login('missing', 'wrong-password', $ip) === LoginResult::INVALID_CREDENTIALS, 'Unknown username fails unexpectedly');
+    $check($auth->login('missing', 'dummy-login-verification', $ip) === LoginResult::INVALID_CREDENTIALS, 'Dummy hash match authenticated an absent account');
+    $check(!$auth->check(), 'Failed login created an authenticated session');
     $db->exec('DELETE FROM login_attempts');
     for ($i = 1; $i <= 20; $i++) $throttle->recordFailure('TEST', '192.0.2.' . $i);
     $check($throttle->isLocked('tést', '198.51.100.1'), 'Changing IP bypasses account budget');

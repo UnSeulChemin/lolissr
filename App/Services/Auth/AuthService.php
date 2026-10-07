@@ -79,7 +79,7 @@ final class AuthService implements AuthenticationInterface
         $user = $this->userRepository->findByUsername($username);
 
         $passwordMatches = $this->hasValidPassword($password)
-            && password_verify($password, $user?->password ?? self::DUMMY_PASSWORD_HASH);
+            && password_verify($password, $user === null ? self::DUMMY_PASSWORD_HASH : $user->password);
 
         if (! $passwordMatches || $user === null)
         {
