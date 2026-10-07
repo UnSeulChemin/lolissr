@@ -167,9 +167,12 @@ exit(0);
 
 function copyPublicDirectory(string $source, string $destination, bool $includeImages): void
 {
+    if (!is_file($source . '/images/.htaccess')) fail('Missing upload protection: public/images/.htaccess');
     $excluded = [normalizePath($source . '/js/dist')];
     if (!$includeImages) $excluded[] = normalizePath($source . '/images');
     copyDirectory($source, $destination, $excluded);
+    // Upload protection belongs in every delivery, including updates without image data.
+    copyFile($source . '/images/.htaccess', $destination . '/images/.htaccess');
     $manifest = require ROOT . '/Config/assets/javascript-manifest.php';
     foreach ($manifest['files'] as $file)
     {
@@ -272,6 +275,7 @@ function ensureDirectory(string $directory): void
 
 function verifyRelease(string $buildDirectory): void
 {
+    if (!is_file($buildDirectory . '/public/images/.htaccess')) fail('Release is missing upload protection.');
     $forbiddenPaths = ['.env', '.git', 'tests', 'releases'];
 
     foreach ($forbiddenPaths as $path)

@@ -17,6 +17,8 @@
 !/storage/logs/.gitkeep
 /storage/backups/*
 !/storage/backups/.gitkeep
+/storage/admin-jobs/*
+!/storage/admin-jobs/.gitkeep
 
 # Etat local des builds et de la retention JavaScript
 /storage/.build.lock
@@ -32,6 +34,8 @@
 # Images locales et fichiers envoyes par les utilisateurs
 /public/images/*
 !/public/images/.gitkeep
+!/public/images/.htaccess
+!/public/images/.htaccess
 
 # Archives de livraison
 /releases/*

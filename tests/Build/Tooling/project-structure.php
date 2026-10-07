@@ -38,4 +38,34 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/
     }
 }
 
+if (file_exists($root . '/.git'))
+{
+    $output = tmpfile();
+    $errors = tmpfile();
+    if ($output === false || $errors === false) throw new RuntimeException('Cannot capture tracked files.');
+    try
+    {
+        $process = proc_open(['git', 'ls-files', '-z', '--', 'storage'],
+            [0 => ['pipe', 'r'], 1 => $output, 2 => $errors], $pipes, $root, null, ['bypass_shell' => true]);
+        if (!is_resource($process)) throw new RuntimeException('Cannot inspect tracked runtime files.');
+        fclose($pipes[0]);
+        if (proc_close($process) !== 0) throw new RuntimeException('Git tracked-file inspection failed.');
+        rewind($output);
+        $tracked = stream_get_contents($output);
+        if ($tracked === false) throw new RuntimeException('Cannot read tracked files.');
+        foreach (explode("\0", $tracked) as $path)
+        {
+            if (preg_match('~^storage/(?:admin-jobs|cache|logs|sessions|backups|bootstrap)/~', $path)
+                && !preg_match('~^storage/(?:admin-jobs|cache|logs|sessions|backups)/\.gitkeep$~D', $path))
+                throw new RuntimeException('Runtime file must not be tracked: ' . $path);
+        }
+        echo "PASS: runtime files excluded from the Git index.\n";
+    }
+    finally
+    {
+        fclose($output);
+        fclose($errors);
+    }
+}
+
 echo "PASS: $classes PSR-4 declarations and $imports source imports.\n";

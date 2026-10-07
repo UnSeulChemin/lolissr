@@ -10,8 +10,11 @@ if ($zip->open($file, ZipArchive::CHECKCONS) !== true) throw new RuntimeExceptio
 try
 {
     foreach (['public/index.php', 'App/Support/Helpers.php', 'Framework/Application/Bootstrap.php',
-        'vendor/autoload.php', '.htaccess', '.env.example', 'Config/assets/versions.php'] as $required)
+        'vendor/autoload.php', '.htaccess', 'public/images/.htaccess', '.env.example', 'Config/assets/versions.php'] as $required)
         if ($zip->locateName($required) === false) throw new RuntimeException('Missing: ' . $required);
+    $uploadProtection = $zip->getFromName('public/images/.htaccess');
+    if ($uploadProtection === false || hash('sha256', $uploadProtection) !== hash_file('sha256', $root . '/public/images/.htaccess'))
+        throw new RuntimeException('Missing/modified upload protection.');
     $files = [];
     for ($i = 0; $i < $zip->numFiles; $i++)
     {
@@ -33,7 +36,7 @@ try
         if (!str_contains($environment, $setting)) throw new RuntimeException('Missing production setting: ' . $setting);
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/public/images', FilesystemIterator::SKIP_DOTS)) as $image)
     {
-        if (!$image->isFile() || $image->getFilename() === '.gitkeep') continue;
+        if (!$image->isFile() || in_array($image->getFilename(), ['.gitkeep', '.htaccess'], true)) continue;
         $name = str_replace('\\', '/', substr($image->getPathname(), strlen($root) + 1));
         $contents = $zip->getFromName($name);
         if ($withImages && ($contents === false || hash('sha256', $contents) !== hash_file('sha256', $image->getPathname())))
