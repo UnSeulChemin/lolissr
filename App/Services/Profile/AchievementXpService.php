@@ -84,11 +84,6 @@ final readonly class AchievementXpService
         ], $baseXp);
     }
 
-    public function rewardAll(User $user, ProfileStatsData $stats): void
-    {
-        $this->award($user, $this->expectedRewards($stats));
-    }
-
     /** @param callable(): ProfileStatsData $loadStats */
     public function reconcile(User $user, callable $loadStats): void
     {

@@ -75,11 +75,11 @@ $assert($audit['missing'] === ['tomes_10' => 500], 'Audit missing rewards incorr
 $assert(count($audit['issues']) === 4, 'Audit must detect amount, eligibility, unknown key and account mismatch');
 $assert($audit['expectedTotal'] === 600 && $audit['expectedLevel'] === 16 && $audit['expectedXp'] === 0, 'Audit calculated progression incorrect');
 $assert([$other->level, $other->xp, $service->totalForUser($other)] === $beforeAudit, 'Audit changed account data');
-$service->rewardAll($other, $stats);
+$service->rewardManga($other, $stats->readTomes, $stats->completedSeries);
 $assert($service->totalForUser($other) === 2756, 'Apply must only add the missing reward');
 $assert((int) $database->query("SELECT xp FROM achievement_xp_rewards WHERE user_id = 2 AND achievement_key = 'tomes_1'")->fetchColumn() === 999, 'Apply corrected an existing reward');
 $afterApply = [$other->level, $other->xp, $service->totalForUser($other)];
-$service->rewardAll($other, $stats);
+$service->rewardManga($other, $stats->readTomes, $stats->completedSeries);
 $assert([$other->level, $other->xp, $service->totalForUser($other)] === $afterApply, 'Repeated apply changed account data');
 $service->reconcile($other, static fn () => $stats);
 $assert($service->totalForUser($other) === 550 && [$other->level, $other->xp] === [16, 0], 'Reconciliation did not preserve base XP or correct rewards');
