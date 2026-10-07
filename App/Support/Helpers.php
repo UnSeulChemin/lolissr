@@ -65,11 +65,3 @@ if (! function_exists('user'))
         return auth()->user();
     }
 }
-
-if (! function_exists('is_logged'))
-{
-    function is_logged(): bool
-    {
-        return auth()->check();
-    }
-}

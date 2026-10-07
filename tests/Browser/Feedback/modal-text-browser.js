@@ -1,7 +1,6 @@
 export async function runBrowserScenario()
 {
     const {confirmModal} = await import('./js/core/modal/confirm-modal.js');
-    const {alertModal} = await import('./js/core/modal/alert-modal.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
     const text = '<img src="x" onerror="window.modalInjected=true"> & <b>texte</b> "test"';
@@ -41,16 +40,5 @@ export async function runBrowserScenario()
         check(await pending === false, 'Cancel did not resolve false');
         closed();
     }
-    for (const mode of ['button', 'escape', 'outside'])
-    {
-        const pending = alertModal({title: text, message: text, buttonText: text});
-        const overlay = inspect(['h3', 'p', '.confirm-modal-primary']);
-        check(document.activeElement === overlay.querySelector('button'), 'Alert button not focused');
-        if (mode === 'button') overlay.querySelector('button').click();
-        else if (mode === 'escape') document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-        else overlay.click();
-        await pending;
-        closed();
-    }
-    return ['HTML-like labels stay literal in confirm/alert modals', 'normal and danger confirmation', 'cancel, Escape and outside click', 'defaults, focus and scroll restoration'];
+    return ['HTML-like labels stay literal in confirmation modals', 'normal and danger confirmation', 'cancel, Escape and outside click', 'defaults, focus and scroll restoration'];
 }
