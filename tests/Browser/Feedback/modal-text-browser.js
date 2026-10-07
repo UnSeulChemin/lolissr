@@ -25,6 +25,14 @@ export async function runBrowserScenario()
         const selector = danger ? '.confirm-modal-danger' : '.confirm-modal-primary';
         const overlay = inspect(['h3', 'p', '.confirm-modal-secondary', selector]);
         check(document.activeElement === overlay.querySelector(selector), 'Confirm button not focused');
+        const dialog = overlay.querySelector('.confirm-modal');
+        check(dialog.getAttribute('role') === 'dialog' && dialog.getAttribute('aria-modal') === 'true', 'Missing dialog semantics');
+        const tab = (shiftKey) => document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', shiftKey, bubbles: true, cancelable: true}));
+        check(tab(false) === false && document.activeElement === overlay.querySelector('.confirm-modal-secondary'), 'Tab escaped modal');
+        tab(false);
+        check(document.activeElement === overlay.querySelector(selector), 'Tab did not wrap');
+        tab(true);
+        check(document.activeElement === overlay.querySelector('.confirm-modal-secondary'), 'Shift+Tab escaped modal');
         overlay.querySelector(selector).click();
         check(await pending === true, 'Confirm did not resolve true');
         closed();

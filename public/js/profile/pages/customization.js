@@ -8,7 +8,7 @@ import { get, post } from '../../core/http.js';
 
 import { showToast } from '../../core/toast.js';
 
-import { appUrl } from '../../core/url.js';
+import { appUrl, profileImageUrl } from '../../core/url.js';
 
 import { invalidateProfilePages } from '../cache-invalidation.js';
 
@@ -95,7 +95,7 @@ async function openAvatarModal(signal)
     if (signal.aborted) return;
 
     const avatarPath =
-        appUrl(`images/profil/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`);
+        profileImageUrl(`images/profil/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`);
 
     const customizationAvatar = document.querySelector('.profile-customization-avatar img');
 
@@ -148,8 +148,8 @@ async function openBannerModal(signal)
 
     invalidateProfilePages();
     if (signal.aborted) return;
-    const imagePath = appUrl(
-        `images/profil/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}?v=20260929-sakura-v2`
+    const imagePath = profileImageUrl(
+        `images/profil/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}`
     );
     document.querySelectorAll('.profile-customization-banner img, .profile-banner img').forEach(image =>
     {
@@ -190,7 +190,7 @@ async function openFrameModal(signal)
 
     invalidateProfilePages();
     if (signal.aborted) return;
-    const imagePath = appUrl(`images/profil/frame/thumbnail/${response.data.frame}.${response.data.frame_extension}`);
+    const imagePath = profileImageUrl(`images/profil/frame/thumbnail/${response.data.frame}.${response.data.frame_extension}`);
     document.querySelectorAll('.profile-customization-avatar .profile-frame, .profile-avatar .profile-frame, .site-profile-frame').forEach(image =>
     {
         image.src = imagePath;

@@ -57,6 +57,10 @@ export function confirmModal(
             `;
 
             overlay.querySelector('h3').textContent = title ?? '';
+            const dialog = overlay.querySelector('.confirm-modal');
+            dialog.setAttribute('role', 'dialog');
+            dialog.setAttribute('aria-modal', 'true');
+            dialog.setAttribute('aria-label', title || 'Confirmation');
             overlay.querySelector('p').textContent = message ?? '';
             overlay.querySelector('.confirm-modal-secondary').textContent = cancelText;
             const confirmButton = overlay.querySelector('.confirm-modal-primary');
@@ -80,7 +84,7 @@ export function confirmModal(
                     if (activeClose === close) activeClose = null;
                     document.body.style.overflow = previousOverflow;
 
-                    document.removeEventListener('keydown', handleEscape);
+                    document.removeEventListener('keydown', handleEscape, true);
 
                     overlay.remove();
                     if (previousFocus?.isConnected) previousFocus.focus();
@@ -92,8 +96,19 @@ export function confirmModal(
                 {
                     if (event.key === 'Escape')
                     {
-
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
                         close(false);
+                    }
+                    if (event.key === 'Tab')
+                    {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        const buttons = [...dialog.querySelectorAll('button:not(:disabled)')];
+                        const index = buttons.indexOf(document.activeElement);
+                        const next = index < 0 ? (event.shiftKey ? buttons.length - 1 : 0)
+                            : (index + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length;
+                        buttons[next]?.focus();
                     }
                 };
 
@@ -103,7 +118,7 @@ export function confirmModal(
 
             document.body.style.overflow = 'hidden';
 
-            document.addEventListener('keydown', handleEscape);
+            document.addEventListener('keydown', handleEscape, true);
 
             overlay
                 .querySelector(confirmSelector)

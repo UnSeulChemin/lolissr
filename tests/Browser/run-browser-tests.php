@@ -16,6 +16,7 @@ $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Search/search-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Navigation/prefetch-browser.js'];
 $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Profile/profile-performance-browser.js'];
+$commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/Profile/customization-images-browser.js'];
 foreach (['Assets/page-styles-browser.js', 'Navigation/spa-browser.js', 'Navigation/route-initializers-browser.js', 'Navigation/spa-lifecycle-browser.js', 'Navigation/scroll-history-browser.js', 'Feedback/flash-feedback-browser.js', 'Chinois/flashcard-pages-browser.js', 'Navigation/navigation-cancel-browser.js', 'Navigation/header-click-browser.js'] as $test)
 {
     $commands[] = [PHP_BINARY, __DIR__ . '/run-browser-scenario.php', $base, __DIR__ . '/' . $test];
