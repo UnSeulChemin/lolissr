@@ -59,7 +59,7 @@
 # Notes personnelles et fichiers temporaires d'editeur
 /roadmap.txt
 /MANGACOLLEC-API.txt
-/PRODUCTION.txt
+/production.txt
 *.swp
 *.swo
 *~
