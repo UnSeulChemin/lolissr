@@ -66,12 +66,13 @@ final readonly class ChinoisReadService
     // GRAMMAIRE
     // =================================================
 
-    public function hsk(string $niveau, string $sectionId = ''): ChinoisHskData
+    public function hsk(string $niveau, string $sectionId = '', bool $reconcile = false): ChinoisHskData
     {
         $niveau = mb_strtoupper(trim($niveau));
         $config = self::HSK[$niveau] ?? throw new NotFoundException('Niveau HSK introuvable');
 
-        $menu = $this->sectionMenu($this->grammaireRepository->sectionTitles($niveau));
+        $titles = $this->grammaireRepository->sectionTitles($niveau);
+        $menu = $this->sectionMenu($titles);
         $selected = $menu[0] ?? null;
         if ($sectionId !== '')
         {
@@ -80,7 +81,14 @@ final readonly class ChinoisReadService
             {
                 if ($section->id === $sectionId) $selected = $section;
             }
-            if ($selected === null) throw new NotFoundException('Section introuvable');
+            // Accept historical links while new links use IDs independent of sibling sections.
+            if ($selected === null)
+            {
+                foreach ($this->legacySectionMenu($titles) as $index => $section)
+                    if ($section->id === $sectionId) $selected = $menu[$index];
+            }
+            if ($selected === null && !$reconcile) throw new NotFoundException('Section introuvable');
+            $selected ??= $menu[0] ?? null;
         }
         $sections = $selected === null ? [] : $this->buildSections(
             $this->grammaireRepository->findByLevel($niveau, $selected->title)
@@ -109,7 +117,7 @@ final readonly class ChinoisReadService
     // VOCABULAIRE
     // =================================================
 
-    public function langue(string $langue, int|string $page = 1): ?ChinoisVocabulairePageData
+    public function langue(string $langue, int|string $page = 1, bool $reconcile = false): ?ChinoisVocabulairePageData
     {
         $langue = mb_strtolower(trim($langue));
 
@@ -124,7 +132,7 @@ final readonly class ChinoisReadService
 
         if ($totalVocabulaires === 0)
         {
-            if ($page > 1) return null;
+            if ($page > 1 && !$reconcile) return null;
             return new ChinoisVocabulairePageData(
                 vocabulaires: [],
                 currentPage: 1,
@@ -135,6 +143,8 @@ final readonly class ChinoisReadService
         }
 
         $totalPages = (int) ceil($totalVocabulaires / $perPage);
+
+        if ($reconcile) $page = min($page, $totalPages);
 
         if ($page > $totalPages)
         {
@@ -229,6 +239,23 @@ final readonly class ChinoisReadService
      *  @return list<ChinoisSectionData>
      */
     private function sectionMenu(array $titles): array
+    {
+        $transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
+        return array_map(function (string $title) use ($transliterator): ChinoisSectionData
+        {
+            $slug = $this->slugify($title, $transliterator);
+            return new ChinoisSectionData(
+                title: $title,
+                id: ($slug === '' ? 'section' : $slug) . '-' . hash('sha256', $title),
+                categories: []
+            );
+        }, $titles);
+    }
+
+    /** @param list<string> $titles
+     *  @return list<ChinoisSectionData>
+     */
+    private function legacySectionMenu(array $titles): array
     {
         $results = [];
         $reservedIds = [];

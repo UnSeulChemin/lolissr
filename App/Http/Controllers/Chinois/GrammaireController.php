@@ -45,7 +45,7 @@ final class GrammaireController extends Controller
         $this->title = 'Chinois | Grammaires ' . $hskLevel;
 
         $this->render('pages/chinois/grammaire/hsk', [
-            'hsk' => $this->chinoisReadService->hsk($hskLevel, $section ?? $this->stringInput('section'))
+            'hsk' => $this->chinoisReadService->hsk($hskLevel, $section ?? $this->stringInput('section'), $this->stringInput('reconcile') === '1')
         ]);
     }
 
@@ -93,7 +93,7 @@ final class GrammaireController extends Controller
     {
         $niveau = $this->resolveHskLevel($level);
 
-        $this->grammaireOrFail($niveau, $id);
+        $current = $this->grammaireOrFail($niveau, $id);
         $this->validateRequest($request);
 
         $returnTo = $this->returnPathInput();
@@ -106,6 +106,13 @@ final class GrammaireController extends Controller
         }
 
         $destination = 'chinois/grammaire/' . mb_strtolower($dto->niveau);
+
+        if ($current->niveau !== $dto->niveau || $current->section !== $dto->section)
+        {
+            $returnTo = '';
+            foreach ($this->chinoisReadService->hsk($dto->niveau)->menu as $section)
+                if ($section->title === $dto->section) $destination .= '?section=' . rawurlencode($section->id);
+        }
 
         $this->redirectWithSuccess($returnTo !== '' ? $returnTo : $destination, $result->message);
     }

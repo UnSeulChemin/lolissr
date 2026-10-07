@@ -23,9 +23,7 @@ trait HasMangaStatsSubQuery
                     END
                 ) AS total_lu,
                 ROUND(
-                    AVG(
-                        COALESCE(note, 0)
-                    ),
+                    AVG(note),
                     1
                 ) AS average_note
 

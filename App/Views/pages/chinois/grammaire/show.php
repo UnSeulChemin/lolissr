@@ -10,7 +10,8 @@ use App\DTO\Common\Responses\ViewData;
 
 ?>
 
-<section class="layout-container dashboard-page">
+<section class="layout-container dashboard-page"
+    data-grammar-url="<?= e($view->baseUri . 'chinois/grammaire/' . strtolower($grammaire->niveau)) ?>">
 
     <section class="grammar-list">
 

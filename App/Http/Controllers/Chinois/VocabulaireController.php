@@ -39,7 +39,7 @@ final class VocabulaireController extends Controller
     public function langue(string $langue, int $page = 1): never
     {
         $langue = mb_strtolower($langue);
-        $data = $this->chinoisReadService->langue($langue, $page);
+        $data = $this->chinoisReadService->langue($langue, $page, $this->stringInput('reconcile') === '1');
 
         if ($data === null)
         {

@@ -90,8 +90,10 @@ foreach (['École', 'Ecole', 'ecole-2', '!!!', 'section-2', '中文'] as $index 
     );
 }
 $sections = $buildSections->invoke($service, $grammar);
-$check(array_column($sections, 'id') === ['ecole', 'ecole-3', 'ecole-2', 'section-3', 'section-2', 'zhong-wen'],
-    'Section transliteration, reserved slugs or collision suffixes changed');
+$check(count(array_unique(array_column($sections, 'id'))) === count($sections), 'Section IDs collided');
+$remaining = $buildSections->invoke($service, array_slice($grammar, 1));
+$check(array_column($remaining, 'id') === array_slice(array_column($sections, 'id'), 1),
+    'Deleting a section changed other section IDs');
 $check($buildSections->invoke($service, []) === [], 'Empty grammar sections changed');
 foreach ($sections as $index => $section)
     $check($section->categories[0]->grammaires[0] === $grammar[$index], 'Section grouping changed');

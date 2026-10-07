@@ -89,7 +89,7 @@ final class MangaCollectionRepository extends AbstractRepository
         $offset = $pageIndex > intdiv(PHP_INT_MAX, $perPage)
             ? PHP_INT_MAX
             : $pageIndex * $perPage;
-        $condition = $notes ? 'average_note < 10' : 'total_lu < total';
+        $condition = $notes ? 'COALESCE(average_note, 0) < 10' : 'total_lu < total';
         $order = $notes ? 'average_note ASC, livre ASC, id ASC' : 'livre ASC, id ASC';
         // La CTE groupée sert au comptage et à la pagination. La jointure gauche
         // préserve le total lorsque la page ou la liste demandée est vide.
@@ -124,7 +124,7 @@ final class MangaCollectionRepository extends AbstractRepository
             $manga->lu = (bool) $row->lu;
             $manga->total = (int) $row->total;
             $manga->total_lu = (int) $row->total_lu;
-            $manga->average_note = (float) $row->average_note;
+            $manga->average_note = $row->average_note === null ? null : (float) $row->average_note;
             $mangas[] = $manga;
         }
 

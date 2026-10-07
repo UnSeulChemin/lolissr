@@ -64,7 +64,36 @@ try
     foreach (['a', 'b'] as $label)
     {
         http_set_cookie($cookies[$label]);
+        $db->prepare('INSERT INTO chinois_grammaire (user_id, niveau, section, categorie, titre, structure, phrase, pinyin, traduction, explication, position, section_position, categorie_position) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1)')
+            ->execute([$accounts[$label], 'HSK1', 'Ancienne', 'Fixture', 'Rule', 'Fixture', 'Fixture', 'Fixture', 'Fixture', 'Fixture']);
+        $grammarId = (int) $db->lastInsertId();
+        $update = http_post(http_base() . '/chinois/grammaire/hsk1/modifier/' . $grammarId,
+            ['Content-Type: application/x-www-form-urlencoded'], http_build_query([
+                'csrf_token' => $tokens[$label], 'return_to' => 'chinois/grammaire/hsk1?section=ancienne',
+                'niveau' => 'HSK2', 'section' => 'Nouvelle', 'categorie' => 'Fixture', 'titre' => 'Rule',
+                'structure' => 'Fixture', 'phrase' => 'Fixture', 'pinyin' => 'Fixture', 'traduction' => 'Fixture', 'explication' => 'Fixture'
+            ]));
+        $check($update['status'] === 302, 'Grammar move failed');
+        $location = '';
+        foreach ($update['headers'] as $header)
+            if (stripos($header, 'Location: ') === 0) $location = trim(substr($header, 10));
+        $check(str_contains($location, '/hsk2?section='), 'Grammar move returned to the old level or section');
+        $movedPage = http_get('http://localhost' . $location);
+        $check($movedPage['status'] === 200 && str_contains($movedPage['body'], 'Nouvelle'), 'Grammar move redirected to a missing section');
+        $db->prepare('DELETE FROM chinois_grammaire WHERE id = ? AND user_id = ?')->execute([$grammarId, $accounts[$label]]);
+        $detailPath = '/chinois/vocabulaire/mandarin/recherche/' . $wordIds[$label];
+        $detail = http_get(http_base() . $detailPath);
+        $check($detail['status'] === 200 && str_contains($detail['body'], $marker . '-' . $label),
+            'Own vocabulary detail must render its word in HTML');
+        $detail = http_get(http_base() . $detailPath, [...$jsonHeaders, 'X-Page-Format: fragment']);
+        $detailPayload = json_decode($detail['body'], true, 512, JSON_THROW_ON_ERROR);
+        $check($detail['status'] === 200 && ($detailPayload['type'] ?? null) === 'page'
+            && str_contains($detailPayload['page']['html'] ?? '', $marker . '-' . $label),
+            'Own vocabulary detail must render its word in SPA navigation');
         $baselineSuccesses[$label] = $successCount();
+        $check(http_get(http_base() . '/chinois/vocabulaire/mandarin/page/999')['status'] === 404, 'Invalid vocabulary page accepted');
+        $reconciled = http_get(http_base() . '/chinois/vocabulaire/mandarin/page/999?reconcile=1');
+        $check($reconciled['status'] === 200 && str_contains($reconciled['body'], 'data-vocabulary-url='), 'Shrinking vocabulary pages were not reconciled');
         $search = http_get(http_base() . '/recherche?q=' . rawurlencode($marker), $jsonHeaders);
         $payload = json_decode($search['body'], true, 512, JSON_THROW_ON_ERROR);
         $check($search['status'] === 200 && count($payload['data']['chinois']) === ($label === 'a' ? 2 : 1), 'Global search leaked foreign contents');

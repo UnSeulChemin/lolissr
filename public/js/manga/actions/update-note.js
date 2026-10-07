@@ -128,21 +128,13 @@ async function saveNotes(fieldName, value)
     const {
         basePath,
         slug,
-        numero,
-        jacquette,
-        livreNote
+        numero
     } = card.dataset;
 
     return post(
         `${basePath}manga/ajax/update-note/${slug}/${numero}`,
         {
-            jacquette: fieldName === 'jacquette'
-                    ? value
-                    : Number(jacquette) || null,
-
-            livre_note: fieldName === 'livreNote'
-                    ? value
-                    : Number(livreNote) || null
+            [fieldName === 'jacquette' ? 'jacquette' : 'livre_note']: value
         },
         {
             headers: {

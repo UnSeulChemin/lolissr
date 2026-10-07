@@ -18,6 +18,9 @@ import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 import { invalidateVocabularyPages } from '../cache-invalidation.js';
 
+import { navigateTo } from '../../router/navigation/navigation.js';
+import { navigationState } from '../../router/state.js';
+
 // =================================================
 // ÉTAT
 // =================================================
@@ -113,6 +116,21 @@ async function deleteVocabulaire(button)
 
         invalidateVocabularyPages();
         if (!button.isConnected) return;
+
+        const vocabularyPage = button.closest('[data-vocabulary-url]');
+        if (vocabularyPage)
+        {
+            const target = new URL(vocabularyPage.dataset.vocabularyUrl, location.href);
+            target.searchParams.set('reconcile', '1');
+            const navigation = navigateTo(target.href, {force: true, updateHistory: false});
+            const navigationId = navigationState.navigationId;
+            await navigation;
+            if (navigationId !== navigationState.navigationId) return;
+            const canonical = document.querySelector('[data-vocabulary-url]')?.dataset.vocabularyUrl;
+            if (canonical) history.replaceState(history.state, '', canonical);
+            showToast(data.message || 'Vocabulaire supprimé', 'success');
+            return;
+        }
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE

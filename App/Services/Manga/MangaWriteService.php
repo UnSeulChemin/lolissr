@@ -207,7 +207,8 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-                $notes = $this->mangaRepository->updateNote($slug, $numero, $dto->jacquette, $dto->livreNote);
+                $notes = $this->mangaRepository->updateNote($slug, $numero, $dto->jacquette, $dto->livreNote,
+                    $dto->updateJacquette, $dto->updateLivreNote);
 
                 $failure = $this->writeFailed(
                     $notes !== false,

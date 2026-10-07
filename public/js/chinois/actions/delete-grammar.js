@@ -18,6 +18,9 @@ import { confirmDelete } from '../../core/modal/delete-modal.js';
 
 import { invalidateGrammarPages } from '../cache-invalidation.js';
 
+import { navigateTo } from '../../router/navigation/navigation.js';
+import { navigationState } from '../../router/state.js';
+
 // =================================================
 // ÉTAT
 // =================================================
@@ -114,6 +117,21 @@ async function deleteGrammaire(button)
 
         invalidateGrammarPages();
         if (!button.isConnected) return;
+
+        const grammarPage = button.closest('[data-grammar-url]');
+        if (grammarPage)
+        {
+            const target = new URL(grammarPage.dataset.grammarUrl, location.href);
+            target.searchParams.set('reconcile', '1');
+            const navigation = navigateTo(target.href, {force: true, updateHistory: false});
+            const navigationId = navigationState.navigationId;
+            await navigation;
+            if (navigationId !== navigationState.navigationId) return;
+            const canonical = document.querySelector('[data-grammar-url]')?.dataset.grammarUrl;
+            if (canonical) history.replaceState(history.state, '', canonical);
+            showToast(data.message || 'Grammaire supprimée', 'success');
+            return;
+        }
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE

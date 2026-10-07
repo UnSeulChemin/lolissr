@@ -166,6 +166,17 @@ try
         $check($row->jacquette === $cover && $row->livre_note === $book && $row->note === $stored, 'Stored notes changed');
         $check((int) $db->query('SELECT note FROM manga WHERE id = 2')->fetchColumn() === 2, 'Other volume changed');
     }
+    foreach ([['jacquette' => 4], ['livre_note' => 5], ['jacquette' => null]] as $input)
+    {
+        $request = new \App\Http\Requests\Manga\MangaUpdateNoteRequest(new \Framework\Http\Requests\Request(post: $input));
+        $check(!$request->fails(), 'Partial note validation failed');
+        $check($service->updateNote('fixture', 1, $request->dto())->success, 'Partial note update failed');
+        $row = $db->query('SELECT jacquette, livre_note FROM manga WHERE id = 1')->fetch();
+        if (array_key_exists('livre_note', $input))
+            $check($row->jacquette === 4 && $row->livre_note === 5, 'Second tab overwrote the first rating');
+        elseif ($input['jacquette'] === null)
+            $check($row->jacquette === null && $row->livre_note === 5, 'Explicit null cleared an untouched rating');
+    }
     $db->exec('DELETE FROM manga WHERE id = 1');
     try
     {

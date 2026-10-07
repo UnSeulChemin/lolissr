@@ -10,7 +10,8 @@ use App\DTO\Common\Responses\ViewData;
 
 ?>
 
-<section class="layout-container dashboard-page">
+<section class="layout-container dashboard-page"
+    data-grammar-url="<?= e($view->baseUri . 'chinois/grammaire/hsk' . $hsk->level . (isset($hsk->sections[0]) ? '?section=' . rawurlencode($hsk->sections[0]->id) : '')) ?>">
 
     <section class="grammar-hero transition-title u-relative u-text-center u-clip u-border-box">
 

@@ -64,7 +64,13 @@ foreach (['École', 'Ecole', 'ecole-2', '!!!', 'section-2', '中文'] as $i => $
 $grammar = $container->get(App\Services\Chinois\ChinoisReadService::class);
 $first = $grammar->hsk('HSK1');
 $check(count($first->menu) === 6 && count($first->sections) === 1, 'Grammar must load one section');
-$check(array_column($first->menu, 'id') === ['ecole', 'ecole-3', 'ecole-2', 'section-3', 'section-2', 'zhong-wen'], 'Menu anchors changed');
+$originalIds = array_column($first->menu, 'id');
+$check(count(array_unique($originalIds)) === 6, 'Section IDs must be unique');
+$db->exec('DELETE FROM chinois_grammaire WHERE id = 1');
+$remaining = $grammar->hsk('HSK1');
+$check(array_column($remaining->menu, 'id') === array_slice($originalIds, 1), 'Deleting a colliding section changed other URLs');
+$insert->execute([1, 'HSK1', 'École', 'Categorie', 'Rule 0', 'Explanation', 1, 0, 1]);
+$check($grammar->hsk('HSK1', 'ecole-3')->sections[0]->title === 'Ecole', 'Historical section link stopped resolving');
 foreach ($first->menu as $i => $section)
 {
     $data = $grammar->hsk('HSK1', $section->id);
@@ -73,6 +79,8 @@ foreach ($first->menu as $i => $section)
     $check($section->categories === [], 'Menu loaded rule content');
 }
 $check($grammar->hsk('HSK2')->sections === [], 'Empty level');
+$check($grammar->hsk('HSK1', 'removed-section', true)->sections[0]->id === $originalIds[0], 'Removed section did not fall back to a valid section');
+$check($grammar->hsk('HSK2', 'removed-section', true)->sections === [], 'Empty level reconciliation failed');
 try
 { $grammar->hsk('HSK1', 'missing'); throw new RuntimeException('Unknown section accepted'); }
 catch (NotFoundException)

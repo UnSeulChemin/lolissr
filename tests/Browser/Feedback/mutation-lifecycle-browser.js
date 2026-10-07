@@ -117,7 +117,7 @@ export async function runBrowserScenario()
         first.querySelector('button').click();
         const oldRequest = requests.shift();
         check(oldRequest !== undefined, 'First note request missing');
-        check(JSON.parse(oldRequest.options.body).livre_note === null, 'Saving the cover invented a book rating');
+        check(!Object.hasOwn(JSON.parse(oldRequest.options.body), 'livre_note'), 'Saving the cover sent an untouched book rating');
         first.remove();
         const second = makeCard('second');
         second.querySelector('button').click();

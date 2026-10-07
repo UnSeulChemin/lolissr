@@ -201,14 +201,14 @@ final class MangaRepository extends AbstractRepository
         return $this->updateBySlugAndNumero($slug, $numero, ['lu' => (int) $readStatus]);
     }
 
-    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): \App\DTO\Manga\Responses\MangaUpdateNoteData|false
+    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote, bool $updateJacquette = true, bool $updateLivreNote = true): \App\DTO\Manga\Responses\MangaUpdateNoteData|false
     {
         if (! $this->db->inTransaction())
         {
             throw new \LogicException('Note updates require a transaction.');
         }
         $target = $this->fetchOne(
-            "SELECT id FROM {$this->table()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1 FOR UPDATE",
+            "SELECT id, jacquette, livre_note FROM {$this->table()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1 FOR UPDATE",
             ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
         );
         if ($target === null)
@@ -216,7 +216,10 @@ final class MangaRepository extends AbstractRepository
             throw new \Framework\Http\Exceptions\NotFoundException('Manga introuvable');
         }
 
-        [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
+        [$jacquette, $livreNote] = $this->normalizeNotes(
+            $updateJacquette ? $jacquette : $target->jacquette,
+            $updateLivreNote ? $livreNote : $target->livre_note
+        );
 
         $updated = $this->update(
             [

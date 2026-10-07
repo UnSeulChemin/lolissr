@@ -15,7 +15,8 @@ use App\DTO\Common\Responses\ViewData;
 
 <section class="layout-container dashboard-page">
 
-    <div class="collection-ajax-container">
+    <div class="collection-ajax-container"
+        data-vocabulary-url="<?= e($view->baseUri . 'chinois/vocabulaire/' . $langue . ($currentPage > 1 ? '/page/' . $currentPage : '')) ?>">
 
         <?php require view_path('pages/chinois/vocabulaire/partials/items.php'); ?>
 

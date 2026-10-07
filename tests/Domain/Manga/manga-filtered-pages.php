@@ -51,7 +51,17 @@ foreach ([true, false] as $notes)
     }
 }
 $first = $repository->filteredPage(true, 2, 1)['mangas'][0];
-$assert($first->average_note === 2.0 && $first->total === 2 && $first->total_lu === 1, 'Null notes or reading totals changed');
+$assert($first->average_note === 4.0 && $first->total === 2 && $first->total_lu === 1, 'Unrated volumes affected the series average');
+$db->exec('DELETE FROM manga');
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga (id, slug, numero, livre, note, lu) VALUES
+    (1, 'audit', 1, 'Audit', 8, 1), (2, 'audit', 2, 'Audit', NULL, 0)"));
+$dashboard = new \App\Repositories\Manga\MangaStatsRepository($db);
+$assert($repository->findAllFirstTomes('id DESC', 10, 1)[0]->average_note === 8.0
+    && $dashboard->dashboardSummary()['average'] === 8.0, 'Series and dashboard disagree on absent ratings');
+$db->exec('UPDATE manga SET note = NULL');
+$unrated = $repository->filteredPage(true, 10, 1);
+$assert($unrated['total'] === 1 && $unrated['mangas'][0]->average_note === null
+    && $dashboard->dashboardSummary()['average'] === null, 'Unrated series lost null average or disappeared from the notes filter');
 $db->exec('DELETE FROM manga');
 foreach ([true, false] as $notes)
 {

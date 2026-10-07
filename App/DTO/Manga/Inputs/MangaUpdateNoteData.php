@@ -8,7 +8,12 @@ use App\Support\Manga\MangaNoteNormalizer;
 
 final readonly class MangaUpdateNoteData
 {
-    public function __construct(public ?int $jacquette, public ?int $livreNote)
+    public function __construct(
+        public ?int $jacquette,
+        public ?int $livreNote,
+        public bool $updateJacquette = true,
+        public bool $updateLivreNote = true
+    )
     {
     }
 
@@ -19,7 +24,9 @@ final readonly class MangaUpdateNoteData
     {
         return new self(
             jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
-            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null)
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
+            updateJacquette: array_key_exists('jacquette', $data),
+            updateLivreNote: array_key_exists('livre_note', $data)
         );
     }
 }
