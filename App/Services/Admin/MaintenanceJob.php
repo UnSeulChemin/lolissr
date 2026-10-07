@@ -10,7 +10,22 @@ final class MaintenanceJob
     public static function status(): array
     {
         $path = self::directory() . '/maintenance.json';
-        $data = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
+        $data = null;
+        $handle = @fopen($path, 'rb');
+        if ($handle !== false)
+        {
+            try
+            {
+                if (!flock($handle, LOCK_SH)) throw new RuntimeException('Impossible de lire l’état de la commande.');
+                $contents = stream_get_contents($handle);
+                $data = $contents === false ? null : json_decode($contents, true);
+            }
+            finally
+            {
+                flock($handle, LOCK_UN);
+                fclose($handle);
+            }
+        }
         if (!is_array($data) || !is_string($data['state'] ?? null) || !is_int($data['updated'] ?? null)) return ['state' => 'idle', 'updated' => 0];
         if (in_array($data['state'], ['queued', 'running'], true) && time() - $data['updated'] > 7200) return ['state' => 'interrupted', 'updated' => $data['updated']];
         return ['state' => $data['state'], 'updated' => $data['updated']];

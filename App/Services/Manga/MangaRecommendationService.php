@@ -18,10 +18,11 @@ final class MangaRecommendationService
     /** @var array<string, string|false> */
     private array $fileFingerprints = [];
 
-    private function collectionRevision(): string
+    /** @param list<array{slug: string, livre: string, numero: int}>|null $rows */
+    private function collectionRevision(?array &$rows): string
     {
         return $this->repository->collectionRevision()
-            ?? hash('sha256', json_encode($this->repository->releaseCollection(), JSON_THROW_ON_ERROR));
+            ?? hash('sha256', json_encode($rows ??= $this->repository->releaseCollection(), JSON_THROW_ON_ERROR));
     }
 
     private function fingerprint(string $path): string|false
@@ -63,15 +64,16 @@ final class MangaRecommendationService
         $path = $this->catalogPath ?? base_path('storage/manga-recommendations.json');
         $hidden = $this->hidden();
         $ownerId = user()->id;
-        $compute = function () use ($mode, $hidden, $ownerId): array
+        $rows = null;
+        $compute = function () use ($mode, $hidden, $ownerId, &$rows): array
         {
             $catalog = $this->catalog();
             if (!is_array($catalog)) return [];
-            $rows = $this->repository->releaseCollection();
+            $rows ??= $this->repository->releaseCollection();
             return self::fromCatalog($catalog, array_column($rows, 'livre'), $mode, $hidden, self::confirmedSeriesIds($catalog, $rows, $ownerId));
         };
         if ($this->catalogPath !== null || !is_file($path)) return $compute();
-        $fingerprint = [$ownerId, $mode, \Framework\Config\ApplicationConfig::baseUri(), $this->fingerprint($path), $this->collectionRevision(), $hidden];
+        $fingerprint = [$ownerId, $mode, \Framework\Config\ApplicationConfig::baseUri(), $this->fingerprint($path), $this->collectionRevision($rows), $hidden];
         foreach (['storage/manga-releases.json', 'Config/settings/manga-releases.php'] as $relative)
         {
             $file = base_path($relative);
@@ -248,12 +250,13 @@ final class MangaRecommendationService
         $entries = $contents === false ? null : json_decode($contents, true);
         if (!is_array($entries) || $entries === []) return [];
         $ownerId = user()->id;
-        $compute = function () use ($entries, $ownerId): array
+        $rows = null;
+        $compute = function () use ($entries, $ownerId, &$rows): array
         {
             $catalog = $this->catalog();
             if (is_array($catalog))
             {
-                $rows = $this->repository->releaseCollection();
+                $rows ??= $this->repository->releaseCollection();
                 $confirmed = self::confirmedSeriesIds($catalog, $rows, $ownerId);
                 $current = [];
                 foreach (['categories', 'authors'] as $mode)
@@ -298,7 +301,7 @@ final class MangaRecommendationService
             return array_values($entries);
         };
         if ($this->catalogPath !== null || $this->favoritesPath !== null) return $compute();
-        $revision = hash('sha256', json_encode([$entries, $this->collectionRevision(), \Framework\Config\ApplicationConfig::baseUri(),
+        $revision = hash('sha256', json_encode([$entries, $this->collectionRevision($rows), \Framework\Config\ApplicationConfig::baseUri(),
             $this->fingerprint(base_path('storage/manga-recommendations.json')),
             $this->fingerprint(base_path('storage/manga-releases.json')),
             $this->fingerprint(base_path('Config/settings/manga-releases.php'))], JSON_THROW_ON_ERROR));
@@ -362,12 +365,13 @@ final class MangaRecommendationService
         if ($query === '' || $owner === null) return $result;
         $hidden = $this->hidden();
         $ownerId = $owner->id;
-        $compute = function () use ($hidden, $ownerId): array
+        $rows = null;
+        $compute = function () use ($hidden, $ownerId, &$rows): array
         {
             $filters = ['categories' => [], 'authors' => []];
             $catalog = $this->catalog();
             if ($catalog === null) return $filters;
-            $rows = $this->repository->releaseCollection();
+            $rows ??= $this->repository->releaseCollection();
             $prepared = self::prepareCatalog($catalog, array_column($rows, 'livre'), self::confirmedSeriesIds($catalog, $rows, $ownerId));
             if ($prepared === null) return $filters;
             foreach (['categories', 'authors'] as $mode)
@@ -389,7 +393,7 @@ final class MangaRecommendationService
         }
         else
         {
-            $revision = hash('sha256', json_encode([$ownerId, $this->collectionRevision(), $hidden, \Framework\Config\ApplicationConfig::baseUri(),
+            $revision = hash('sha256', json_encode([$ownerId, $this->collectionRevision($rows), $hidden, \Framework\Config\ApplicationConfig::baseUri(),
                 $this->fingerprint($path), $this->fingerprint(base_path('storage/manga-releases.json')),
                 $this->fingerprint(base_path('Config/settings/manga-releases.php'))], JSON_THROW_ON_ERROR));
             /** @var array{categories: list<array{title: string, normalized: string}>, authors: list<array{title: string, normalized: string}>} $filters */

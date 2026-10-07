@@ -226,11 +226,30 @@ try
     $db->exec('DROP TABLE manga_collection_revisions');
     $check($repository->collectionRevision() === null, 'Missing revision schema must retain compatibility');
     Config::prime(['cache' => ['enabled' => true, 'ttl' => 3600], 'app' => ['base_uri' => '/test/']]);
-    $service()->searchFilters('a');
+    $fallback = $service();
+    $check($fallback->setFavorite($id(1), true)->success, 'Cannot prepare fallback favorite');
+    foreach (['all' => 'manga.recommendations.v4.1.categories', 'favorites' => 'manga.favorites.v3.1',
+        'searchFilters' => 'manga.recommendation-filters.v2.1'] as $method => $key)
+    {
+        \Framework\Cache\Cache::forget($key);
+        RecommendationCacheStatement::$collectionReads = 0;
+        $cold = $method === 'searchFilters' ? $fallback->$method('a') : $fallback->$method();
+        $check(RecommendationCacheStatement::$collectionReads === 1, 'Fallback cold ' . $method . ' must read collection once');
+        RecommendationCacheStatement::$collectionReads = 0;
+        $warm = $method === 'searchFilters' ? $fallback->$method('a') : $fallback->$method();
+        $check(RecommendationCacheStatement::$collectionReads === 1 && $warm === $cold,
+            'Fallback warm ' . $method . ' must take one fresh snapshot');
+    }
     $fallbackSnapshot = file_get_contents($filterCache);
     $db->exec('UPDATE manga SET numero = 3 WHERE user_id = 1');
-    $service()->searchFilters('a');
+    RecommendationCacheStatement::$collectionReads = 0;
+    $fallback->searchFilters('a');
+    $check(RecommendationCacheStatement::$collectionReads === 1, 'Fallback invalidation must reuse the current snapshot');
     $check(file_get_contents($filterCache) !== $fallbackSnapshot, 'Legacy fallback missed a collection update');
+    $db->exec('DELETE FROM manga WHERE user_id = 1');
+    RecommendationCacheStatement::$collectionReads = 0;
+    $check($fallback->all() === [] && RecommendationCacheStatement::$collectionReads === 1,
+        'Same service retained a stale collection after deletion');
     $GLOBALS['cacheTestOwner'] = null;
     RecommendationCacheStatement::$collectionReads = 0;
     $check($service()->searchFilters('a') === ['categories' => [], 'authors' => []] && RecommendationCacheStatement::$collectionReads === 0, 'Guest filters must skip collection reads');
