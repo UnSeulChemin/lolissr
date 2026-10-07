@@ -258,14 +258,15 @@ final class MangaRecommendationService
             {
                 $rows ??= $this->repository->releaseCollection();
                 $confirmed = self::confirmedSeriesIds($catalog, $rows, $ownerId);
+                $prepared = self::prepareCatalog($catalog, array_column($rows, 'livre'), $confirmed);
                 $current = [];
                 foreach (['categories', 'authors'] as $mode)
                 {
                     $ids = [];
                     foreach ($entries as $entry)
                         if ((str_starts_with($entry['reason'], 'Auteurs communs : ') ? 'authors' : 'categories') === $mode) $ids[] = $entry['id'];
-                    if ($ids === []) continue;
-                    foreach (self::fromCatalog($catalog, array_column($rows, 'livre'), $mode, [], $confirmed, $ids) as $suggestion)
+                    if ($ids === [] || $prepared === null) continue;
+                    foreach (self::fromPreparedCatalog($catalog, $prepared, $mode, [], $ids) as $suggestion)
                         $current[$suggestion['id']] = $suggestion;
                 }
                 $titles = [];

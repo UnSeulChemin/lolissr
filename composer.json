@@ -99,6 +99,7 @@
             "@php tests/Framework/Cache/cache-expiration-race.php",
             "@php tests/Framework/Cache/cache-purge.php",
             "@php tests/Framework/Cache/cache-ttl.php",
+            "@php tests/Framework/Cache/cache-short-write.php",
             "@php tests/Framework/Session/flash-toast.php",
             "@php tests/Framework/Http/request-lifecycle.php",
             "@php tests/Framework/Core/core-behavior.php",

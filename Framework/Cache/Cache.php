@@ -320,7 +320,7 @@ final class Cache
 
             $written = @file_put_contents($temporaryPath, $json, LOCK_EX);
 
-            if ($written === false)
+            if ($written !== strlen($json))
             {
                 self::deleteFile($temporaryPath);
 

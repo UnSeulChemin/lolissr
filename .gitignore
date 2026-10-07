@@ -35,7 +35,6 @@
 /public/images/*
 !/public/images/.gitkeep
 !/public/images/.htaccess
-!/public/images/.htaccess
 
 # Archives de livraison
 /releases/*

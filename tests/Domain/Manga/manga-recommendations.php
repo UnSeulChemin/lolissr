@@ -73,6 +73,17 @@ try
     $authorFilters = $service->searchFilters('auteur');
     $assert(count($authorFilters['authors']) === 1 && str_starts_with($authorFilters['authors'][0]['url'], 'manga/series/recommandations-auteurs/auteur/'), 'Author search included an unrelated author or lost its link');
     $assert(count($authorResult) === 1 && $authorResult[0]['id'] === $id(1) && str_contains($authorResult[0]['reason'], 'Auteur partagé'), 'Author recommendations used unrelated authors or categories');
+    $savedFavorites = file_get_contents($favorites);
+    $mixedCatalog = ['series' => $series,
+        'kinds' => [['title' => 'Aventure', 'series_ids' => [$id(0), $id(1)]]],
+        'authors' => [['title' => 'Auteur partagé', 'series_ids' => [$id(0), $id(2)]]]];
+    $mixedFavorites = [...MangaRecommendationService::fromCatalog($mixedCatalog, ['Etoile']),
+        ...MangaRecommendationService::fromCatalog($mixedCatalog, ['Etoile'], 'authors')];
+    file_put_contents($path, json_encode($mixedCatalog, JSON_THROW_ON_ERROR));
+    file_put_contents($favorites, json_encode(array_column($mixedFavorites, null, 'id'), JSON_THROW_ON_ERROR));
+    $assert($service->favorites() === $mixedFavorites, 'Mixed category/author favorites lost their scores or explanations');
+    file_put_contents($favorites, $savedFavorites);
+    file_put_contents($path, json_encode($authorCatalog, JSON_THROW_ON_ERROR));
     $manySeries = $series;
     foreach (['categories', 'authors'] as $mode)
     {
