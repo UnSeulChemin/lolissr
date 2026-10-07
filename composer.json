@@ -37,6 +37,7 @@
         "check:all": [
             "@composer validate",
             "@check",
+            "@http:portability",
             "@browser-tests",
             "@db:check",
             "@php scripts/Database/deduplicate-indexes.php --check",
@@ -92,6 +93,7 @@
             "@php tests/Framework/Cache/bootstrap-cache.php",
             "@php tests/Framework/Http/production-errors.php",
             "@php tests/Framework/Cache/cache-expiration-race.php",
+            "@php tests/Framework/Cache/cache-purge.php",
             "@php tests/Framework/Cache/cache-ttl.php",
             "@php tests/Framework/Session/flash-toast.php",
             "@php tests/Framework/Http/request-lifecycle.php",
@@ -182,7 +184,7 @@
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",
-        "check:all": "[Tests] Tous les controles : validation Composer, PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, index redondants, isolation des comptes, images et dependances de production.",
+        "check:all": "[Tests] Tous les controles : validation Composer, PHPStan, regressions, HTTP/SPA, portabilite Apache, navigateur, schema MySQL, index redondants, isolation des comptes, images et dependances de production.",
 
         "phpstan": "[Tests] Analyse statique du code PHP.",
         "http-tests": "[Tests] Vérifie les réponses HTTP et la navigation SPA.",

@@ -143,6 +143,40 @@ final class Cache
         }, required: true);
     }
 
+    /** Invalidate existing producers without removing their stable locks. */
+    public static function clear(): int
+    {
+        if (! self::ensureDirectory()) throw new \RuntimeException('Cannot create cache directory.');
+        $entries = scandir(self::directory());
+        if ($entries === false) throw new \RuntimeException('Cannot list cache directory.');
+        $paths = [];
+        foreach ($entries as $entry)
+        {
+            if (preg_match('/^([a-f0-9]{40}\.cache)(?:$|\.lock$|\.metadata\.lock$|\.version$|\.[a-f0-9]+\.tmp$)/D', $entry, $matches) === 1)
+                $paths[$matches[1]] = true;
+        }
+        $deleted = 0;
+        foreach (array_keys($paths) as $entry)
+        {
+            $path = self::directory() . DIRECTORY_SEPARATOR . $entry;
+            $deleted += self::synchronized($path, static function () use ($path): int
+            {
+                self::advanceGeneration($path . '.version');
+                $temporaryFiles = glob($path . '.*.tmp');
+                $files = array_merge([$path], $temporaryFiles === false ? [] : $temporaryFiles);
+                $count = 0;
+                foreach ($files as $file)
+                {
+                    if (! is_file($file)) continue;
+                    if (! unlink($file)) throw new \RuntimeException('Cannot remove cache entry: ' . $file);
+                    $count++;
+                }
+                return $count;
+            }, required: true) ?? 0;
+        }
+        return $deleted;
+    }
+
     /** @return array{value: mixed}|null Null means absent, not a cached null value. */
     private static function readEntry(string $key): ?array
     {

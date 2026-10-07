@@ -25,7 +25,14 @@ if (! is_dir($directory))
     fail('Runtime directory not found: ' . $relativeDirectory);
 }
 
-$deletedFiles = clearDirectory($directory);
+$deletedFiles = 0;
+if ($target === 'cache')
+{
+    require ROOT . '/vendor/autoload.php';
+    require ROOT . '/Framework/Support/Helpers.php';
+    $deletedFiles = \Framework\Cache\Cache::clear();
+}
+$deletedFiles += clearDirectory($directory, $target === 'cache');
 
 echo PHP_EOL;
 echo '[OK] ' . ucfirst($target) . ' cleared.';
@@ -35,7 +42,7 @@ echo PHP_EOL;
 
 exit(0);
 
-function clearDirectory(string $directory): int
+function clearDirectory(string $directory, bool $preserveCacheEntries = false): int
 {
     $entries = scandir($directory);
 
@@ -54,6 +61,12 @@ function clearDirectory(string $directory): int
         }
 
         $path = $directory . DIRECTORY_SEPARATOR . $entry;
+
+        // Cache::clear owns these entries, including files created during this purge.
+        if ($preserveCacheEntries && preg_match('/^[a-f0-9]{40}\.cache(?:$|\.lock$|\.metadata\.lock$|\.version$|\.[a-f0-9]+\.tmp$)/D', $entry))
+        {
+            continue;
+        }
 
         if (is_dir($path) && ! is_link($path))
         {
