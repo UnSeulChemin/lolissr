@@ -25,11 +25,18 @@ try
         copy($root . '/.htaccess', $directory . '/.htaccess-portability');
         copy($root . '/public/.htaccess', $directory . '/public/.htaccess-portability');
         copy($root . '/public/js/dist/.htaccess', $directory . '/public/js/dist/.htaccess-portability');
+        copy($root . '/public/images/.htaccess', $directory . '/public/images/.htaccess-portability');
         // A static marker front controller isolates rewriting from PHP/app configuration.
         file_put_contents($directory . '/public/index.php', 'FRONT_CONTROLLER');
         file_put_contents($directory . '/public/css/app.css', 'CSS_ASSET');
         file_put_contents($directory . '/public/js/dist/app-ABCDEFGH.js', 'JS_ASSET');
         file_put_contents($directory . '/public/js/dist/chunks/chunk-ABCDEFGH.js', 'CHUNK_ASSET');
+        file_put_contents($directory . '/public/images/thumbnail/allowed.jpg', 'IMAGE_MARKER');
+        foreach (['blocked.php', 'blocked.PHP', 'blocked.php.jpg', 'blocked.phtml.png', 'blocked.php8', 'blocked.phar'] as $name)
+            file_put_contents($directory . '/public/images/thumbnail/' . $name, 'EXECUTABLE_MARKER');
+        file_put_contents($directory . '/.env', 'PRIVATE_MARKER');
+        mkdir($directory . '/storage', 0700);
+        file_put_contents($directory . '/storage/private.json', 'PRIVATE_MARKER');
     }
     $configuration = "ServerRoot \"$serverRoot\"\nListen 127.0.0.1:$port\nServerName localhost\n";
     foreach (['authz_core', 'mime', 'dir', 'autoindex', 'rewrite', 'headers'] as $module)
@@ -87,6 +94,32 @@ try
             }
         }
         echo 'PASS: directory listings denied at ' . ($mount ?: '(root)') . ' through both public URL forms.' . PHP_EOL;
+        foreach (['', '/public'] as $publicPrefix)
+        {
+            foreach (['allowed.jpg', 'blocked.php', 'blocked.PHP', 'blocked.php.jpg', 'blocked.phtml.png', 'blocked.php8', 'blocked.phar'] as $name)
+            {
+                $curl = curl_init("http://127.0.0.1:$port" . $mount . $publicPrefix . '/images/thumbnail/' . $name);
+                curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => true, CURLOPT_TIMEOUT => 5]);
+                $response = curl_exec($curl);
+                $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                curl_close($curl);
+                $allowed = $name === 'allowed.jpg';
+                if ($status !== ($allowed ? 200 : 403) || !is_string($response)
+                    || !str_contains(strtolower($response), 'x-content-type-options: nosniff')
+                    || (!$allowed && str_contains($response, 'EXECUTABLE_MARKER')))
+                    throw new RuntimeException('Upload protection failed: ' . $name . ' status=' . $status);
+            }
+        }
+        foreach (['/.env', '/storage/private.json'] as $path)
+        {
+            $curl = curl_init("http://127.0.0.1:$port" . $mount . $path);
+            curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5]);
+            $response = curl_exec($curl);
+            curl_close($curl);
+            if (!is_string($response) || str_contains($response, 'PRIVATE_MARKER'))
+                throw new RuntimeException('Private project file exposed: ' . $path);
+        }
+        echo 'PASS: uploads reject executable variants, retain nosniff and private project files stay inaccessible at ' . ($mount ?: '(root)') . '.' . PHP_EOL;
     }
 }
 finally
