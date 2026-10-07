@@ -159,15 +159,13 @@ AVANT PRODUCTION
 = Diagnostiquer le projet, compiler les assets, verifier le formatage et lancer tous les controles
 composer preflight
 
+!! Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
+
 = Generer une archive avec images, assets actifs et dependances de production
 composer release:zip
 
-
-
 = Mise a jour en conservant les images du serveur
 composer release:zip -- --without-images
-
-= Archives dans releases/ ; nom defini par APP_NAME / APP_VERSION
 
 
 =========================================
