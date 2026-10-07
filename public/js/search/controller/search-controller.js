@@ -94,6 +94,9 @@ export function initSearchController()
             abortController?.abort();
             lastQuery = null;
             clearTimeout(debounceTimer);
+            activeIndex = -1;
+            clearSearchResults(searchResults);
+            closeDropdown(searchDropdown);
 
             debounceTimer = setTimeout(
                     () =>
@@ -164,6 +167,8 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
     abortController = new AbortController();
 
     activeIndex = -1;
+    clearSearchResults(searchResults);
+    closeDropdown(searchDropdown);
 
     try
     {

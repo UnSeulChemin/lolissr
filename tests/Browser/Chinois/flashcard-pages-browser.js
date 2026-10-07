@@ -80,9 +80,44 @@ export async function runBrowserScenario()
         try
         { await pending; } catch { failed = true; }
         check(failed && cancelled.card.id === 2 && cancelled.total === 121, 'Late response survived cleanup');
+        const {initVocabularyFlashcardsPage} = await import('./js/chinois/pages/flashcards-vocabulary.js');
+        const {initGrammarFlashcardsPage} = await import('./js/chinois/pages/flashcards-grammar.js');
+        for (const [className, init] of [['chinois-vocab-panel', initVocabularyFlashcardsPage], ['grammar-main-section', initGrammarFlashcardsPage]])
+        {
+            for (const success of [false, true])
+            {
+                const fixture = document.createElement('div');
+                fixture.innerHTML = '<span class="js-user-level">42</span><div id="toast">Current page</div>';
+                const panel = document.createElement('div');
+                panel.className = className;
+                panel.dataset.flashcards = JSON.stringify([{id: 1}]);
+                panel.innerHTML = '<button id="flashcard-mastered" type="button">Validate</button>';
+                fixture.append(panel);
+                document.body.append(fixture);
+                try
+                {
+                    let finish;
+                    window.fetch = () => new Promise(resolve =>
+                    { finish = resolve; });
+                    init();
+                    const button = panel.querySelector('button');
+                    button.click();
+                    check(button.disabled && typeof finish === 'function', 'Validation did not start');
+                    panel.remove();
+                    runCleanup();
+                    finish(new Response(JSON.stringify({success, data: {level: 2}}), {headers: {'Content-Type': 'application/json'}}));
+                    for (let i = 0; button.disabled && i < 100; i++) await new Promise(resolve => setTimeout(resolve, 10));
+                    check(!button.disabled, 'Late validation did not settle');
+                    check(fixture.querySelector('.js-user-level').textContent === '42', 'Late response overwrote current level');
+                    check(fixture.querySelector('#toast').textContent === 'Current page', 'Late response displayed obsolete feedback');
+                }
+                finally
+                { fixture.remove(); runCleanup(); }
+            }
+        }
         return ['Bounded batches and sparse IDs', 'Forward/backward boundaries and circular navigation',
             'Removal, concurrent shrink and empty deck', 'Network failure preserves current card and retry works',
-            'Cleanup discards late responses'];
+            'Cleanup discards late responses', 'Both flashcard pages discard obsolete validation feedback and header updates'];
     }
     finally
     { window.fetch = original; runCleanup(); }

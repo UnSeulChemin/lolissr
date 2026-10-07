@@ -109,11 +109,18 @@ export async function runBrowserScenario()
         input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
         check(form.querySelector('.search-result-item').classList.contains('is-active'), 'Keyboard navigation failed');
         const dropdown = form.querySelector('.js-header-search-dropdown');
+        input.value = 'changed-query';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        check(!form.querySelector('.search-result-item') && !dropdown.classList.contains('has-results'),
+            'Editing query left old results selectable during debounce');
+        check(input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}))
+            && input.value === 'changed-query', 'Enter selected an obsolete result');
         window.fetch = async () =>
         { throw new TypeError('Network unavailable'); };
         input.value = 'failed-query';
         form.dispatchEvent(new Event('submit', {cancelable: true}));
         await until(() => !form.querySelector('.search-result-item'));
+        await new Promise(resolve => setTimeout(resolve, 50));
         check(input.value === 'failed-query' && !dropdown.classList.contains('has-results'),
             'Failed search left stale results or cleared the query');
 

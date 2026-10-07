@@ -186,16 +186,16 @@ export function initGrammarFlashcardsPage()
 
             if (! data?.success)
             {
-                showToast('Erreur', 'error');
+                if (container.isConnected) showToast('Erreur', 'error');
 
                 return;
             }
 
-            updateHeaderUser(data?.data?.level);
             invalidateGrammarPages();
 
             saved = true;
             if (! container.isConnected) return;
+            updateHeaderUser(data?.data?.level);
             await deck.remove(card.id);
             if (! container.isConnected) return;
 

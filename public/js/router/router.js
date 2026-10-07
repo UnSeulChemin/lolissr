@@ -15,8 +15,41 @@ import { debug } from '../core/debug/debug.js';
 import { confirmModal } from '../core/modal/confirm-modal.js';
 
 import { request } from '../core/http.js';
+import { showToast } from '../core/toast.js';
 
 import { shouldIgnoreLink } from '../core/navigation.js';
+
+let logoutPending = false;
+
+async function logout(link)
+{
+    if (logoutPending) return;
+    logoutPending = true;
+    try
+    {
+        const confirmed = await confirmModal({
+            title: 'Déconnexion',
+            message: 'Êtes-vous sûr de vouloir vous déconnecter ?',
+            confirmText: 'Déconnexion'
+        });
+        if (!confirmed) return;
+        const response = await request(link.href, {method: 'POST'});
+        if (response?.type === 'redirect')
+        {
+            window.location.href = response.redirect;
+            return;
+        }
+        showToast('Déconnexion impossible. Réessaie.', 'error');
+    }
+    catch
+    {
+        showToast('Déconnexion impossible. Réessaie.', 'error');
+    }
+    finally
+    {
+        logoutPending = false;
+    }
+}
 
 // =================================================
 // CLIC
@@ -63,34 +96,7 @@ async function handleClick(event)
 
         event.preventDefault();
 
-        const confirmed = await confirmModal(
-                {
-                    title: 'Déconnexion',
-
-                    message: 'Êtes-vous sûr de vouloir vous déconnecter ?',
-
-                    confirmText: 'Déconnexion'
-                }
-            );
-
-        if (! confirmed)
-        {
-
-            return;
-        }
-
-        const response = await request(
-                link.href,
-                {
-                    method: 'POST'
-                }
-            );
-
-        if (response?.type === 'redirect')
-        {
-
-            window.location.href = response.redirect;
-        }
+        await logout(link);
 
         return;
     }
