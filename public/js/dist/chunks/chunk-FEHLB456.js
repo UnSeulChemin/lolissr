@@ -1,1 +1,0 @@
-import{a}from"./chunk-TE3VHEBK.js";import{c as e}from"./chunk-ME5BFOWY.js";function o(){a(e(),{descendants:!1}),a(e("profil")),a(e("figurine")),a(window.location.pathname,{descendants:!1})}export{o as a};

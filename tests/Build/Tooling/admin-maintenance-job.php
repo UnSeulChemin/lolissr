@@ -52,6 +52,13 @@ try
     file_put_contents($fixture . '/scripts/Assets/build-assets.php', '<?php echo "Assets built\n";');
     $run('assets'); $wait('done');
     if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Assets built')) throw new RuntimeException('Asset build command not executed.');
+    mkdir($fixture . '/scripts/Assets/JavaScript', 0700, true);
+    file_put_contents($fixture . '/scripts/Assets/JavaScript/prune-javascript.php', '<?php if (count($argv) !== 1) exit(1); echo "JavaScript pruned\n";');
+    $run('js-prune'); $wait('done');
+    if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'JavaScript pruned')) throw new RuntimeException('JavaScript prune command not executed.');
+    file_put_contents($fixture . '/scripts/Assets/JavaScript/prune-javascript.php', '<?php if (($argv[1] ?? null) !== "--force" || count($argv) !== 2) exit(1); echo "Forced JavaScript prune\n";');
+    $run('js-prune-force'); $wait('done');
+    if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Forced JavaScript prune')) throw new RuntimeException('Forced JavaScript prune command not executed.');
     file_put_contents($fixture . '/scripts/Assets/Images/check-images.php', '<?php if (count($argv) !== 1) exit(1); echo "Images checked\n";');
     $run('images-check'); $wait('done');
     if (!str_contains((string) file_get_contents($fixture . '/storage/admin-jobs/maintenance.log'), 'Images checked')) throw new RuntimeException('Image check command not executed.');

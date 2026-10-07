@@ -10,6 +10,8 @@ $commands = match ($task)
 {
     'doctor' => [[PHP_BINARY, $root . '/scripts/Tools/doctor.php']],
     'assets' => [[PHP_BINARY, $root . '/scripts/Assets/build-assets.php']],
+    'js-prune' => [[PHP_BINARY, $root . '/scripts/Assets/JavaScript/prune-javascript.php']],
+    'js-prune-force' => [[PHP_BINARY, $root . '/scripts/Assets/JavaScript/prune-javascript.php', '--force']],
     'images-check' => [[PHP_BINARY, $root . '/scripts/Assets/Images/check-images.php']],
     'images' => [[PHP_BINARY, $root . '/scripts/Assets/Images/build-profile-images.php'], [PHP_BINARY, $root . '/scripts/Assets/Images/optimize-thumbnails.php', '--apply']],
     'cache' => [[PHP_BINARY, $root . '/scripts/Maintenance/clear-runtime.php', 'cache']],

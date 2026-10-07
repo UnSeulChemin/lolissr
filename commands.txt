@@ -24,6 +24,30 @@ composer assets:build
 
 
 =========================================
+MAINTENANCE
+=========================================
+
+= Nettoyer les anciens bundles JavaScript apres leur retention de sept jours
+composer js:prune
+
+= Supprimer immediatement les anciens bundles JavaScript, en conservant les actifs
+= Recharger les pages ouvertes ; en production, peut interrompre les anciens onglets des visiteurs
+composer js:prune:force
+
+= Vider logs / cache / sessions et regenerer l'autoload
+composer dev:reset
+
+= Vider uniquement les logs
+composer logs:clear
+
+= Vider uniquement le cache
+composer cache:clear
+
+= Vider les sessions et deconnecter les utilisateurs
+composer sessions:clear
+
+
+=========================================
 DX
 =========================================
 
@@ -61,9 +85,6 @@ composer check
 composer check:all
 
 
-
-
-
 =========================================
 IMAGES
 =========================================
@@ -79,6 +100,8 @@ composer images:build
 composer images:check
 
 
+
+
 =========================================
 MANGA
 =========================================
@@ -92,15 +115,6 @@ composer manga:sync
 = Actualiser le catalogue et les couvertures des recommandations pour tous les comptes
 = Local et production ; ajouter -- USER_ID pour cibler un seul compte
 composer manga:recommendations
-
-
-
-
-
-
-
-
-
 
 
 = Apres modification manuelle du catalogue JSON : republier sa revision sans reseau
@@ -165,27 +179,6 @@ composer xp:backfill -- USER_ID
 
 = Attribuer uniquement les recompenses XP manquantes
 composer xp:backfill -- USER_ID --apply
-
-
-=========================================
-MAINTENANCE
-=========================================
-
-= Vider logs / cache / sessions et regenerer l'autoload
-composer dev:reset
-
-= Vider uniquement les logs
-composer logs:clear
-
-= Vider uniquement le cache
-composer cache:clear
-
-= Vider les sessions et deconnecter les utilisateurs
-composer sessions:clear
-
-= Sur le serveur : nettoyer les anciens bundles selon la retention de sept jours
-= Ne pas supprimer les chunks en fonction du seul manifeste actif
-composer js:prune
 
 
 =========================================

@@ -1,1 +1,0 @@
-import{a as e}from"./chunk-S5Q5RSM2.js";import{a}from"./chunk-3TIC7A3L.js";function o(){e(a(),{descendants:!1}),e(a("profil")),e(a("peluche")),e(window.location.pathname,{descendants:!1})}export{o as a};

@@ -9,6 +9,8 @@ $labels = ['idle' => 'Prêt', 'queued' => 'En attente', 'running' => 'En cours',
 $actions = [
     ['key' => 'doctor', 'icon' => '🩺', 'title' => 'Diagnostic', 'description' => 'Vérifier la configuration PHP, les services et les assets.', 'button' => 'Lancer le diagnostic'],
     ['key' => 'assets', 'icon' => '🛠️', 'title' => 'Assets', 'description' => 'Compiler le CSS et le JavaScript et actualiser leurs versions.', 'button' => 'Compiler les assets'],
+    ['key' => 'js-prune', 'icon' => '🧹', 'title' => 'Nettoyage JavaScript', 'description' => 'Supprimer les anciens bundles et chunks après sept jours de conservation. Préserve les fichiers actifs.', 'button' => 'Nettoyer les anciens bundles'],
+    ['key' => 'js-prune-force', 'icon' => '🧹', 'title' => 'Nettoyage JavaScript forcé', 'description' => 'Supprimer immédiatement les anciens bundles et chunks. Préserve les fichiers actifs. Recharger les onglets ouverts ; peut interrompre les anciennes pages des visiteurs.', 'button' => 'Forcer le nettoyage'],
     ['key' => 'images-check', 'icon' => '🔍', 'title' => 'Vérification images', 'description' => 'Vérifier profils, miniatures, variantes et empreintes sans modifier les fichiers.', 'button' => 'Vérifier les images'],
     ['key' => 'images', 'icon' => '🖼️', 'title' => 'Images', 'description' => 'Optimiser profils et miniatures, générer les variantes et actualiser les empreintes.', 'button' => 'Optimiser les images'],
     ['key' => 'cache', 'icon' => '🧹', 'title' => 'Cache', 'description' => 'Vider le cache de l’application.', 'button' => 'Vider le cache'],
@@ -25,7 +27,7 @@ $actions = [
                 <span class="dashboard-card-icon u-row-center" aria-hidden="true"><?= e($action['icon']) ?></span>
                 <span class="dashboard-card-title u-relative u-w-full u-bold"><?= e($action['title']) ?></span>
                 <code class="admin-command-badge"><?= e(match ($action['key'])
-                { 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
+                { 'doctor' => 'composer doctor', 'assets' => 'composer assets:build', 'js-prune' => 'composer js:prune', 'js-prune-force' => 'composer js:prune:force', 'images-check' => 'composer images:check', 'images' => 'composer images:build', 'reset' => 'composer dev:reset', 'migrations-create' => 'composer db:migrate:create -- create', 'migrations-check' => 'composer db:migrate:check', 'migrations' => 'composer db:migrate', default => 'composer cache:clear' }) ?></code>
                 <p class="dashboard-card-description"><?= e($action['description']) ?></p>
                 <p role="status"><?= e($labels[$job['state']] ?? 'État inconnu') ?></p>
                 <form method="post" action="<?= e($view->baseUri . 'admin/dev/commandes/' . $action['key']) ?>">

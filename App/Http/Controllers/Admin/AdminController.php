@@ -54,6 +54,10 @@ final class AdminController extends Controller
     { $this->maintenance('doctor'); }
     public function buildAssets(): never
     { $this->maintenance('assets'); }
+    public function pruneJavaScript(): never
+    { $this->maintenance('js-prune'); }
+    public function forcePruneJavaScript(): never
+    { $this->maintenance('js-prune-force'); }
     public function checkImages(): never
     { $this->maintenance('images-check'); }
     public function clearCache(): never

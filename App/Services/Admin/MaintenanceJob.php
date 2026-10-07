@@ -36,7 +36,7 @@ final class MaintenanceJob
     }
     public static function start(string $task): void
     {
-        if (!in_array($task, ['doctor', 'assets', 'images-check', 'images', 'cache', 'reset', 'migrations-create', 'migrations-check', 'migrations'], true)) throw new RuntimeException('Commande invalide.');
+        if (!in_array($task, ['doctor', 'assets', 'js-prune', 'js-prune-force', 'images-check', 'images', 'cache', 'reset', 'migrations-create', 'migrations-check', 'migrations'], true)) throw new RuntimeException('Commande invalide.');
         $directory = self::directory();
         if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) throw new RuntimeException('Stockage des commandes indisponible.');
         $lock = fopen($directory . '/maintenance.lock', 'c');

@@ -27,6 +27,10 @@ try
     $check(JavaScriptRetention::prune($root, [$active, $shared], 1000 + 14 * 86400) === 0);
     $check(JavaScriptRetention::prune($root, [$active], 1000 + 15 * 86400) === 0);
     $check(is_file($root . '/public/js/dist/.htaccess'));
+    $check(JavaScriptRetention::prune($root, [$active], 1000 + 15 * 86400, force: true) === 1);
+    $check(!is_file($root . '/public/' . $shared));
+    $check(is_file($root . '/public/' . $active));
+    $check(is_file($root . '/public/js/dist/.htaccess'));
     echo "PASS: retirement grace period, shared active chunks, reactivation and non-bundle files.\n";
 }
 finally

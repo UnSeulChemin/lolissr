@@ -1,1 +1,0 @@
-import{a}from"./chunk-NW274NC3.js";import{a as e}from"./chunk-HMCMA5OB.js";function o(){a(e(),{descendants:!1}),a(e("profil")),a(e("figurine")),a(window.location.pathname,{descendants:!1})}export{o as a};

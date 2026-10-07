@@ -23,6 +23,8 @@ $router->prefix('admin')->middleware(AdminOwnerMiddleware::class)->group(functio
         $router->get('commandes', [AdminController::class, 'devCommands']);
         $router->post('commandes/doctor', [AdminController::class, 'doctor'], [CsrfMiddleware::class]);
         $router->post('commandes/assets', [AdminController::class, 'buildAssets'], [CsrfMiddleware::class]);
+        $router->post('commandes/js-prune', [AdminController::class, 'pruneJavaScript'], [CsrfMiddleware::class]);
+        $router->post('commandes/js-prune-force', [AdminController::class, 'forcePruneJavaScript'], [CsrfMiddleware::class]);
         $router->post('commandes/images-check', [AdminController::class, 'checkImages'], [CsrfMiddleware::class]);
         $router->post('commandes/images', [AdminController::class, 'images'], [CsrfMiddleware::class]);
         $router->post('commandes/cache', [AdminController::class, 'clearCache'], [CsrfMiddleware::class]);

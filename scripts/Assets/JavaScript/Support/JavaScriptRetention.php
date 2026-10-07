@@ -9,7 +9,7 @@ final class JavaScriptRetention
     public const DAYS = 7;
 
     /** @param list<string> $active Files relative to public/. */
-    public static function prune(string $root, array $active, ?int $now = null): int
+    public static function prune(string $root, array $active, ?int $now = null, bool $force = false): int
     {
         $now ??= time();
         $directory = realpath($root . '/public/js/dist');
@@ -32,7 +32,7 @@ final class JavaScriptRetention
             // Called on the deployed server only; local build timestamps are ignored.
             $since = $previous[$path] ?? $now;
             if (!is_int($since)) throw new RuntimeException('Invalid bundle retirement timestamp.');
-            if ($now - $since >= self::DAYS * 86400)
+            if ($force || $now - $since >= self::DAYS * 86400)
             {
                 if (!unlink($file->getPathname())) throw new RuntimeException('Cannot prune bundle: ' . $path);
                 $removed++;
