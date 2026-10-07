@@ -90,14 +90,14 @@ IMAGES
 =========================================
 
 !! Uploads par formulaire : empreintes actualisees automatiquement
+!! Ajout du manga a la collection depuis le catalogue : couverture convertie en WebP automatiquement
 
 = Apres ajout, remplacement ou suppression manuelle d'images dans les dossiers
-= Optimise les profils et miniatures, migre les extensions des profils et genere les variantes .grid
-= Actualise le manifeste des profils et les empreintes de toutes les images
-composer images:build
-
 = Verifier profils, miniatures, variantes .grid, extensions en base, manifestes et empreintes sans les modifier
 composer images:check
+
+= Actualise le manifeste des profils et les empreintes de toutes les images
+composer images:build
 
 
 
